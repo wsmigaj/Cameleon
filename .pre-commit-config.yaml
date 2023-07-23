@@ -1,0 +1,21 @@
+# Configuration of the pre-commit package, which installs a Git hook running the clang-format
+# utility to format C++ source files before they are committed.
+
+repos:
+- repo: https://github.com/Lucas-C/pre-commit-hooks
+  rev: v1.5.1
+  hooks:
+  - id: insert-license
+    types_or: [c++, c]
+    exclude: '^3pty.*$'
+    args:
+      - --license-filepath
+      - LicenceHeader.txt
+      - --comment-style
+      - //
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: v13.0.1
+  hooks:
+  - id: clang-format
+    types_or: [c++, c]
+    exclude: '^3pty.*$'
