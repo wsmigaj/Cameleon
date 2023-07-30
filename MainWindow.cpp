@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
   ui_.setupUi(this);
   mainLayout_ = new QGridLayout(ui_.mainView);
+  updateDocumentDependentActions();
 }
 
 MainWindow::~MainWindow()
@@ -44,16 +45,20 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::on_actionNewComparison_triggered()
 {
-  //   QMessageBox::information(this, "Info", "New comparison clicked");
   ComparisonDialog dialog(this);
   dialog.setWindowTitle("New Comparison");
-  if (dialog.exec() == QDialog::Accepted)
+  if (dialog.exec() != QDialog::Accepted)
   {
-    doc_ = std::make_unique<Document>();
-    doc_->setLayout(Layout{2, 2});
-    doc_->setPatterns(dialog.patterns());
-    updateMainView();
+    return;
   }
+
+  doc_ = std::make_unique<Document>();
+  doc_->setLayout(Layout{2, 2});
+  doc_->setPatterns(dialog.patterns());
+
+  connectDocumentSignals();
+  updateMainView();
+  updateDocumentDependentActions();
 }
 
 void MainWindow::on_actionOpenComparison_triggered()
@@ -87,7 +92,9 @@ void MainWindow::on_actionOpenComparison_triggered()
   }
 
   doc_ = std::move(doc);
+  connectDocumentSignals();
   updateMainView();
+  updateDocumentDependentActions();
 }
 
 void MainWindow::on_actionEditComparison_triggered()
@@ -136,6 +143,7 @@ void MainWindow::on_actionCloseComparison_triggered()
 
   doc_ = nullptr;
   updateMainView();
+  updateDocumentDependentActions();
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -158,6 +166,17 @@ void MainWindow::on_actionZoom1to1_triggered()
   ui_.mainView->resetScale();
 }
 
+void MainWindow::onDocumentModificationStatusChanged()
+{
+  updateDocumentModificationStatusDependentActions();
+}
+
+void MainWindow::connectDocumentSignals()
+{
+  connect(doc_.get(), &Document::modificationStatusChanged, this,
+          &MainWindow::onDocumentModificationStatusChanged);
+}
+
 void MainWindow::updateMainView()
 {
   if (!doc_)
@@ -174,6 +193,29 @@ void MainWindow::updateMainView()
     ui_.mainView->setLayout(doc_->layout());
     ui_.mainView->setPaths(doc_->instances().front());
   }
+}
+
+void MainWindow::updateDocumentDependentActions()
+{
+  const bool isOpen = doc_ != nullptr;
+  const bool hasInstances = isOpen && !doc_->instances().empty();
+  const bool isModified = isOpen && doc_->modified();
+  ui_.actionEditComparison->setEnabled(isOpen);
+  ui_.actionSaveComparison->setEnabled(isModified);
+  ui_.actionSaveComparisonAs->setEnabled(isOpen);
+  ui_.actionCloseComparison->setEnabled(isOpen);
+  ui_.actionZoomIn->setEnabled(hasInstances);
+  ui_.actionZoomOut->setEnabled(hasInstances);
+  ui_.actionZoom1to1->setEnabled(hasInstances);
+
+  updateDocumentModificationStatusDependentActions();
+}
+
+void MainWindow::updateDocumentModificationStatusDependentActions()
+{
+  const bool isOpen = doc_ != nullptr;
+  const bool isModified = isOpen && doc_->modified();
+  ui_.actionSaveComparison->setEnabled(isModified);
 }
 
 bool MainWindow::maybeSaveDocument()

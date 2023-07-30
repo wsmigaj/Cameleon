@@ -43,6 +43,7 @@ void Document::setLayout(const Layout& layout)
   {
     layout_ = layout;
     modified_ = true;
+    modificationStatusChanged();
   }
 }
 
@@ -53,6 +54,7 @@ void Document::setPatterns(std::vector<QString> patterns)
     patterns_ = std::move(patterns);
     modified_ = true;
     regenerateInstances();
+    modificationStatusChanged();
   }
 }
 
@@ -88,6 +90,9 @@ void Document::loadFromJson(const QJsonObject& json)
   std::transform(jsonPatterns.begin(), jsonPatterns.end(), std::back_inserter(patterns),
                  [](const QJsonValue& jsonPattern) { return jsonPattern.toString(); });
   setPatterns(std::move(patterns));
+
+  modified_ = false;
+  modificationStatusChanged();
 }
 
 void Document::save(const QString& path)
@@ -106,6 +111,7 @@ void Document::save(const QString& path)
 
   path_ = path;
   modified_ = false;
+  modificationStatusChanged();
 }
 
 //int Document::numCases() const

@@ -23,8 +23,10 @@
 
 #include <vector>
 
-class Document
+class Document : public QObject
 {
+  Q_OBJECT
+
 public:
   Document();
   explicit Document(const QString& path);
@@ -52,6 +54,9 @@ public:
   void loadFromJson(const QJsonObject& json);
 
   void save(const QString& path);
+
+signals:
+  void modificationStatusChanged();
 
 private:
   QString path_;

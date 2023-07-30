@@ -47,8 +47,14 @@ private slots:
   void on_actionZoomOut_triggered();
   void on_actionZoom1to1_triggered();
 
+  void onDocumentModificationStatusChanged();
+
 private:
+  void connectDocumentSignals();
   void updateMainView();
+  void updateDocumentDependentActions();
+  void updateDocumentModificationStatusDependentActions();
+
   bool maybeSaveDocument();
   bool saveDocument();
   bool saveDocumentAs();

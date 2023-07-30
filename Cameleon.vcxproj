@@ -106,7 +106,7 @@
     <None Include="Cameleon.ico" />
     <ResourceCompile Include="Cameleon.rc" />
     <QtMoc Include="ComparisonDialog.h" />
-    <ClInclude Include="Document.h" />
+    <QtMoc Include="Document.h" />
     <QtMoc Include="ImageView.h" />
     <QtMoc Include="MainView.h" />
     <ClInclude Include="RuntimeError.h" />

@@ -80,11 +80,11 @@
     <QtMoc Include="MainView.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Document.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Document.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RuntimeError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
