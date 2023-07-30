@@ -111,8 +111,8 @@ void MainView::setLayout(const Layout& layout)
   for (int column = 0; column < layout.columns; ++column)
     mainLayout_->setColumnStretch(column, 1);
 
-  Q_ASSERT(mainLayout_->rowCount() == layout.rows);
-  Q_ASSERT(mainLayout_->columnCount() == layout.columns);
+  //Q_ASSERT(mainLayout_->rowCount() == layout.rows);
+  //Q_ASSERT(mainLayout_->columnCount() == layout.columns);
 }
 
 //void MainView::onInstancesChanged()

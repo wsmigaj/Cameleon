@@ -15,16 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
-#include "MainWindow.h"
-#include <QtWidgets/QApplication>
+#pragma once
 
-int main(int argc, char* argv[])
+#include <QString>
+#include <stdexcept>
+
+class RuntimeError : public std::runtime_error
 {
-  QApplication a(argc, argv);
-  QApplication::setApplicationName("Cameleon");
-  a.setQuitOnLastWindowClosed(true);
-  MainWindow* w = new MainWindow;
-  w->show();
-  return a.exec();
-}
+public:
+  explicit RuntimeError(const QString& msg) : runtime_error(msg.toStdString()) {}
+};

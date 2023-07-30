@@ -37,6 +37,8 @@ public:
   const std::vector<QString>& patterns() const { return patterns_; }
   void setPatterns(std::vector<QString> patterns);
 
+  bool modified() const { return modified_; }
+
   void regenerateInstances();
 
   //int numInstances() const;
@@ -46,6 +48,9 @@ public:
   //const std::vector<QString> &instance(int index) const;
   const std::vector<std::vector<QString>>& instances() const { return instances_; }
 
+  QJsonObject toJson() const;
+  void loadFromJson(const QJsonObject& json);
+
   void save(const QString& path);
 
 private:
@@ -53,8 +58,6 @@ private:
   Layout layout_ = Layout{0, 0};
   std::vector<QString> patterns_;
 
+  bool modified_ = false;
   std::vector<std::vector<QString>> instances_;
-  //int numRows_ = 1;
-  //int numColumns_ = 1;
-  //int currentCaseIndex_ = -1;
 };

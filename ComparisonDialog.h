@@ -30,6 +30,7 @@ public:
   ComparisonDialog(QWidget* parent = nullptr);
 
   std::vector<QString> patterns() const;
+  void setPatterns(const std::vector<QString>& patterns);
 
 private:
   Ui::ComparisonDialogClass ui;

@@ -18,6 +18,8 @@
 #include "stdafx.h"
 #include "ComparisonDialog.h"
 
+#include <array>
+
 ComparisonDialog::ComparisonDialog(QWidget* parent) : QDialog(parent)
 {
   ui.setupUi(this);
@@ -34,4 +36,18 @@ std::vector<QString> ComparisonDialog::patterns() const
     }
   }
   return result;
+}
+
+void ComparisonDialog::setPatterns(const std::vector<QString>& patterns)
+{
+  std::array<QLineEdit*, 4> edits = {ui.patternAEdit, ui.patternBEdit, ui.patternCEdit,
+                                     ui.patternDEdit};
+
+  for (size_t i = 0; i < edits.size(); ++i)
+  {
+    if (i < patterns.size())
+      edits[i]->setText(patterns[i]);
+    else
+      edits[i]->setText(QString());
+  }
 }

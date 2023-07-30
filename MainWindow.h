@@ -32,21 +32,30 @@ public:
   explicit MainWindow(QWidget* parent = nullptr);
   ~MainWindow() override;
 
+protected:
+  void closeEvent(QCloseEvent* event) override;
+
 private slots:
   void on_actionNewComparison_triggered();
+  void on_actionOpenComparison_triggered();
+  void on_actionEditComparison_triggered();
+  void on_actionSaveComparison_triggered();
+  void on_actionSaveComparisonAs_triggered();
+  void on_actionCloseComparison_triggered();
+  void on_actionQuit_triggered();
   void on_actionZoomIn_triggered();
   void on_actionZoomOut_triggered();
   void on_actionZoom1to1_triggered();
 
 private:
-  void updateLayout(int numRows, int numColumns);
-  void updateImageViews();
+  void updateMainView();
+  bool maybeSaveDocument();
+  bool saveDocument();
+  bool saveDocumentAs();
+  bool saveDocument(const QString& path);
 
 private:
   Ui::MainWindowClass ui_;
-  std::unique_ptr<Document> doc_;
-
   QGridLayout* mainLayout_;
-  std::vector<ImageView*> imageViews_;
-  int numOngoingTransformUpdates_ = 0;
+  std::unique_ptr<Document> doc_;
 };
