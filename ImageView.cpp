@@ -29,15 +29,24 @@ ImageView::ImageView(QWidget* parent) : QGraphicsView(parent)
 
 void ImageView::loadImage(const QString& path)
 {
+  QPixmap pixmap;
+  if (!path.isEmpty())
+    pixmap.load(path);
+
   if (!item_)
   {
-    item_ = new QGraphicsPixmapItem(QPixmap(path));
+    item_ = new QGraphicsPixmapItem(pixmap);
     scene_.addItem(item_);
   }
   else
   {
-    item_->setPixmap(QPixmap(path));
+    item_->setPixmap(pixmap);
   }
+}
+
+void ImageView::clear()
+{
+  loadImage(QString());
 }
 
 QRectF ImageView::imageRect() const

@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "Layout.h"
+
 #include <QString>
 
 #include <vector>
@@ -25,25 +27,34 @@ class Document
 {
 public:
   Document();
+  explicit Document(const QString& path);
 
-  void load(const QString& path);
+  const QString& path() const { return path_; }
+
+  Layout layout() const { return layout_; }
+  void setLayout(const Layout& layout);
+
+  const std::vector<QString>& patterns() const { return patterns_; }
+  void setPatterns(std::vector<QString> patterns);
+
+  void regenerateInstances();
+
+  //int numInstances() const;
+  //int currentCaseIndex() const;
+  //void setCurrentCaseIndex(int index);
+  //std::vector<QString> currentCase() const;
+  //const std::vector<QString> &instance(int index) const;
+  const std::vector<std::vector<QString>>& instances() const { return instances_; }
+
   void save(const QString& path);
 
-  const std::vector<QString>& patterns() const;
-  void setPatterns(std::vector<QString> patterns, int numRows, int numColumns);
-
-  int numRows() const;
-  int numColumns() const;
-  void setLayout(int numRows, int numColumns);
-
-  int numCases() const;
-  int currentCaseIndex() const;
-  void setCurrentCaseIndex(int index);
-  std::vector<QString> currentCase() const;
-
 private:
+  QString path_;
+  Layout layout_ = Layout{0, 0};
   std::vector<QString> patterns_;
-  int numRows_ = 1;
-  int numColumns_ = 1;
-  int currentCaseIndex_ = -1;
+
+  std::vector<std::vector<QString>> instances_;
+  //int numRows_ = 1;
+  //int numColumns_ = 1;
+  //int currentCaseIndex_ = -1;
 };

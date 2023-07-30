@@ -15,15 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
-#include "MainWindow.h"
-#include <QtWidgets/QApplication>
+#pragma once
 
-int main(int argc, char* argv[])
+struct Layout
 {
-  QApplication a(argc, argv);
-  a.setQuitOnLastWindowClosed(true);
-  MainWindow* w = new MainWindow;
-  w->show();
-  return a.exec();
+  size_t rows;
+  size_t columns;
+
+  size_t panels() const { return rows * columns; }
+  size_t panelIndex(size_t row, size_t column) const { return row * columns + column; }
+};
+
+inline bool operator==(const Layout& a, const Layout& b)
+{
+  return a.rows == b.rows && a.columns == b.columns;
+}
+
+inline bool operator!=(const Layout& a, const Layout& b)
+{
+  return !(a == b);
 }

@@ -61,6 +61,9 @@
     <ClCompile Include="Document.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ComparisonDialog.ui">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ImageView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MainView.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

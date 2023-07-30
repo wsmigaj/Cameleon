@@ -100,6 +100,7 @@
     <ClCompile Include="ComparisonDialog.cpp" />
     <ClCompile Include="Document.cpp" />
     <ClCompile Include="ImageView.cpp" />
+    <ClCompile Include="MainView.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="Cameleon.ico" />
@@ -107,6 +108,7 @@
     <QtMoc Include="ComparisonDialog.h" />
     <ClInclude Include="Document.h" />
     <QtMoc Include="ImageView.h" />
+    <QtMoc Include="MainView.h" />
     <ClInclude Include="stdafx.h" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>

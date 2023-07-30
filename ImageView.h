@@ -25,7 +25,9 @@ class ImageView : public QGraphicsView
 public:
   explicit ImageView(QWidget* parent = nullptr);
 
+  /// If `path` is empty, the image is cleared.
   void loadImage(const QString& path);
+  void clear();
 
   QRectF imageRect() const;
 

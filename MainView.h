@@ -17,36 +17,49 @@
 
 #pragma once
 
-#include "ImageView.h"
-#include "ui_MainWindow.h"
+#include "Layout.h"
 
-#include <QtWidgets/QMainWindow>
+#include <QWidget>
 
 class Document;
+class ImageView;
 
-class MainWindow : public QMainWindow
+// enum class ForceReload {NO, YES};
+
+class MainView : public QWidget
 {
   Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget* parent = nullptr);
-  ~MainWindow() override;
+  MainView(QWidget* parent);
+  MainView(const MainView&) = delete;
+  MainView& operator=(const MainView&) = delete;
+  ~MainView() override;
+
+  const Layout& layout() const { return layout_; }
+  void setLayout(const Layout& layout);
+
+  const std::vector<QString>& paths() const { return paths_; }
+  void setPaths(std::vector<QString> paths);
+  void clearPaths();
+
+  void reloadImages();
+
+  void zoom(double relativeScale);
+  void resetScale();
 
 private slots:
-  void on_actionNewComparison_triggered();
-  void on_actionZoomIn_triggered();
-  void on_actionZoomOut_triggered();
-  void on_actionZoom1to1_triggered();
+  void onImageViewHorizontalScrollBarValueChanged(int value);
+  void onImageViewVerticalScrollBarValueChanged(int value);
+  void onImageViewTransformChanging();
+  void onImageViewTransformChanged(QTransform transform);
 
 private:
-  void updateLayout(int numRows, int numColumns);
-  void updateImageViews();
-
-private:
-  Ui::MainWindowClass ui_;
-  std::unique_ptr<Document> doc_;
-
   QGridLayout* mainLayout_;
   std::vector<ImageView*> imageViews_;
+
+  Layout layout_ = Layout{0, 0};
+  std::vector<QString> paths_;
+
   int numOngoingTransformUpdates_ = 0;
 };
