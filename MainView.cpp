@@ -108,11 +108,12 @@ void MainView::setLayout(const Layout& layout)
 
   for (int row = 0; row < layout.rows; ++row)
     mainLayout_->setRowStretch(row, 1);
+  for (int row = layout.rows; row < mainLayout_->rowCount(); ++row)
+    mainLayout_->setRowStretch(row, 0);
   for (int column = 0; column < layout.columns; ++column)
     mainLayout_->setColumnStretch(column, 1);
-
-  //Q_ASSERT(mainLayout_->rowCount() == layout.rows);
-  //Q_ASSERT(mainLayout_->columnCount() == layout.columns);
+  for (int column = 0; column < mainLayout_->columnCount(); ++column)
+    mainLayout_->setColumnStretch(column, 0);
 }
 
 //void MainView::onInstancesChanged()

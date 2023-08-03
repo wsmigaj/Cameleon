@@ -19,6 +19,7 @@
 #include "ComparisonDialog.h"
 #include "Document.h"
 #include "MainWindow.h"
+#include "Settings.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -45,6 +46,11 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::on_actionNewComparison_triggered()
 {
+  if (!maybeSaveDocument())
+  {
+    return;
+  }
+
   ComparisonDialog dialog(this);
   dialog.setWindowTitle("New Comparison");
   if (dialog.exec() != QDialog::Accepted)
@@ -53,7 +59,7 @@ void MainWindow::on_actionNewComparison_triggered()
   }
 
   doc_ = std::make_unique<Document>();
-  doc_->setLayout(Layout{2, 2});
+  doc_->setLayout(Settings::defaultLayout(dialog.patterns().size()));
   doc_->setPatterns(dialog.patterns());
 
   connectDocumentSignals();
@@ -99,8 +105,6 @@ void MainWindow::on_actionOpenComparison_triggered()
 
 void MainWindow::on_actionEditComparison_triggered()
 {
-  // TODO: Enable/disable menu items as appropriate. Although this won't be necessary if we implement an SDI.
-
   ComparisonDialog dialog(this);
   dialog.setWindowTitle("Edit Comparison");
   dialog.setPatterns(doc_->patterns());
