@@ -58,6 +58,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)\3pty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)\3pty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -93,10 +103,16 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="WildcardPatterns.cpp" />
+    <ClInclude Include="WildcardPatterns.h" />
     <QtRcc Include="MainWindow.qrc" />
     <QtUic Include="ComparisonDialog.ui" />
     <QtUic Include="MainWindow.ui" />
     <QtMoc Include="MainWindow.h" />
+    <ClCompile Include="3pty\glob\glob.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ComparisonDialog.cpp" />
     <ClCompile Include="Document.cpp" />
     <ClCompile Include="ImageView.cpp" />
@@ -109,6 +125,7 @@
     <QtMoc Include="Document.h" />
     <QtMoc Include="ImageView.h" />
     <QtMoc Include="MainView.h" />
+    <ClInclude Include="3pty\glob\glob.h" />
     <ClInclude Include="RuntimeError.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="stdafx.h" />

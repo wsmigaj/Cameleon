@@ -18,6 +18,20 @@
 #include "stdafx.h"
 #include "Document.h"
 #include "RuntimeError.h"
+#include "WildcardPatterns.h"
+
+#include <glob/glob.h>
+
+#include <map>
+#include <regex>
+#include <set>
+#include <string>
+#include <vector>
+
+namespace
+{
+
+}
 
 Document::Document()
 {
@@ -58,9 +72,147 @@ void Document::setPatterns(std::vector<QString> patterns)
   }
 }
 
+struct MatchingPath
+{
+  std::filesystem::path path;
+  std::vector<std::string> magicExpressionMatches;
+};
+
+struct PatternMatches
+{
+  size_t numMagicExpressions = 0;
+  std::vector<MatchingPath> matchingPaths;
+};
+
+PatternMatches matchWildcardPattern(const std::string& pattern)
+{
+  PatternMatches matches;
+
+  const std::vector<std::filesystem::path> globResults = glob::rglob(pattern);
+
+  const std::regex patternAsRegex(wildcardPatternToRegex(pattern));
+  matches.numMagicExpressions = patternAsRegex.mark_count();
+  for (const std::filesystem::path& path : globResults)
+  {
+    const std::string pathAsString = path.string();
+    std::smatch match;
+    std::vector<std::string> magicExpressionMatches;
+    if (std::regex_match(pathAsString, match, patternAsRegex))
+    {
+      if (match.size() != matches.numMagicExpressions + 1)
+      {
+        throw RuntimeError(QString::fromStdString("Internal error: the path '" + pathAsString +
+                                                  "' did not match all magic expressions"));
+      }
+      for (std::size_t i = 1; i < match.size(); ++i)
+      {
+        magicExpressionMatches.push_back(match[i].str());
+      }
+    }
+    else
+    {
+      throw RuntimeError(
+        QString::fromStdString("Internal error: the path '" + pathAsString +
+                               "' unexpectedly did not match a regular expression."));
+    }
+    matches.matchingPaths.push_back(MatchingPath{path, std::move(magicExpressionMatches)});
+  }
+
+  return matches;
+}
+
 void Document::regenerateInstances()
 {
-  instances_ = {patterns_};
+  std::size_t numMagicExpressions = 0;
+  for (const QString& pattern : patterns_)
+  {
+    const std::regex patternAsRegex(wildcardPatternToRegex(pattern.toStdString()));
+    const std::size_t markCount = patternAsRegex.mark_count();
+    if (markCount > 0)
+    {
+      if (numMagicExpressions == 0)
+      {
+        numMagicExpressions = markCount;
+      }
+      else if (markCount != numMagicExpressions)
+      {
+        throw RuntimeError("Any patterns with wildcard expressions must contain the same number of "
+                           "wildcard expressions.");
+      }
+    }
+  }
+
+  std::vector<PatternMatches> matchesByPattern;
+  std::transform(patterns_.begin(), patterns_.end(), std::back_inserter(matchesByPattern),
+                 [](const QString& pattern)
+                 { return matchWildcardPattern(pattern.toStdString()); });
+
+  std::map<std::vector<std::string>, std::size_t> magicExpressionMatchIndex;
+  for (const PatternMatches& patternMatches : matchesByPattern)
+  {
+    if (patternMatches.numMagicExpressions != 0)
+    {
+      for (const MatchingPath& path : patternMatches.matchingPaths)
+      {
+        magicExpressionMatchIndex[path.magicExpressionMatches] = 0;
+      }
+    }
+  }
+
+  {
+    std::size_t i = 0;
+    for (auto& kv : magicExpressionMatchIndex)
+    {
+      kv.second = i++;
+    }
+  }
+
+  instances_.clear();
+  if (numMagicExpressions == 0)
+  {
+    std::vector<QString> instance;
+    for (const PatternMatches& patternMatches : matchesByPattern)
+    {
+      if (patternMatches.matchingPaths.empty())
+      {
+        instance.push_back(QString());
+      }
+      else
+      {
+        instance.push_back(
+          QString::fromStdString(patternMatches.matchingPaths.front().path.string()));
+      }
+    }
+    instances_.push_back(std::move(instance));
+  }
+  else
+  {
+    instances_.assign(std::max<std::size_t>(1, magicExpressionMatchIndex.size()),
+                      std::vector<QString>(patterns_.size()));
+    for (size_t iPattern = 0; iPattern < patterns_.size(); ++iPattern)
+    {
+      const PatternMatches& patternMatches = matchesByPattern[iPattern];
+      if (patternMatches.numMagicExpressions == 0)
+      {
+        if (!patternMatches.matchingPaths.empty())
+        {
+          const QString path =
+            QString::fromStdString(patternMatches.matchingPaths.front().path.string());
+          for (std::vector<QString>& instance : instances_)
+            instance[iPattern] = path;
+        }
+      }
+      else
+      {
+        for (const MatchingPath& matchingPath : patternMatches.matchingPaths)
+        {
+          const std::size_t iInstance =
+            magicExpressionMatchIndex.at(matchingPath.magicExpressionMatches);
+          instances_[iInstance][iPattern] = QString::fromStdString(matchingPath.path.string());
+        }
+      }
+    }
+  }
 }
 
 QJsonObject Document::toJson() const
