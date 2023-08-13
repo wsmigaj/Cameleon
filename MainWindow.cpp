@@ -123,6 +123,7 @@ void MainWindow::on_actionEditComparison_triggered()
     else
     {
       ui_.mainView->setLayout(doc_->layout());
+      // TODO: Replace this with navigateToInstance(...). Add a function updating the enable status navigation buttons.
       ui_.mainView->setPaths(doc_->instances().front());
     }
   }
@@ -168,6 +169,22 @@ void MainWindow::on_actionZoomOut_triggered()
 void MainWindow::on_actionZoom1to1_triggered()
 {
   ui_.mainView->resetScale();
+}
+
+void MainWindow::on_actionFirstInstance_triggered()
+{
+}
+
+void MainWindow::on_actionPreviousInstance_triggered()
+{
+}
+
+void MainWindow::on_actionNextInstance_triggered()
+{
+}
+
+void MainWindow::on_actionLastInstance_triggered()
+{
 }
 
 void MainWindow::onDocumentModificationStatusChanged()

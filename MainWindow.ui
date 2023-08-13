@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>835</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>835</width>
      <height>22</height>
     </rect>
    </property>
@@ -57,8 +57,18 @@
     <addaction name="actionZoomOut"/>
     <addaction name="actionZoom1to1"/>
    </widget>
+   <widget class="QMenu" name="menuNavigation">
+    <property name="title">
+     <string>Navigation</string>
+    </property>
+    <addaction name="actionFirstInstance"/>
+    <addaction name="actionPreviousInstance"/>
+    <addaction name="actionNextInstance"/>
+    <addaction name="actionLastInstance"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
+   <addaction name="menuNavigation"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -67,6 +77,15 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionNewComparison"/>
+   <addaction name="actionOpenComparison"/>
+   <addaction name="actionEditComparison"/>
+   <addaction name="actionSaveComparison"/>
+   <addaction name="separator"/>
+   <addaction name="actionFirstInstance"/>
+   <addaction name="actionPreviousInstance"/>
+   <addaction name="actionNextInstance"/>
+   <addaction name="actionLastInstance"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewComparison">
@@ -117,6 +136,26 @@
   <action name="actionEditComparison">
    <property name="text">
     <string>&amp;Edit Comparison...</string>
+   </property>
+  </action>
+  <action name="actionFirstInstance">
+   <property name="text">
+    <string>&amp;First Instance</string>
+   </property>
+  </action>
+  <action name="actionPreviousInstance">
+   <property name="text">
+    <string>&amp;Previous Instance</string>
+   </property>
+  </action>
+  <action name="actionNextInstance">
+   <property name="text">
+    <string>&amp;Next Instance</string>
+   </property>
+  </action>
+  <action name="actionLastInstance">
+   <property name="text">
+    <string>&amp;Last Instance</string>
    </property>
   </action>
  </widget>

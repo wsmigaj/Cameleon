@@ -46,6 +46,10 @@ private slots:
   void on_actionZoomIn_triggered();
   void on_actionZoomOut_triggered();
   void on_actionZoom1to1_triggered();
+  void on_actionFirstInstance_triggered();
+  void on_actionPreviousInstance_triggered();
+  void on_actionNextInstance_triggered();
+  void on_actionLastInstance_triggered();
 
   void onDocumentModificationStatusChanged();
 
