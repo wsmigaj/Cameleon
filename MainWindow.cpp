@@ -19,6 +19,7 @@
 #include "ComparisonDialog.h"
 #include "Document.h"
 #include "MainWindow.h"
+#include "RuntimeError.h"
 #include "Settings.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
@@ -112,6 +113,7 @@ void MainWindow::on_actionOpenComparison_triggered()
   }
 
   doc_ = std::move(doc);
+  instance_ = 0;
   connectDocumentSignals();
   updateMainView();
   updateDocumentDependentActions();
@@ -129,17 +131,7 @@ void MainWindow::on_actionEditComparison_triggered()
 
     doc_->setPatterns(dialog.patterns());
 
-    if (doc_->instances().empty())
-    {
-      ui_.mainView->setLayout(Layout{0, 0});
-      QMessageBox::information(this, "Information", "No pattern matches found");
-    }
-    else
-    {
-      ui_.mainView->setLayout(doc_->layout());
-      // TODO: Replace this with navigateToInstance(...). Add a function updating the enable status navigation buttons.
-      ui_.mainView->setPaths(doc_->instances().front());
-    }
+    goToInstance(0);
   }
 }
 
@@ -187,18 +179,37 @@ void MainWindow::on_actionZoom1to1_triggered()
 
 void MainWindow::on_actionFirstInstance_triggered()
 {
+  if (!doc_ || doc_->instances().empty())
+    return;
+  goToInstance(0);
 }
 
 void MainWindow::on_actionPreviousInstance_triggered()
 {
+  if (!doc_ || doc_->instances().empty() || instance_ == 0)
+    return;
+  goToInstance(instance_ - 1);
 }
 
 void MainWindow::on_actionNextInstance_triggered()
 {
+  if (!doc_ || doc_->instances().empty() || instance_ + 1 >= doc_->instances().size())
+    return;
+  goToInstance(instance_ + 1);
 }
 
 void MainWindow::on_actionLastInstance_triggered()
 {
+  if (!doc_ || doc_->instances().empty() || instance_ + 1 >= doc_->instances().size())
+    return;
+  goToInstance(doc_->instances().size() - 1);
+}
+
+void MainWindow::goToInstance(int instance)
+{
+  instance_ = instance;
+  updateInstanceDependentActions();
+  updateMainView();
 }
 
 void MainWindow::onDocumentModificationStatusChanged()
@@ -226,7 +237,14 @@ void MainWindow::updateMainView()
   else
   {
     ui_.mainView->setLayout(doc_->layout());
-    ui_.mainView->setPaths(doc_->instances().front());
+    if (instance_ < doc_->instances().size())
+    {
+      ui_.mainView->setPaths(doc_->instances()[instance_]);
+    }
+    else
+    {
+      throw RuntimeError("Internal error: invalid instance index");
+    }
   }
 }
 
@@ -244,6 +262,7 @@ void MainWindow::updateDocumentDependentActions()
   ui_.actionZoom1to1->setEnabled(hasInstances);
 
   updateDocumentModificationStatusDependentActions();
+  updateInstanceDependentActions();
 }
 
 void MainWindow::updateDocumentModificationStatusDependentActions()
@@ -251,6 +270,16 @@ void MainWindow::updateDocumentModificationStatusDependentActions()
   const bool isOpen = doc_ != nullptr;
   const bool isModified = isOpen && doc_->modified();
   ui_.actionSaveComparison->setEnabled(isModified);
+}
+
+void MainWindow::updateInstanceDependentActions()
+{
+  const bool isOpen = doc_ != nullptr;
+  const int numInstances = isOpen ? doc_->instances().size() : 0;
+  ui_.actionFirstInstance->setEnabled(numInstances > 0 && instance_ > 0);
+  ui_.actionPreviousInstance->setEnabled(numInstances > 0 && instance_ > 0);
+  ui_.actionNextInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
+  ui_.actionLastInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
 }
 
 bool MainWindow::maybeSaveDocument()

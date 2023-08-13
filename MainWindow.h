@@ -58,6 +58,9 @@ private:
   void updateMainView();
   void updateDocumentDependentActions();
   void updateDocumentModificationStatusDependentActions();
+  void updateInstanceDependentActions();
+
+  void goToInstance(int instance);
 
   bool maybeSaveDocument();
   bool saveDocument();
@@ -68,4 +71,5 @@ private:
   Ui::MainWindowClass ui_;
   QGridLayout* mainLayout_;
   std::unique_ptr<Document> doc_;
+  int instance_ = 0;
 };
