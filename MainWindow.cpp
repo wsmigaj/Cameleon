@@ -24,6 +24,20 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
   ui_.setupUi(this);
+
+  QIcon::setThemeName("tango");
+
+  ui_.actionNewComparison->setIcon(QIcon::fromTheme("document-new"));
+  ui_.actionOpenComparison->setIcon(QIcon::fromTheme("document-open"));
+  ui_.actionEditComparison->setIcon(QIcon::fromTheme("document-properties"));
+  ui_.actionSaveComparison->setIcon(QIcon::fromTheme("document-save"));
+  ui_.actionSaveComparisonAs->setIcon(QIcon::fromTheme("document-save-as"));
+
+  ui_.actionFirstInstance->setIcon(QIcon::fromTheme("go-first"));
+  ui_.actionPreviousInstance->setIcon(QIcon::fromTheme("go-previous"));
+  ui_.actionNextInstance->setIcon(QIcon::fromTheme("go-next"));
+  ui_.actionLastInstance->setIcon(QIcon::fromTheme("go-last"));
+
   mainLayout_ = new QGridLayout(ui_.mainView);
   updateDocumentDependentActions();
 }
