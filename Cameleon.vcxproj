@@ -106,6 +106,7 @@
     <ClCompile Include="WildcardPatterns.cpp" />
     <ClInclude Include="WildcardPatterns.h" />
     <QtRcc Include="MainWindow.qrc" />
+    <QtRcc Include="tango.qrc" />
     <QtUic Include="ComparisonDialog.ui" />
     <QtUic Include="MainWindow.ui" />
     <QtMoc Include="MainWindow.h" />
