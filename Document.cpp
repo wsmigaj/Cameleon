@@ -147,7 +147,8 @@ void Document::regenerateInstances()
                  [](const QString& pattern)
                  { return matchWildcardPattern(pattern.toStdString()); });
 
-  std::map<std::vector<std::string>, std::size_t> magicExpressionMatchIndex;
+  using StringsToIndexMap = std::map<std::vector<std::string>, std::size_t>;
+  StringsToIndexMap magicExpressionMatchIndex;
   for (const PatternMatches& patternMatches : matchesByPattern)
   {
     if (patternMatches.numMagicExpressions != 0)
@@ -168,6 +169,7 @@ void Document::regenerateInstances()
   }
 
   instances_.clear();
+  magicExpressionMatches_.clear();
   if (numMagicExpressions == 0)
   {
     std::vector<QString> instance;
@@ -184,11 +186,20 @@ void Document::regenerateInstances()
       }
     }
     instances_.push_back(std::move(instance));
+    magicExpressionMatches_.push_back({});
   }
   else
   {
-    instances_.assign(std::max<std::size_t>(1, magicExpressionMatchIndex.size()),
-                      std::vector<QString>(patterns_.size()));
+    instances_.assign(magicExpressionMatchIndex.size(), std::vector<QString>(patterns_.size()));
+    std::transform(magicExpressionMatchIndex.begin(), magicExpressionMatchIndex.end(),
+                   std::back_inserter(magicExpressionMatches_),
+                   [](const StringsToIndexMap::value_type& matchAndIndex)
+                   {
+                     std::vector<QString> match;
+                     std::transform(matchAndIndex.first.begin(), matchAndIndex.first.end(),
+                                    std::back_inserter(match), &QString::fromStdString);
+                     return match;
+                   });
     for (size_t iPattern = 0; iPattern < patterns_.size(); ++iPattern)
     {
       const PatternMatches& patternMatches = matchesByPattern[iPattern];

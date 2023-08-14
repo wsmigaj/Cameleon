@@ -44,6 +44,7 @@ public:
   void regenerateInstances();
 
   const std::vector<std::vector<QString>>& instances() const { return instances_; }
+  const std::vector<std::vector<QString>>& instanceKeys() const { return magicExpressionMatches_; }
 
   QJsonObject toJson() const;
   void loadFromJson(const QJsonObject& json);
@@ -60,4 +61,5 @@ private:
 
   bool modified_ = false;
   std::vector<std::vector<QString>> instances_;
+  std::vector<std::vector<QString>> magicExpressionMatches_;
 };

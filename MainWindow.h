@@ -52,13 +52,20 @@ private slots:
   void on_actionLastInstance_triggered();
 
   void onDocumentModificationStatusChanged();
+  void onInstanceComboBox(int currentIndex);
 
 private:
   void connectDocumentSignals();
-  void updateMainView();
+
+  void updateMainViewLayout();
+  void populateInstanceComboBox();
+
   void updateDocumentDependentActions();
   void updateDocumentModificationStatusDependentActions();
   void updateInstanceDependentActions();
+
+  void onInstancesChanged();
+  void onActiveInstanceChanged();
 
   void goToInstance(int instance);
 
@@ -69,6 +76,7 @@ private:
 
 private:
   Ui::MainWindowClass ui_;
+  QComboBox* instanceComboBox_;
   QGridLayout* mainLayout_;
   std::unique_ptr<Document> doc_;
   int instance_ = 0;

@@ -22,9 +22,32 @@
 #include "RuntimeError.h"
 #include "Settings.h"
 
+namespace
+{
+QString join(const std::vector<QString>& strings, const QString& sep = QString())
+{
+  QString result;
+  if (!strings.empty())
+    result = strings.front();
+  for (size_t i = 1; i < strings.size(); ++i)
+  {
+    result += sep;
+    result += strings[i];
+  }
+  return result;
+}
+} // namespace
+
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
   ui_.setupUi(this);
+
+  instanceComboBox_ = new QComboBox(this);
+  instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
+  ui_.mainToolBar->addWidget(instanceComboBox_);
+
+  connect(instanceComboBox_, &QComboBox::currentIndexChanged, this,
+          &MainWindow::onInstanceComboBox);
 
   QIcon::setThemeName("tango");
 
@@ -78,8 +101,7 @@ void MainWindow::on_actionNewComparison_triggered()
   doc_->setPatterns(dialog.patterns());
 
   connectDocumentSignals();
-  updateMainView();
-  updateDocumentDependentActions();
+  onInstancesChanged();
 }
 
 void MainWindow::on_actionOpenComparison_triggered()
@@ -113,10 +135,9 @@ void MainWindow::on_actionOpenComparison_triggered()
   }
 
   doc_ = std::move(doc);
-  instance_ = 0;
   connectDocumentSignals();
-  updateMainView();
-  updateDocumentDependentActions();
+  onInstancesChanged();
+  goToInstance(0);
 }
 
 void MainWindow::on_actionEditComparison_triggered()
@@ -130,7 +151,7 @@ void MainWindow::on_actionEditComparison_triggered()
     // Later we might restore the case shown previously if certain conditions are met.
 
     doc_->setPatterns(dialog.patterns());
-
+    onInstancesChanged();
     goToInstance(0);
   }
 }
@@ -153,8 +174,7 @@ void MainWindow::on_actionCloseComparison_triggered()
   }
 
   doc_ = nullptr;
-  updateMainView();
-  updateDocumentDependentActions();
+  onInstancesChanged();
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -205,16 +225,15 @@ void MainWindow::on_actionLastInstance_triggered()
   goToInstance(doc_->instances().size() - 1);
 }
 
-void MainWindow::goToInstance(int instance)
-{
-  instance_ = instance;
-  updateInstanceDependentActions();
-  updateMainView();
-}
-
 void MainWindow::onDocumentModificationStatusChanged()
 {
   updateDocumentModificationStatusDependentActions();
+}
+
+void MainWindow::onInstanceComboBox(int currentIndex)
+{
+  if (currentIndex >= 0)
+    goToInstance(currentIndex);
 }
 
 void MainWindow::connectDocumentSignals()
@@ -223,7 +242,7 @@ void MainWindow::connectDocumentSignals()
           &MainWindow::onDocumentModificationStatusChanged);
 }
 
-void MainWindow::updateMainView()
+void MainWindow::updateMainViewLayout()
 {
   if (!doc_)
   {
@@ -237,15 +256,22 @@ void MainWindow::updateMainView()
   else
   {
     ui_.mainView->setLayout(doc_->layout());
-    if (instance_ < doc_->instances().size())
-    {
-      ui_.mainView->setPaths(doc_->instances()[instance_]);
-    }
-    else
-    {
-      throw RuntimeError("Internal error: invalid instance index");
-    }
   }
+}
+
+void MainWindow::populateInstanceComboBox()
+{
+  // Need to disconnect the signal, apparently.
+  instanceComboBox_->clear();
+
+  bool anyItemIsNonempty = false;
+  for (const std::vector<QString>& matches : doc_->instanceKeys())
+  {
+    QString item = join(matches, "...");
+    anyItemIsNonempty = anyItemIsNonempty || !item.isEmpty();
+    instanceComboBox_->addItem(std::move(item));
+  }
+  instanceComboBox_->setEnabled(anyItemIsNonempty);
 }
 
 void MainWindow::updateDocumentDependentActions()
@@ -280,6 +306,36 @@ void MainWindow::updateInstanceDependentActions()
   ui_.actionPreviousInstance->setEnabled(numInstances > 0 && instance_ > 0);
   ui_.actionNextInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
   ui_.actionLastInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
+}
+
+void MainWindow::onInstancesChanged()
+{
+  updateMainViewLayout();
+  populateInstanceComboBox();
+  updateDocumentDependentActions();
+}
+
+void MainWindow::onActiveInstanceChanged()
+{
+  if (doc_ && !doc_->instances().empty())
+  {
+    if (instance_ < doc_->instances().size())
+    {
+      instanceComboBox_->setCurrentIndex(instance_);
+      ui_.mainView->setPaths(doc_->instances()[instance_]);
+    }
+    else
+    {
+      throw RuntimeError("Internal error: invalid instance index");
+    }
+  }
+  updateInstanceDependentActions();
+}
+
+void MainWindow::goToInstance(int instance)
+{
+  instance_ = instance;
+  onActiveInstanceChanged();
 }
 
 bool MainWindow::maybeSaveDocument()
