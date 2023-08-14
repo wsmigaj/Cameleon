@@ -34,14 +34,19 @@ public:
   void zoom(double relativeScale);
   void resetScale();
 
+  bool eventFilter(QObject* watched, QEvent* event) override;
+
 signals:
   void transformChanging();
   void transformChanged(QTransform transform);
+  void mouseMovedOverImage(QPoint pixelCoords, QColor pixelColour);
+  void mouseLeftImage();
 
 protected:
   void wheelEvent(QWheelEvent* event) override;
 
 private:
-  QGraphicsPixmapItem* item_ = nullptr;
   QGraphicsScene scene_;
+  QGraphicsPixmapItem* item_ = nullptr;
+  QImage image_;
 };

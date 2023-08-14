@@ -21,6 +21,9 @@
 HeaderBar::HeaderBar(QWidget* parent) : QWidget(parent)
 {
   ui.setupUi(this);
+  ui.coordLabel->setMinimumWidth(ui.coordLabel->fontMetrics().size(0, "(0000, 0000)").width());
+  ui.colourLabel->setMinimumWidth(
+    ui.colourLabel->fontMetrics().size(0, "(000, 000, 000, 000)").width());
 }
 
 HeaderBar::~HeaderBar()

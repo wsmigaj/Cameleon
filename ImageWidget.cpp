@@ -25,6 +25,7 @@ ImageWidget::ImageWidget(QWidget* parent) : QGraphicsView(parent)
   setBackgroundRole(QPalette::Dark);
   setScene(&scene_);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+  scene_.installEventFilter(this);
 }
 
 void ImageWidget::loadImage(const QString& path)
@@ -42,6 +43,7 @@ void ImageWidget::loadImage(const QString& path)
   {
     item_->setPixmap(pixmap);
   }
+  image_ = pixmap.toImage();
 }
 
 void ImageWidget::clear()
@@ -82,4 +84,26 @@ void ImageWidget::wheelEvent(QWheelEvent* event)
   {
     QGraphicsView::wheelEvent(event);
   }
+}
+
+bool ImageWidget::eventFilter(QObject* watched, QEvent* event)
+{
+  if (watched == &scene_ && item_ && !item_->pixmap().isNull())
+  {
+    if (event->type() == QEvent::GraphicsSceneMouseMove)
+    {
+      QGraphicsSceneMouseEvent* mouseSceneEvent = dynamic_cast<QGraphicsSceneMouseEvent*>(event);
+      if (item_->boundingRect().contains(mouseSceneEvent->scenePos()))
+      {
+        const QPoint point = mouseSceneEvent->scenePos().toPoint();
+        emit mouseMovedOverImage(point, image_.pixelColor(point));
+      }
+    }
+    else if (event->type() == QEvent::GraphicsSceneLeave)
+    {
+      QGraphicsSceneMouseEvent* mouseSceneEvent = dynamic_cast<QGraphicsSceneMouseEvent*>(event);
+      emit mouseLeftImage();
+    }
+  }
+  return QGraphicsView::eventFilter(watched, event);
 }

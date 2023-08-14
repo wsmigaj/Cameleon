@@ -29,6 +29,9 @@ ImageView::ImageView(QWidget* parent) : QWidget(parent)
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(headerBar_);
   layout->addWidget(imageWidget_, 1);
+
+  connect(imageWidget_, &ImageWidget::mouseMovedOverImage, this, &ImageView::onMouseMovedOverImage);
+  connect(imageWidget_, &ImageWidget::mouseLeftImage, this, &ImageView::onMouseLeftImage);
 }
 
 ImageView::~ImageView()
@@ -50,4 +53,16 @@ void ImageView::clear()
   headerBar_->clearColour();
   headerBar_->clearCoordinates();
   imageWidget_->loadImage(QString());
+}
+
+void ImageView::onMouseMovedOverImage(QPoint pixelCoords, QColor pixelColour)
+{
+  headerBar_->setColour(pixelColour);
+  headerBar_->setCoordinates(pixelCoords);
+}
+
+void ImageView::onMouseLeftImage()
+{
+  headerBar_->clearColour();
+  headerBar_->clearCoordinates();
 }
