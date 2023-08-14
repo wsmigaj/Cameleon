@@ -37,9 +37,13 @@ public:
 
 public slots:
   void done(int r) override;
+  void onFileDialogButtonClicked();
 
 private:
   std::vector<QComboBox*> patternComboBoxes() const;
+  std::vector<QToolButton*> fileDialogButtons() const;
+
+  void connectSignals();
 
 private:
   static const size_t MAX_NUM_PATTERNS = 6;

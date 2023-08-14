@@ -91,6 +91,7 @@ void MainWindow::on_actionNewComparison_triggered()
 
   ComparisonDialog dialog(this);
   dialog.setWindowTitle("New Comparison");
+  dialog.setPatterns({});
   if (dialog.exec() != QDialog::Accepted)
   {
     return;

@@ -18,9 +18,23 @@
 #include "stdafx.h"
 #include "ComparisonDialog.h"
 
+namespace
+{
+QString getDirPrefix(const QString& pattern)
+{
+  QFileInfo fileInfo(pattern);
+  while (!fileInfo.filePath().isEmpty() && !fileInfo.isDir())
+  {
+    fileInfo.setFile(fileInfo.dir().path());
+  }
+  return fileInfo.filePath();
+}
+} // namespace
+
 ComparisonDialog::ComparisonDialog(QWidget* parent) : QDialog(parent)
 {
   ui_.setupUi(this);
+  connectSignals();
   loadRecentPatterns();
 }
 
@@ -105,4 +119,31 @@ std::vector<QComboBox*> ComparisonDialog::patternComboBoxes() const
 {
   return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox,
           ui_.patternDComboBox, ui_.patternEComboBox, ui_.patternFComboBox};
+}
+
+std::vector<QToolButton*> ComparisonDialog::fileDialogButtons() const
+{
+  return {ui_.fileDialogButtonA, ui_.fileDialogButtonB, ui_.fileDialogButtonC,
+          ui_.fileDialogButtonD, ui_.fileDialogButtonE, ui_.fileDialogButtonF};
+}
+
+void ComparisonDialog::connectSignals()
+{
+  for (QToolButton* button : fileDialogButtons())
+    connect(button, &QToolButton::clicked, this, &ComparisonDialog::onFileDialogButtonClicked);
+}
+
+void ComparisonDialog::onFileDialogButtonClicked()
+{
+  const std::vector<QToolButton*> buttons = fileDialogButtons();
+  const int index = std::find(buttons.begin(), buttons.end(), sender()) - buttons.begin();
+  QComboBox* comboBox = patternComboBoxes()[index];
+
+  QString pattern = comboBox->currentText();
+  if (pattern.isEmpty() && comboBox->count() > 0)
+    pattern = comboBox->itemText(0);
+  QString dir = getDirPrefix(pattern);
+  QString file = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, "caption", dir));
+  if (!file.isEmpty())
+    comboBox->setCurrentText(file);
 }
