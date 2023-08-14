@@ -22,6 +22,7 @@
 int main(int argc, char* argv[])
 {
   QApplication a(argc, argv);
+  QApplication::setOrganizationName("Cameleon");
   QApplication::setApplicationName("Cameleon");
   a.setQuitOnLastWindowClosed(true);
   MainWindow* w = new MainWindow;

@@ -18,19 +18,18 @@
 #include "stdafx.h"
 #include "ComparisonDialog.h"
 
-#include <array>
-
 ComparisonDialog::ComparisonDialog(QWidget* parent) : QDialog(parent)
 {
-  ui.setupUi(this);
+  ui_.setupUi(this);
+  loadRecentPatterns();
 }
 
 std::vector<QString> ComparisonDialog::patterns() const
 {
   std::vector<QString> result;
-  for (QLineEdit* edit : {ui.patternAEdit, ui.patternBEdit, ui.patternCEdit, ui.patternDEdit})
+  for (QComboBox* comboBox : patternComboBoxes())
   {
-    if (QString pattern = edit->text(); !pattern.isEmpty())
+    if (QString pattern = comboBox->currentText(); !pattern.isEmpty())
     {
       result.push_back(pattern);
     }
@@ -40,14 +39,69 @@ std::vector<QString> ComparisonDialog::patterns() const
 
 void ComparisonDialog::setPatterns(const std::vector<QString>& patterns)
 {
-  std::array<QLineEdit*, 4> edits = {ui.patternAEdit, ui.patternBEdit, ui.patternCEdit,
-                                     ui.patternDEdit};
+  const std::vector<QComboBox*> comboBoxes = patternComboBoxes();
 
-  for (size_t i = 0; i < edits.size(); ++i)
+  for (size_t i = 0; i < comboBoxes.size(); ++i)
   {
     if (i < patterns.size())
-      edits[i]->setText(patterns[i]);
+    {
+      if (int index = comboBoxes[i]->findText(patterns[i]); index >= 0)
+        comboBoxes[i]->removeItem(index);
+      comboBoxes[i]->insertItem(0, patterns[i]);
+      comboBoxes[i]->setCurrentIndex(0);
+    }
     else
-      edits[i]->setText(QString());
+    {
+      comboBoxes[i]->setCurrentText(QString());
+    }
   }
+}
+
+void ComparisonDialog::loadRecentPatterns()
+{
+  QSettings settings;
+  const std::vector<QComboBox*> comboBoxes = patternComboBoxes();
+
+  for (size_t i = 0; i < MAX_NUM_PATTERNS; ++i)
+  {
+    QComboBox* comboBox = comboBoxes[i];
+    const QString key = QString("recentPatterns/%1").arg(i);
+    QStringList patterns = settings.value(key, QStringList()).toStringList();
+    patterns.resize(std::min<qsizetype>(patterns.size(), MAX_NUM_RECENT_PATTERNS));
+    for (QString pattern : patterns)
+      comboBox->addItem(pattern);
+  }
+}
+
+void ComparisonDialog::saveRecentPatterns()
+{
+  QSettings settings;
+  const std::vector<QComboBox*> comboBoxes = patternComboBoxes();
+
+  for (size_t i = 0; i < comboBoxes.size(); ++i)
+  {
+    QComboBox* comboBox = comboBoxes[i];
+    if (QString currentPattern = comboBox->currentText(); !currentPattern.isEmpty())
+    {
+      const QString key = QString("recentPatterns/%1").arg(i);
+      QStringList patterns = settings.value(key, QStringList()).toStringList();
+      patterns.resize(std::min<qsizetype>(patterns.size(), MAX_NUM_RECENT_PATTERNS));
+      patterns.removeAll(currentPattern);
+      patterns.prepend(currentPattern);
+      settings.setValue(key, patterns);
+    }
+  }
+}
+
+void ComparisonDialog::done(int r)
+{
+  if (r == QDialog::Accepted)
+    saveRecentPatterns();
+
+  QDialog::done(r);
+}
+
+std::vector<QComboBox*> ComparisonDialog::patternComboBoxes() const
+{
+  return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox, ui_.patternDComboBox};
 }

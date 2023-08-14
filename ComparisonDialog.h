@@ -32,6 +32,19 @@ public:
   std::vector<QString> patterns() const;
   void setPatterns(const std::vector<QString>& patterns);
 
+  void loadRecentPatterns();
+  void saveRecentPatterns();
+
+public slots:
+  void done(int r) override;
+
 private:
-  Ui::ComparisonDialogClass ui;
+  std::vector<QComboBox*> patternComboBoxes() const;
+
+private:
+  static const size_t MAX_NUM_PATTERNS = 4;
+  static const size_t MAX_NUM_RECENT_PATTERNS = 20;
+
+private:
+  Ui::ComparisonDialogClass ui_;
 };
