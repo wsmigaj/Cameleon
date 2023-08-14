@@ -265,26 +265,3 @@ void Document::save(const QString& path)
   modified_ = false;
   modificationStatusChanged();
 }
-
-//int Document::numCases() const
-//{
-//  // Temporary
-//  return 1;
-//}
-//
-//int Document::currentCaseIndex() const
-//{
-//  return currentCaseIndex_;
-//}
-//
-//void Document::setCurrentCaseIndex(int index)
-//{
-//  // TODO: Validation
-//  currentCaseIndex_ = index;
-//}
-//
-//std::vector<QString> Document::currentCase() const
-//{
-//  // Temporary
-//  return patterns_;
-//}

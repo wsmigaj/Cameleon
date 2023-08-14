@@ -43,11 +43,6 @@ public:
 
   void regenerateInstances();
 
-  //int numInstances() const;
-  //int currentCaseIndex() const;
-  //void setCurrentCaseIndex(int index);
-  //std::vector<QString> currentCase() const;
-  //const std::vector<QString> &instance(int index) const;
   const std::vector<std::vector<QString>>& instances() const { return instances_; }
 
   QJsonObject toJson() const;
