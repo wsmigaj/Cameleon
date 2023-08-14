@@ -101,6 +101,7 @@ void MainView::setLayout(const Layout& layout)
             &MainView::onImageViewTransformChanged);
     newImageWidget->setDragMode(QGraphicsView::ScrollHandDrag);
     newImageWidget->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    newView->headerBar()->setLabel(QString(char('A' + i)));
     imageViews_.push_back(newView);
 
     // TODO: set the transform and scroll bar position of the new view to match those
