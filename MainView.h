@@ -49,10 +49,10 @@ public:
   void resetScale();
 
 private slots:
-  void onImageViewHorizontalScrollBarValueChanged(int value);
-  void onImageViewVerticalScrollBarValueChanged(int value);
-  void onImageViewTransformChanging();
-  void onImageViewTransformChanged(QTransform transform);
+  void onImageWidgetHorizontalScrollBarValueChanged(int value);
+  void onImageWidgetVerticalScrollBarValueChanged(int value);
+  void onImageWidgetTransformChanging();
+  void onImageWidgetTransformChanged(QTransform transform);
 
 private:
   QGridLayout* mainLayout_;
