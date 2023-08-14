@@ -92,25 +92,40 @@
    <property name="text">
     <string>&amp;New Comparison...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionOpenComparison">
    <property name="text">
     <string>&amp;Open Comparison...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionCloseComparison">
    <property name="text">
     <string>&amp;Close Comparison</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
   </action>
   <action name="actionQuit">
    <property name="text">
     <string>&amp;Quit</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
   </action>
   <action name="actionSaveComparison">
    <property name="text">
     <string>&amp;Save Comparison</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionSaveComparisonAs">
@@ -122,10 +137,16 @@
    <property name="text">
     <string>Zoom &amp;In</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
   </action>
   <action name="actionZoomOut">
    <property name="text">
     <string>Zoom &amp;Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
    </property>
   </action>
   <action name="actionZoom1to1">
@@ -137,25 +158,40 @@
    <property name="text">
     <string>&amp;Edit Comparison...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
   </action>
   <action name="actionFirstInstance">
    <property name="text">
     <string>&amp;First Instance</string>
+   </property>
+   <property name="shortcut">
+    <string>Home</string>
    </property>
   </action>
   <action name="actionPreviousInstance">
    <property name="text">
     <string>&amp;Previous Instance</string>
    </property>
+   <property name="shortcut">
+    <string>PgUp</string>
+   </property>
   </action>
   <action name="actionNextInstance">
    <property name="text">
     <string>&amp;Next Instance</string>
    </property>
+   <property name="shortcut">
+    <string>PgDown</string>
+   </property>
   </action>
   <action name="actionLastInstance">
    <property name="text">
     <string>&amp;Last Instance</string>
+   </property>
+   <property name="shortcut">
+    <string>End</string>
    </property>
   </action>
  </widget>
