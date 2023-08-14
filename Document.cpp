@@ -30,48 +30,6 @@
 
 namespace
 {
-
-}
-
-Document::Document()
-{
-}
-
-Document::Document(const QString& path) : path_(path)
-{
-  QFile file(path);
-  if (!file.open(QIODevice::ReadOnly))
-  {
-    throw RuntimeError("Couldn't open file " + path + "for reading.");
-  }
-
-  QByteArray saveData = file.readAll();
-
-  QJsonDocument jsonDoc(QJsonDocument::fromJson(saveData));
-  loadFromJson(jsonDoc.object());
-}
-
-void Document::setLayout(const Layout& layout)
-{
-  if (layout != layout_)
-  {
-    layout_ = layout;
-    modified_ = true;
-    modificationStatusChanged();
-  }
-}
-
-void Document::setPatterns(std::vector<QString> patterns)
-{
-  if (patterns != patterns_)
-  {
-    patterns_ = std::move(patterns);
-    modified_ = true;
-    regenerateInstances();
-    modificationStatusChanged();
-  }
-}
-
 struct MatchingPath
 {
   std::filesystem::path path;
@@ -119,6 +77,46 @@ PatternMatches matchWildcardPattern(const std::string& pattern)
   }
 
   return matches;
+}
+} // namespace
+
+Document::Document()
+{
+}
+
+Document::Document(const QString& path) : path_(path)
+{
+  QFile file(path);
+  if (!file.open(QIODevice::ReadOnly))
+  {
+    throw RuntimeError("Couldn't open file " + path + "for reading.");
+  }
+
+  QByteArray saveData = file.readAll();
+
+  QJsonDocument jsonDoc(QJsonDocument::fromJson(saveData));
+  loadFromJson(jsonDoc.object());
+}
+
+void Document::setLayout(const Layout& layout)
+{
+  if (layout != layout_)
+  {
+    layout_ = layout;
+    modified_ = true;
+    modificationStatusChanged();
+  }
+}
+
+void Document::setPatterns(std::vector<QString> patterns)
+{
+  if (patterns != patterns_)
+  {
+    patterns_ = std::move(patterns);
+    modified_ = true;
+    regenerateInstances();
+    modificationStatusChanged();
+  }
 }
 
 void Document::regenerateInstances()
