@@ -42,7 +42,7 @@ private:
   std::vector<QComboBox*> patternComboBoxes() const;
 
 private:
-  static const size_t MAX_NUM_PATTERNS = 4;
+  static const size_t MAX_NUM_PATTERNS = 6;
   static const size_t MAX_NUM_RECENT_PATTERNS = 20;
 
 private:

@@ -103,5 +103,6 @@ void ComparisonDialog::done(int r)
 
 std::vector<QComboBox*> ComparisonDialog::patternComboBoxes() const
 {
-  return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox, ui_.patternDComboBox};
+  return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox,
+          ui_.patternDComboBox, ui_.patternEComboBox, ui_.patternFComboBox};
 }
