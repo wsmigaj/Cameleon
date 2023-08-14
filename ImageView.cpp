@@ -26,47 +26,13 @@ ImageView::ImageView(QWidget* parent) : QWidget(parent)
   imageWidget_ = new ImageWidget(this);
 
   QVBoxLayout* layout = new QVBoxLayout(this);
+  layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(headerBar_);
   layout->addWidget(imageWidget_, 1);
-
-  connect(imageWidget_, &ImageWidget::transformChanging, this,
-          &ImageView::onImageWidgetTransformChanging);
-  connect(imageWidget_, &ImageWidget::transformChanged, this,
-          &ImageView::onImageWidgetTransformChanged);
 }
 
 ImageView::~ImageView()
 {
-}
-
-void ImageView::setLabel(const QString& label)
-{
-  headerBar_->setLabel(label);
-}
-
-void ImageView::clearLabel()
-{
-  headerBar_->clearLabel();
-}
-
-void ImageView::setCoordinates(const QPoint& pt)
-{
-  headerBar_->setCoordinates(pt);
-}
-
-void ImageView::clearCoordinates()
-{
-  headerBar_->clearCoordinates();
-}
-
-void ImageView::setColour(const QColor& colour)
-{
-  headerBar_->setColour(colour);
-}
-
-void ImageView::clearColour()
-{
-  headerBar_->clearColour();
 }
 
 void ImageView::loadImage(const QString& path)
@@ -84,29 +50,4 @@ void ImageView::clear()
   headerBar_->clearColour();
   headerBar_->clearCoordinates();
   imageWidget_->loadImage(QString());
-}
-
-QRectF ImageView::imageRect() const
-{
-  return imageWidget_->imageRect();
-}
-
-void ImageView::zoom(double relativeScale)
-{
-  imageWidget_->zoom(relativeScale);
-}
-
-void ImageView::resetScale()
-{
-  imageWidget_->resetScale();
-}
-
-void ImageView::onImageWidgetTransformChanging()
-{
-  emit transformChanging();
-}
-
-void ImageView::onImageWidgetTransformChanged(QTransform transform)
-{
-  emit transformChanged(transform);
 }

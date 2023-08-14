@@ -16,30 +16,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
-#include <qgraphicsview.h>
+#include <QLabel>
 
-class HeaderBar;
-class ImageWidget;
-
-class ImageView : public QWidget
+class ElidedLabel : public QLabel
 {
   Q_OBJECT
 
 public:
-  explicit ImageView(QWidget* parent = nullptr);
-  ~ImageView() override;
+  using QLabel::QLabel;
 
-  /// If `path` is empty, the image is cleared.
-  void loadImage(const QString& path);
-  void clear();
-
-  HeaderBar* headerBar() { return headerBar_; }
-  const HeaderBar* headerBar() const { return headerBar_; }
-
-  ImageWidget* imageWidget() { return imageWidget_; }
-  const ImageWidget* imageWidget() const { return imageWidget_; }
-
-private:
-  HeaderBar* headerBar_ = nullptr;
-  ImageWidget* imageWidget_ = nullptr;
+protected:
+  void paintEvent(QPaintEvent* event) override;
 };

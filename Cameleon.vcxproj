@@ -103,11 +103,13 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ElidedLabel.cpp" />
     <ClCompile Include="HeaderBar.cpp" />
     <ClCompile Include="ImageWidget.cpp" />
     <ClCompile Include="WildcardPatterns.cpp" />
     <QtMoc Include="HeaderBar.h" />
     <QtMoc Include="ImageWidget.h" />
+    <QtMoc Include="ElidedLabel.h" />
     <ClInclude Include="WildcardPatterns.h" />
     <QtRcc Include="MainWindow.qrc" />
     <QtRcc Include="tango.qrc" />

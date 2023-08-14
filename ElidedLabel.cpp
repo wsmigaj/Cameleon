@@ -15,31 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-#include <qgraphicsview.h>
+#include "stdafx.h"
+#include "ElidedLabel.h"
 
-class HeaderBar;
-class ImageWidget;
-
-class ImageView : public QWidget
+void ElidedLabel::paintEvent(QPaintEvent* event)
 {
-  Q_OBJECT
+  QPainter painter(this);
+  QFontMetrics fontMetrics = painter.fontMetrics();
 
-public:
-  explicit ImageView(QWidget* parent = nullptr);
-  ~ImageView() override;
-
-  /// If `path` is empty, the image is cleared.
-  void loadImage(const QString& path);
-  void clear();
-
-  HeaderBar* headerBar() { return headerBar_; }
-  const HeaderBar* headerBar() const { return headerBar_; }
-
-  ImageWidget* imageWidget() { return imageWidget_; }
-  const ImageWidget* imageWidget() const { return imageWidget_; }
-
-private:
-  HeaderBar* headerBar_ = nullptr;
-  ImageWidget* imageWidget_ = nullptr;
-};
+  QString elidedLine = fontMetrics.elidedText(text(), Qt::ElideLeft, width());
+  painter.drawText(QPoint(0, fontMetrics.ascent()), elidedLine);
+  event->accept();
+}

@@ -82,6 +82,9 @@
     <ClCompile Include="ImageWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ElidedLabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ComparisonDialog.ui">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ImageWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ElidedLabel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

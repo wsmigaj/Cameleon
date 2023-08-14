@@ -19,7 +19,9 @@
 #include "MainView.h"
 
 #include "Document.h"
+#include "HeaderBar.h"
 #include "ImageView.h"
+#include "ImageWidget.h"
 
 MainView::MainView(QWidget* parent) : QWidget(parent)
 {
@@ -48,7 +50,7 @@ void MainView::reloadImages()
   for (size_t i = 0; i < paths_.size() && i < imageViews_.size(); ++i)
   {
     imageViews_[i]->loadImage(paths_[i]);
-    unitedRect = unitedRect.united(imageViews_[i]->imageRect());
+    unitedRect = unitedRect.united(imageViews_[i]->imageWidget()->imageRect());
   }
   for (size_t i = paths_.size(); i < imageViews_.size(); ++i)
   {
@@ -57,7 +59,7 @@ void MainView::reloadImages()
 
   for (ImageView* imageView : imageViews_)
   {
-    imageView->setSceneRect(unitedRect);
+    imageView->imageWidget()->setSceneRect(unitedRect);
   }
 }
 
@@ -88,14 +90,17 @@ void MainView::setLayout(const Layout& layout)
   for (int i = imageViews_.size(); i < numViews; ++i)
   {
     ImageView* newView = new ImageView(this);
-    connect(newView->horizontalScrollBar(), &QScrollBar::valueChanged, this,
+    ImageWidget* newImageWidget = newView->imageWidget();
+    connect(newImageWidget->horizontalScrollBar(), &QScrollBar::valueChanged, this,
             &MainView::onImageViewHorizontalScrollBarValueChanged);
-    connect(newView->verticalScrollBar(), &QScrollBar::valueChanged, this,
+    connect(newImageWidget->verticalScrollBar(), &QScrollBar::valueChanged, this,
             &MainView::onImageViewVerticalScrollBarValueChanged);
-    connect(newView, &ImageView::transformChanging, this, &MainView::onImageViewTransformChanging);
-    connect(newView, &ImageView::transformChanged, this, &MainView::onImageViewTransformChanged);
-    newView->setDragMode(QGraphicsView::ScrollHandDrag);
-    newView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    connect(newImageWidget, &ImageWidget::transformChanging, this,
+            &MainView::onImageViewTransformChanging);
+    connect(newImageWidget, &ImageWidget::transformChanged, this,
+            &MainView::onImageViewTransformChanged);
+    newImageWidget->setDragMode(QGraphicsView::ScrollHandDrag);
+    newImageWidget->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     imageViews_.push_back(newView);
 
     // TODO: set the transform and scroll bar position of the new view to match those
@@ -135,7 +140,7 @@ void MainView::zoom(double relativeScale)
 {
   if (!imageViews_.empty())
   {
-    imageViews_.front()->zoom(relativeScale);
+    imageViews_.front()->imageWidget()->zoom(relativeScale);
   }
 }
 
@@ -143,7 +148,7 @@ void MainView::resetScale()
 {
   if (!imageViews_.empty())
   {
-    imageViews_.front()->resetScale();
+    imageViews_.front()->imageWidget()->resetScale();
   }
 }
 
@@ -155,18 +160,21 @@ void MainView::onImageViewTransformChanging()
 void MainView::onImageViewTransformChanged(QTransform transform)
 {
   ImageView* senderView = static_cast<ImageView*>(sender());
-  for (ImageView* imageView : imageViews_)
+  ImageWidget* senderWidget = senderView->imageWidget();
+  for (ImageView* receiverView : imageViews_)
   {
-    if (imageView != senderView)
+    if (receiverView != senderView)
     {
+      ImageWidget* receiverWidget = receiverView->imageWidget();
       {
-        auto guard = qScopeGuard([imageView, origAnchor = imageView->transformationAnchor()]
-                                 { imageView->setTransformationAnchor(origAnchor); });
-        imageView->setTransformationAnchor(QGraphicsView::NoAnchor);
-        imageView->setTransform(transform);
+        auto guard =
+          qScopeGuard([receiverWidget, origAnchor = receiverWidget->transformationAnchor()]
+                      { receiverWidget->setTransformationAnchor(origAnchor); });
+        receiverWidget->setTransformationAnchor(QGraphicsView::NoAnchor);
+        receiverWidget->setTransform(transform);
       }
-      imageView->horizontalScrollBar()->setValue(senderView->horizontalScrollBar()->value());
-      imageView->verticalScrollBar()->setValue(senderView->verticalScrollBar()->value());
+      receiverWidget->horizontalScrollBar()->setValue(senderWidget->horizontalScrollBar()->value());
+      receiverWidget->verticalScrollBar()->setValue(senderWidget->verticalScrollBar()->value());
     }
   }
   --numOngoingTransformUpdates_;
@@ -179,7 +187,7 @@ void MainView::onImageViewHorizontalScrollBarValueChanged(int value)
 
   for (ImageView* imageView : imageViews_)
   {
-    QScrollBar* scrollBar = imageView->horizontalScrollBar();
+    QScrollBar* scrollBar = imageView->imageWidget()->horizontalScrollBar();
     if (scrollBar != sender())
       scrollBar->setValue(value);
   }
@@ -192,7 +200,7 @@ void MainView::onImageViewVerticalScrollBarValueChanged(int value)
 
   for (ImageView* imageView : imageViews_)
   {
-    QScrollBar* scrollBar = imageView->verticalScrollBar();
+    QScrollBar* scrollBar = imageView->imageWidget()->verticalScrollBar();
     if (scrollBar != sender())
       scrollBar->setValue(value);
   }
