@@ -262,15 +262,17 @@ void MainWindow::updateMainViewLayout()
 
 void MainWindow::populateInstanceComboBox()
 {
-  // Need to disconnect the signal, apparently.
   instanceComboBox_->clear();
 
   bool anyItemIsNonempty = false;
-  for (const std::vector<QString>& matches : doc_->instanceKeys())
+  if (doc_ != nullptr)
   {
-    QString item = join(matches, "...");
-    anyItemIsNonempty = anyItemIsNonempty || !item.isEmpty();
-    instanceComboBox_->addItem(std::move(item));
+    for (const std::vector<QString>& matches : doc_->instanceKeys())
+    {
+      QString item = join(matches, "...");
+      anyItemIsNonempty = anyItemIsNonempty || !item.isEmpty();
+      instanceComboBox_->addItem(std::move(item));
+    }
   }
   instanceComboBox_->setEnabled(anyItemIsNonempty);
 }
