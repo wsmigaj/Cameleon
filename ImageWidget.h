@@ -18,29 +18,16 @@
 #pragma once
 #include <qgraphicsview.h>
 
-class HeaderBar;
-class ImageWidget;
-
-class ImageView : public QWidget
+class ImageWidget : public QGraphicsView
 {
   Q_OBJECT
 
 public:
-  explicit ImageView(QWidget* parent = nullptr);
-  ~ImageView() override;
-
-  void setLabel(const QString& label);
-  void clearLabel();
+  explicit ImageWidget(QWidget* parent = nullptr);
 
   /// If `path` is empty, the image is cleared.
   void loadImage(const QString& path);
   void clear();
-
-  void setCoordinates(const QPoint& pt);
-  void clearCoordinates();
-
-  void setColour(const QColor& colour);
-  void clearColour();
 
   QRectF imageRect() const;
 
@@ -51,11 +38,10 @@ signals:
   void transformChanging();
   void transformChanged(QTransform transform);
 
-private slots:
-  void onImageWidgetTransformChanging();
-  void onImageWidgetTransformChanged(QTransform transform);
+protected:
+  void wheelEvent(QWheelEvent* event) override;
 
 private:
-  HeaderBar* headerBar_ = nullptr;
-  ImageWidget* imageWidget_ = nullptr;
+  QGraphicsPixmapItem* item_ = nullptr;
+  QGraphicsScene scene_;
 };

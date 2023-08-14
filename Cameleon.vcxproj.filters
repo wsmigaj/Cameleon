@@ -76,9 +76,18 @@
     <ClCompile Include="WildcardPatterns.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HeaderBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ComparisonDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="HeaderBar.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -93,6 +102,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Document.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="HeaderBar.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ImageWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

@@ -16,46 +16,28 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
-#include <qgraphicsview.h>
 
-class HeaderBar;
-class ImageWidget;
+#include <QWidget>
+#include "ui_HeaderBar.h"
 
-class ImageView : public QWidget
+class HeaderBar : public QWidget
 {
   Q_OBJECT
 
 public:
-  explicit ImageView(QWidget* parent = nullptr);
-  ~ImageView() override;
+  HeaderBar(QWidget* parent = nullptr);
+  ~HeaderBar() override;
 
   void setLabel(const QString& label);
-  void clearLabel();
-
-  /// If `path` is empty, the image is cleared.
-  void loadImage(const QString& path);
-  void clear();
-
+  void setPath(const QString& path);
   void setCoordinates(const QPoint& pt);
-  void clearCoordinates();
-
   void setColour(const QColor& colour);
+
+  void clearLabel();
+  void clearPath();
+  void clearCoordinates();
   void clearColour();
 
-  QRectF imageRect() const;
-
-  void zoom(double relativeScale);
-  void resetScale();
-
-signals:
-  void transformChanging();
-  void transformChanged(QTransform transform);
-
-private slots:
-  void onImageWidgetTransformChanging();
-  void onImageWidgetTransformChanged(QTransform transform);
-
 private:
-  HeaderBar* headerBar_ = nullptr;
-  ImageWidget* imageWidget_ = nullptr;
+  Ui::HeaderBarClass ui;
 };
