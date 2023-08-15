@@ -26,11 +26,25 @@ ImageWidget::ImageWidget(QWidget* parent) : QGraphicsView(parent)
   setScene(&scene_);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
   scene_.installEventFilter(this);
+
+  createActions();
 }
 
 ImageWidget::~ImageWidget()
 {
   scene_.removeEventFilter(this);
+}
+
+void ImageWidget::createActions()
+{
+  copyImageAction_ = new QAction(tr("&Copy Image"), this);
+  connect(copyImageAction_, &QAction::triggered, this, &ImageWidget::onCopyImage);
+  copyFullPathAction_ = new QAction(tr("&Copy Full Path"), this);
+  connect(copyFullPathAction_, &QAction::triggered, this, &ImageWidget::onCopyFullPath);
+  copyFileNameAction_ = new QAction(tr("&Copy File Name"), this);
+  connect(copyFileNameAction_, &QAction::triggered, this, &ImageWidget::onCopyFileName);
+  openInExplorerAction_ = new QAction(tr("&Open In Explorer"), this);
+  connect(openInExplorerAction_, &QAction::triggered, this, &ImageWidget::onOpenInExplorer);
 }
 
 void ImageWidget::loadImage(const QString& path)
@@ -49,6 +63,7 @@ void ImageWidget::loadImage(const QString& path)
     item_->setPixmap(pixmap);
   }
   image_ = pixmap.toImage();
+  path_ = path;
 }
 
 void ImageWidget::clear()
@@ -111,4 +126,58 @@ bool ImageWidget::eventFilter(QObject* watched, QEvent* event)
     }
   }
   return QGraphicsView::eventFilter(watched, event);
+}
+
+void ImageWidget::contextMenuEvent(QContextMenuEvent* event)
+{
+  if (!image_.isNull())
+  {
+    QMenu menu(this);
+    menu.addAction(copyImageAction_);
+    menu.addAction(copyFullPathAction_);
+    menu.addAction(copyFileNameAction_);
+    menu.addSeparator();
+    menu.addAction(openInExplorerAction_);
+    menu.exec(event->globalPos());
+  }
+}
+
+void ImageWidget::onCopyImage()
+{
+  if (!image_.isNull())
+  {
+    QClipboard* clipboard = QGuiApplication::clipboard();
+    clipboard->setImage(image_);
+  }
+}
+
+void ImageWidget::onCopyFullPath()
+{
+  if (!path_.isEmpty())
+  {
+    QClipboard* clipboard = QGuiApplication::clipboard();
+    clipboard->setText(path_);
+  }
+}
+
+void ImageWidget::onCopyFileName()
+{
+  if (!path_.isEmpty())
+  {
+    QFileInfo fileInfo(path_);
+    QClipboard* clipboard = QGuiApplication::clipboard();
+    clipboard->setText(fileInfo.fileName());
+  }
+}
+
+void ImageWidget::onOpenInExplorer()
+{
+  if (!path_.isEmpty())
+  {
+    // TODO: ensure this is done only on Windows
+    QStringList params;
+    params += QLatin1String("/select,");
+    params += QDir::toNativeSeparators(path_);
+    QProcess::startDetached("explorer.exe", params);
+  }
 }

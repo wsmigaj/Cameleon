@@ -45,9 +45,25 @@ signals:
 
 protected:
   void wheelEvent(QWheelEvent* event) override;
+  void contextMenuEvent(QContextMenuEvent* event) override;
+
+private slots:
+  void onCopyImage();
+  void onCopyFullPath();
+  void onCopyFileName();
+  void onOpenInExplorer();
 
 private:
+  void createActions();
+
+private:
+  QAction* copyImageAction_;
+  QAction* copyFullPathAction_;
+  QAction* copyFileNameAction_;
+  QAction* openInExplorerAction_;
+
   QGraphicsScene scene_;
   QGraphicsPixmapItem* item_ = nullptr;
+  QString path_;
   QImage image_;
 };
