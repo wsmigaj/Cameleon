@@ -28,6 +28,11 @@ ImageWidget::ImageWidget(QWidget* parent) : QGraphicsView(parent)
   scene_.installEventFilter(this);
 }
 
+ImageWidget::~ImageWidget()
+{
+  scene_.removeEventFilter(this);
+}
+
 void ImageWidget::loadImage(const QString& path)
 {
   QPixmap pixmap;

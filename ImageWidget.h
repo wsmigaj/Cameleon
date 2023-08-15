@@ -24,6 +24,7 @@ class ImageWidget : public QGraphicsView
 
 public:
   explicit ImageWidget(QWidget* parent = nullptr);
+  ~ImageWidget() override;
 
   /// If `path` is empty, the image is cleared.
   void loadImage(const QString& path);
