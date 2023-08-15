@@ -41,8 +41,7 @@ ImageView::~ImageView()
 void ImageView::loadImage(const QString& path)
 {
   headerBar_->setPath(path);
-  headerBar_->clearColour();
-  headerBar_->clearCoordinates();
+  headerBar_->clearPixelProperties();
   imageWidget_->loadImage(path);
 }
 
@@ -50,19 +49,16 @@ void ImageView::clear()
 {
   headerBar_->clearLabel();
   headerBar_->clearPath();
-  headerBar_->clearColour();
-  headerBar_->clearCoordinates();
+  headerBar_->clearPixelProperties();
   imageWidget_->loadImage(QString());
 }
 
 void ImageView::onMouseMovedOverImage(QPoint pixelCoords, QColor pixelColour)
 {
-  headerBar_->setColour(pixelColour);
-  headerBar_->setCoordinates(pixelCoords);
+  headerBar_->setPixelProperties(pixelCoords, pixelColour);
 }
 
 void ImageView::onMouseLeftImage()
 {
-  headerBar_->clearColour();
-  headerBar_->clearCoordinates();
+  headerBar_->clearPixelProperties();
 }

@@ -30,13 +30,11 @@ public:
 
   void setLabel(const QString& label);
   void setPath(const QString& path);
-  void setCoordinates(const QPoint& pt);
-  void setColour(const QColor& colour);
+  void setPixelProperties(const QPoint& pt, const QColor& colour);
 
   void clearLabel();
   void clearPath();
-  void clearCoordinates();
-  void clearColour();
+  void clearPixelProperties();
 
 private:
   Ui::HeaderBarClass ui;

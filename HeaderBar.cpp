@@ -21,9 +21,9 @@
 HeaderBar::HeaderBar(QWidget* parent) : QWidget(parent)
 {
   ui.setupUi(this);
-  ui.coordLabel->setMinimumWidth(ui.coordLabel->fontMetrics().size(0, "(0000, 0000)").width());
-  ui.colourLabel->setMinimumWidth(
-    ui.colourLabel->fontMetrics().size(0, "(000, 000, 000, 000)").width());
+  ui.pixelLabel->setMinimumWidth(ui.pixelLabel->fontMetrics()
+                                   .size(0, "(X: 0000, Y: 0000)   (R: 000, G: 000, B: 000, A: 000)")
+                                   .width());
 }
 
 HeaderBar::~HeaderBar()
@@ -40,18 +40,15 @@ void HeaderBar::setPath(const QString& path)
   ui.pathLabel->setText(path);
 }
 
-void HeaderBar::setCoordinates(const QPoint& pt)
+void HeaderBar::setPixelProperties(const QPoint& pt, const QColor& colour)
 {
-  ui.coordLabel->setText(QString("(%1, %2)").arg(pt.x()).arg(pt.y()));
-}
-
-void HeaderBar::setColour(const QColor& colour)
-{
-  ui.colourLabel->setText(QString("(%1, %2, %3, %4)")
-                            .arg(colour.red())
-                            .arg(colour.green())
-                            .arg(colour.blue())
-                            .arg(colour.alpha()));
+  ui.pixelLabel->setText(QString("(X: %1, Y: %2)   (R: %3, G: %4, B: %5, A: %6)")
+                           .arg(pt.x())
+                           .arg(pt.y())
+                           .arg(colour.red())
+                           .arg(colour.green())
+                           .arg(colour.blue())
+                           .arg(colour.alpha()));
 }
 
 void HeaderBar::clearLabel()
@@ -64,12 +61,7 @@ void HeaderBar::clearPath()
   ui.pathLabel->setText(QString());
 }
 
-void HeaderBar::clearCoordinates()
+void HeaderBar::clearPixelProperties()
 {
-  ui.coordLabel->setText(QString());
-}
-
-void HeaderBar::clearColour()
-{
-  ui.colourLabel->setText(QString());
+  ui.pixelLabel->setText(QString());
 }

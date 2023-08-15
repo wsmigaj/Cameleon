@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0">
      <item>
       <widget class="QLabel" name="mainLabel">
        <property name="font">
@@ -54,16 +54,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="coordLabel">
+      <widget class="QLabel" name="pixelLabel">
        <property name="text">
         <string/>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="colourLabel">
-       <property name="text">
-        <string/>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
