@@ -221,7 +221,40 @@ void Document::regenerateInstances()
         }
       }
     }
+
+    sortInstances();
   }
+}
+
+void Document::sortInstances()
+{
+  if (magicExpressionMatches_.size() != instances_.size())
+    throw RuntimeError("Internal error: unexpected number of instances");
+
+  const size_t numInstances = instances_.size();
+  std::vector<size_t> indices(instances_.size());
+  std::iota(indices.begin(), indices.end(), 0);
+
+  QCollator collator;
+  collator.setCaseSensitivity(Qt::CaseInsensitive);
+  collator.setNumericMode(true);
+  auto lessThan = [&collator](const std::vector<QString>& va, const std::vector<QString>& vb)
+  { return std::lexicographical_compare(va.begin(), va.end(), vb.begin(), vb.end(), collator); };
+  std::sort(indices.begin(), indices.end(),
+            [&](size_t a, size_t b)
+            { return lessThan(magicExpressionMatches_[a], magicExpressionMatches_[b]); });
+
+  std::vector<std::vector<QString>> sortedMagicExpressionMatches;
+  std::vector<std::vector<QString>> sortedInstances;
+  sortedMagicExpressionMatches.reserve(magicExpressionMatches_.size());
+  sortedInstances.reserve(instances_.size());
+  for (size_t i : indices)
+  {
+    sortedMagicExpressionMatches.push_back(std::move(magicExpressionMatches_[i]));
+    sortedInstances.push_back(std::move(instances_[i]));
+  }
+  magicExpressionMatches_ = std::move(sortedMagicExpressionMatches);
+  instances_ = std::move(sortedInstances);
 }
 
 QJsonObject Document::toJson() const

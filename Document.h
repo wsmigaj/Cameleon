@@ -55,6 +55,10 @@ signals:
   void modificationStatusChanged();
 
 private:
+  /// \brief Sorts instances alphanumerically by the magic expression matches.
+  void sortInstances();
+
+private:
   QString path_;
   Layout layout_ = Layout{0, 0};
   std::vector<QString> patterns_;
