@@ -151,6 +151,7 @@ void MainWindow::on_actionEditComparison_triggered()
     // For now, we'll always reset to the first case in the sequence.
     // Later we might restore the case shown previously if certain conditions are met.
 
+    doc_->setLayout(Settings::defaultLayout(dialog.patterns().size()));
     doc_->setPatterns(dialog.patterns());
     onInstancesChanged();
     goToInstance(0);
