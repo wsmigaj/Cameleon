@@ -33,7 +33,7 @@ namespace
 struct MatchingPath
 {
   std::filesystem::path path;
-  std::vector<std::string> magicExpressionMatches;
+  std::vector<std::wstring> magicExpressionMatches;
 };
 
 struct PatternMatches
@@ -42,25 +42,25 @@ struct PatternMatches
   std::vector<MatchingPath> matchingPaths;
 };
 
-PatternMatches matchWildcardPattern(const std::string& pattern)
+PatternMatches matchWildcardPattern(const std::wstring& pattern)
 {
   PatternMatches matches;
 
   const std::vector<std::filesystem::path> globResults = glob::rglob(pattern);
 
-  const std::regex patternAsRegex(wildcardPatternToRegex(pattern));
+  const std::wregex patternAsRegex(wildcardPatternToRegex(pattern));
   matches.numMagicExpressions = patternAsRegex.mark_count();
   for (const std::filesystem::path& path : globResults)
   {
-    const std::string pathAsString = path.string();
-    std::smatch match;
-    std::vector<std::string> magicExpressionMatches;
+    const std::wstring pathAsString = path.wstring();
+    std::wsmatch match;
+    std::vector<std::wstring> magicExpressionMatches;
     if (std::regex_match(pathAsString, match, patternAsRegex))
     {
       if (match.size() != matches.numMagicExpressions + 1)
       {
-        throw RuntimeError(QString::fromStdString("Internal error: the path '" + pathAsString +
-                                                  "' did not match all magic expressions"));
+        throw RuntimeError(QString::fromStdWString(L"Internal error: the path '" + pathAsString +
+                                                   L"' did not match all magic expressions"));
       }
       for (std::size_t i = 1; i < match.size(); ++i)
       {
@@ -70,8 +70,8 @@ PatternMatches matchWildcardPattern(const std::string& pattern)
     else
     {
       throw RuntimeError(
-        QString::fromStdString("Internal error: the path '" + pathAsString +
-                               "' unexpectedly did not match a regular expression."));
+        QString::fromStdWString(L"Internal error: the path '" + pathAsString +
+                                L"' unexpectedly did not match a regular expression."));
     }
     matches.matchingPaths.push_back(MatchingPath{path, std::move(magicExpressionMatches)});
   }
@@ -124,7 +124,7 @@ void Document::regenerateInstances()
   std::size_t numMagicExpressions = 0;
   for (const QString& pattern : patterns_)
   {
-    const std::regex patternAsRegex(wildcardPatternToRegex(pattern.toStdString()));
+    const std::wregex patternAsRegex(wildcardPatternToRegex(pattern.toStdWString()));
     const std::size_t markCount = patternAsRegex.mark_count();
     if (markCount > 0)
     {
@@ -143,9 +143,9 @@ void Document::regenerateInstances()
   std::vector<PatternMatches> matchesByPattern;
   std::transform(patterns_.begin(), patterns_.end(), std::back_inserter(matchesByPattern),
                  [](const QString& pattern)
-                 { return matchWildcardPattern(pattern.toStdString()); });
+                 { return matchWildcardPattern(pattern.toStdWString()); });
 
-  using StringsToIndexMap = std::map<std::vector<std::string>, std::size_t>;
+  using StringsToIndexMap = std::map<std::vector<std::wstring>, std::size_t>;
   StringsToIndexMap magicExpressionMatchIndex;
   for (const PatternMatches& patternMatches : matchesByPattern)
   {
@@ -180,7 +180,7 @@ void Document::regenerateInstances()
       else
       {
         instance.push_back(
-          QString::fromStdString(patternMatches.matchingPaths.front().path.string()));
+          QString::fromStdWString(patternMatches.matchingPaths.front().path.wstring()));
       }
     }
     instances_.push_back(std::move(instance));
@@ -195,7 +195,7 @@ void Document::regenerateInstances()
                    {
                      std::vector<QString> match;
                      std::transform(matchAndIndex.first.begin(), matchAndIndex.first.end(),
-                                    std::back_inserter(match), &QString::fromStdString);
+                                    std::back_inserter(match), &QString::fromStdWString);
                      return match;
                    });
     for (size_t iPattern = 0; iPattern < patterns_.size(); ++iPattern)
@@ -206,7 +206,7 @@ void Document::regenerateInstances()
         if (!patternMatches.matchingPaths.empty())
         {
           const QString path =
-            QString::fromStdString(patternMatches.matchingPaths.front().path.string());
+            QString::fromStdWString(patternMatches.matchingPaths.front().path.wstring());
           for (std::vector<QString>& instance : instances_)
             instance[iPattern] = path;
         }
@@ -217,7 +217,7 @@ void Document::regenerateInstances()
         {
           const std::size_t iInstance =
             magicExpressionMatchIndex.at(matchingPath.magicExpressionMatches);
-          instances_[iInstance][iPattern] = QString::fromStdString(matchingPath.path.string());
+          instances_[iInstance][iPattern] = QString::fromStdWString(matchingPath.path.wstring());
         }
       }
     }

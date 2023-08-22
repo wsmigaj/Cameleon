@@ -21,20 +21,20 @@
 #include <filesystem>
 #include <regex>
 
-bool replaceFirstMatch(std::string& str, const std::string& from, const std::string& to)
+bool replaceFirstMatch(std::wstring& str, const std::wstring& from, const std::wstring& to)
 {
   std::size_t start_pos = str.find(from);
-  if (start_pos == std::string::npos)
+  if (start_pos == std::wstring::npos)
     return false;
   str.replace(start_pos, from.length(), to);
   return true;
 }
 
-std::size_t replaceAllMatches(std::string& str, const std::string& from, const std::string& to)
+std::size_t replaceAllMatches(std::wstring& str, const std::wstring& from, const std::wstring& to)
 {
   std::size_t num_replacements = 0;
   std::size_t start_pos = str.find(from);
-  while (start_pos != std::string::npos)
+  while (start_pos != std::wstring::npos)
   {
     str.replace(start_pos, from.length(), to);
     ++num_replacements;
@@ -44,14 +44,15 @@ std::size_t replaceAllMatches(std::string& str, const std::string& from, const s
   return num_replacements;
 }
 
-std::string wildcardPatternToRegex(const std::string& pattern)
+std::wstring wildcardPatternToRegex(const std::wstring& pattern)
 {
-  static const std::string separator =
-    std::filesystem::path::preferred_separator == '\\' ? std::string{R"(\\)"} : std::string{"/"};
-  static const std::string any_character_except_separator = "[^" + separator + "]";
+  static const std::wstring separator = std::filesystem::path::preferred_separator == '\\'
+                                          ? std::wstring{LR"(\\)"}
+                                          : std::wstring{L"/"};
+  static const std::wstring any_character_except_separator = L"[^" + separator + L"]";
 
   std::size_t i = 0, n = pattern.size();
-  std::string result_string;
+  std::wstring result_string;
 
   while (i < n)
   {
@@ -67,17 +68,17 @@ std::string wildcardPatternToRegex(const std::string& pattern)
         {
           i += 1;
         }
-        result_string += "(.*)";
+        result_string += L"(.*)";
       }
       else
       {
         // single asterisk
-        result_string += "(" + any_character_except_separator + "*)";
+        result_string += L"(" + any_character_except_separator + L"*)";
       }
     }
     else if (c == '?')
     {
-      result_string += "(" + any_character_except_separator + ")";
+      result_string += L"(" + any_character_except_separator + L")";
     }
     else if (c == '[')
     {
@@ -96,19 +97,19 @@ std::string wildcardPatternToRegex(const std::string& pattern)
       }
       if (j >= n)
       {
-        result_string += "\\[";
+        result_string += L"\\[";
       }
       else
       {
-        auto stuff = std::string(pattern.begin() + i, pattern.begin() + j);
-        if (stuff.find("--") == std::string::npos)
+        auto stuff = std::wstring(pattern.begin() + i, pattern.begin() + j);
+        if (stuff.find(L"--") == std::wstring::npos)
         {
           // NOTE(wsmigaj): Directory separators within character classes won't work.
-          replaceFirstMatch(stuff, std::string{"\\"}, std::string{R"(\\)"});
+          replaceFirstMatch(stuff, std::wstring{L"\\"}, std::wstring{LR"(\\)"});
         }
         else
         {
-          std::vector<std::string> chunks;
+          std::vector<std::wstring> chunks;
           std::size_t k = 0;
           if (pattern[i] == '!')
           {
@@ -121,24 +122,24 @@ std::string wildcardPatternToRegex(const std::string& pattern)
 
           while (true)
           {
-            k = pattern.find("-", k, j);
-            if (k == std::string::npos)
+            k = pattern.find(L"-", k, j);
+            if (k == std::wstring::npos)
             {
               break;
             }
-            chunks.push_back(std::string(pattern.begin() + i, pattern.begin() + k));
+            chunks.push_back(std::wstring(pattern.begin() + i, pattern.begin() + k));
             i = k + 1;
             k = k + 3;
           }
 
-          chunks.push_back(std::string(pattern.begin() + i, pattern.begin() + j));
+          chunks.push_back(std::wstring(pattern.begin() + i, pattern.begin() + j));
           // Escape backslashes and hyphens for set difference (--).
           // Hyphens that create ranges shouldn't be escaped.
           bool first = true;
           for (auto& s : chunks)
           {
-            replaceFirstMatch(s, std::string{"\\"}, std::string{R"(\\)"});
-            replaceFirstMatch(s, std::string{"-"}, std::string{R"(\-)"});
+            replaceFirstMatch(s, std::wstring{L"\\"}, std::wstring{LR"(\\)"});
+            replaceFirstMatch(s, std::wstring{L"-"}, std::wstring{LR"(\-)"});
             if (first)
             {
               stuff += s;
@@ -146,28 +147,28 @@ std::string wildcardPatternToRegex(const std::string& pattern)
             }
             else
             {
-              stuff += "-" + s;
+              stuff += L"-" + s;
             }
           }
         }
 
         // Escape set operations (&&, ~~ and ||).
-        std::string result;
-        std::regex_replace(std::back_inserter(result),          // ressult
-                           stuff.begin(), stuff.end(),          // string
-                           std::regex(std::string{R"([&~|])"}), // pattern
-                           std::string{R"(\\\1)"});             // repl
+        std::wstring result;
+        std::regex_replace(std::back_inserter(result),             // ressult
+                           stuff.begin(), stuff.end(),             // string
+                           std::wregex(std::wstring{LR"([&~|])"}), // pattern
+                           std::wstring{LR"(\\\1)"});              // repl
         stuff = result;
         i = j + 1;
         if (stuff[0] == '!')
         {
-          stuff = "^" + std::string(stuff.begin() + 1, stuff.end());
+          stuff = L"^" + std::wstring(stuff.begin() + 1, stuff.end());
         }
         else if (stuff[0] == '^' || stuff[0] == '[')
         {
-          stuff = "\\\\" + stuff;
+          stuff = L"\\\\" + stuff;
         }
-        result_string = result_string + "([" + stuff + "])";
+        result_string = result_string + L"([" + stuff + L"])";
       }
     }
     else
@@ -177,18 +178,18 @@ std::string wildcardPatternToRegex(const std::string& pattern)
       // '-' (a range in character set)
       // '&', '~', (extended character set operations)
       // '#' (comment) and WHITESPACE (ignored) in verbose mode
-      static std::string special_characters = "()[]{}?*+-|^$\\.&~# \t\n\r\v\f";
-      static std::map<int, std::string> special_characters_map;
+      static std::wstring special_characters = L"()[]{}?*+-|^$\\.&~# \t\n\r\v\f";
+      static std::map<int, std::wstring> special_characters_map;
       if (special_characters_map.empty())
       {
         for (auto& sc : special_characters)
         {
           special_characters_map.insert(
-            std::make_pair(static_cast<int>(sc), std::string{"\\"} + std::string(1, sc)));
+            std::make_pair(static_cast<int>(sc), std::wstring{L"\\"} + std::wstring(1, sc)));
         }
       }
 
-      if (special_characters.find(c) != std::string::npos)
+      if (special_characters.find(c) != std::wstring::npos)
       {
         result_string += special_characters_map[static_cast<int>(c)];
       }
@@ -198,5 +199,5 @@ std::string wildcardPatternToRegex(const std::string& pattern)
       }
     }
   }
-  return std::string{"(?:(?:"} + result_string + std::string{R"()|[\r\n])$)"};
+  return std::wstring{L"(?:(?:"} + result_string + std::wstring{LR"()|[\r\n])$)"};
 }

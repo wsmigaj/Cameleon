@@ -19,8 +19,8 @@
 
 #include <string>
 
-bool replaceFirstMatch(std::string& str, const std::string& from, const std::string& to);
+bool replaceFirstMatch(std::wstring& str, const std::wstring& from, const std::wstring& to);
 
-std::size_t replaceAllMatches(std::string& str, const std::string& from, const std::string& to);
+std::size_t replaceAllMatches(std::wstring& str, const std::wstring& from, const std::wstring& to);
 
-std::string wildcardPatternToRegex(const std::string& pattern);
+std::wstring wildcardPatternToRegex(const std::wstring& pattern);

@@ -10,25 +10,25 @@ namespace glob {
 
 namespace {
 
-bool string_replace(std::string &str, const std::string &from, const std::string &to) {
+bool string_replace(std::wstring &str, const std::wstring &from, const std::wstring &to) {
   std::size_t start_pos = str.find(from);
-  if (start_pos == std::string::npos)
+  if (start_pos == std::wstring::npos)
     return false;
   str.replace(start_pos, from.length(), to);
   return true;
 }
 
-std::string translate(const std::string &pattern) {
+std::wstring translate(const std::wstring &pattern) {
   std::size_t i = 0, n = pattern.size();
-  std::string result_string;
+  std::wstring result_string;
 
   while (i < n) {
     auto c = pattern[i];
     i += 1;
     if (c == '*') {
-      result_string += ".*";
+      result_string += L".*";
     } else if (c == '?') {
-      result_string += ".";
+      result_string += L".";
     } else if (c == '[') {
       auto j = i;
       if (j < n && pattern[j] == '!') {
@@ -41,13 +41,13 @@ std::string translate(const std::string &pattern) {
         j += 1;
       }
       if (j >= n) {
-        result_string += "\\[";
+        result_string += L"\\[";
       } else {
-        auto stuff = std::string(pattern.begin() + i, pattern.begin() + j);
-        if (stuff.find("--") == std::string::npos) {
-          string_replace(stuff, std::string{"\\"}, std::string{R"(\\)"});
+        auto stuff = std::wstring(pattern.begin() + i, pattern.begin() + j);
+        if (stuff.find(L"--") == std::wstring::npos) {
+          string_replace(stuff, std::wstring{L"\\"}, std::wstring{LR"(\\)"});
         } else {
-          std::vector<std::string> chunks;
+          std::vector<std::wstring> chunks;
           std::size_t k = 0;
           if (pattern[i] == '!') {
             k = i + 2;
@@ -56,45 +56,45 @@ std::string translate(const std::string &pattern) {
           }
 
           while (true) {
-            k = pattern.find("-", k, j);
-            if (k == std::string::npos) {
+            k = pattern.find(L"-", k, j);
+            if (k == std::wstring::npos) {
               break;
             }
-            chunks.push_back(std::string(pattern.begin() + i, pattern.begin() + k));
+            chunks.push_back(std::wstring(pattern.begin() + i, pattern.begin() + k));
             i = k + 1;
             k = k + 3;
           }
 
-          chunks.push_back(std::string(pattern.begin() + i, pattern.begin() + j));
+          chunks.push_back(std::wstring(pattern.begin() + i, pattern.begin() + j));
           // Escape backslashes and hyphens for set difference (--).
           // Hyphens that create ranges shouldn't be escaped.
           bool first = true;
           for (auto &s : chunks) {
-            string_replace(s, std::string{"\\"}, std::string{R"(\\)"});
-            string_replace(s, std::string{"-"}, std::string{R"(\-)"});
+            string_replace(s, std::wstring{L"\\"}, std::wstring{LR"(\\)"});
+            string_replace(s, std::wstring{L"-"}, std::wstring{LR"(\-)"});
             if (first) {
               stuff += s;
               first = false;
             } else {
-              stuff += "-" + s;
+              stuff += L"-" + s;
             }
           }
         }
 
         // Escape set operations (&&, ~~ and ||).
-        std::string result;
+        std::wstring result;
         std::regex_replace(std::back_inserter(result),          // ressult
                            stuff.begin(), stuff.end(),          // string
-                           std::regex(std::string{R"([&~|])"}), // pattern
-                           std::string{R"(\\\1)"});             // repl
+                           std::wregex(std::wstring{LR"([&~|])"}), // pattern
+                           std::wstring{LR"(\\\1)"});             // repl
         stuff = result;
         i = j + 1;
         if (stuff[0] == '!') {
-          stuff = "^" + std::string(stuff.begin() + 1, stuff.end());
+          stuff = L"^" + std::wstring(stuff.begin() + 1, stuff.end());
         } else if (stuff[0] == '^' || stuff[0] == '[') {
-          stuff = "\\\\" + stuff;
+          stuff = L"\\\\" + stuff;
         }
-        result_string = result_string + "[" + stuff + "]";
+        result_string = result_string + L"[" + stuff + L"]";
       }
     } else {
       // SPECIAL_CHARS
@@ -102,39 +102,39 @@ std::string translate(const std::string &pattern) {
       // '-' (a range in character set)
       // '&', '~', (extended character set operations)
       // '#' (comment) and WHITESPACE (ignored) in verbose mode
-      static std::string special_characters = "()[]{}?*+-|^$\\.&~# \t\n\r\v\f";
-      static std::map<int, std::string> special_characters_map;
+      static std::wstring special_characters = L"()[]{}?*+-|^$\\.&~# \t\n\r\v\f";
+      static std::map<int, std::wstring> special_characters_map;
       if (special_characters_map.empty()) {
         for (auto &sc : special_characters) {
           special_characters_map.insert(
-              std::make_pair(static_cast<int>(sc), std::string{"\\"} + std::string(1, sc)));
+              std::make_pair(static_cast<int>(sc), std::wstring{L"\\"} + std::wstring(1, sc)));
         }
       }
 
-      if (special_characters.find(c) != std::string::npos) {
+      if (special_characters.find(c) != std::wstring::npos) {
         result_string += special_characters_map[static_cast<int>(c)];
       } else {
         result_string += c;
       }
     }
   }
-  return std::string{"(("} + result_string + std::string{R"()|[\r\n])$)"};
+  return std::wstring{L"(("} + result_string + std::wstring{LR"()|[\r\n])$)"};
 }
 
-std::regex compile_pattern(const std::string &pattern) {
-  return std::regex(translate(pattern), std::regex::ECMAScript);
+std::wregex compile_pattern(const std::wstring &pattern) {
+  return std::wregex(translate(pattern), std::wregex::ECMAScript);
 }
 
-bool fnmatch(const fs::path &name, const std::string &pattern) {
-  return std::regex_match(name.string(), compile_pattern(pattern));
+bool fnmatch(const fs::path &name, const std::wstring &pattern) {
+  return std::regex_match(name.wstring(), compile_pattern(pattern));
 }
 
 std::vector<fs::path> filter(const std::vector<fs::path> &names,
-                             const std::string &pattern) {
+                             const std::wstring &pattern) {
   // std::cout << "Pattern: " << pattern << "\n";
   std::vector<fs::path> result;
   for (auto &name : names) {
-    // std::cout << "Checking for " << name.string() << "\n";
+    // std::cout << "Checking for " << name.wstring() << "\n";
     if (fnmatch(name, pattern)) {
       result.push_back(name);
     }
@@ -151,28 +151,30 @@ fs::path expand_tilde(fs::path path) {
     const char * home_variable = "USER";
 #endif
     const char * home = std::getenv(home_variable);
-
+    // Probably won't work if the home directory contains any non-ASCII characters
+    std::wstring wide_home(home, home + strlen(home));
+    
   if (home == nullptr) {
     throw std::invalid_argument("error: Unable to expand `~` - HOME environment variable not set.");
   }
 
-  std::string s = path.string();
+  std::wstring s = path.wstring();
   if (s[0] == '~') {
-    s = std::string(home) + s.substr(1, s.size() - 1);
+    s = wide_home + s.substr(1, s.size() - 1);
     return fs::path(s);
   } else {
     return path;
   }
 }
 
-bool has_magic(const std::string &pathname) {
-  static const auto magic_check = std::regex("([*?[])");
+bool has_magic(const std::wstring &pathname) {
+  static const auto magic_check = std::wregex(L"([*?[])");
   return std::regex_search(pathname, magic_check);
 }
 
-bool is_hidden(const std::string &pathname) { return pathname[0] == '.'; }
+bool is_hidden(const std::wstring &pathname) { return pathname[0] == '.'; }
 
-bool is_recursive(const std::string &pattern) { return pattern == "**"; }
+bool is_recursive(const std::wstring &pattern) { return pattern == L"**"; }
 
 std::vector<fs::path> iter_directory(const fs::path &dirname, bool dironly) {
   std::vector<fs::path> result;
@@ -209,7 +211,7 @@ std::vector<fs::path> rlistdir(const fs::path &dirname, bool dironly) {
   std::vector<fs::path> result;
   auto names = iter_directory(dirname, dironly);
   for (auto &x : names) {
-    if (!is_hidden(x.string())) {
+    if (!is_hidden(x.wstring())) {
       result.push_back(x);
       for (auto &y : rlistdir(x, dironly)) {
         result.push_back(y);
@@ -225,7 +227,7 @@ std::vector<fs::path> glob2(const fs::path &dirname, [[maybe_unused]] const fs::
                             bool dironly) {
   // std::cout << "In glob2\n";
   std::vector<fs::path> result{"."};
-  assert(is_recursive(pattern.string()));
+  assert(is_recursive(pattern.wstring()));
   for (auto &dir : rlistdir(dirname, dironly)) {
     result.push_back(dir);
   }
@@ -242,7 +244,7 @@ std::vector<fs::path> glob1(const fs::path &dirname, const fs::path &pattern,
   auto names = iter_directory(dirname, dironly);
   std::vector<fs::path> filtered_names;
   for (auto &n : names) {
-    if (!is_hidden(n.string())) {
+    if (!is_hidden(n.wstring())) {
       filtered_names.push_back(n.filename());
       // if (n.is_relative()) {
       //   // std::cout << "Filtered (Relative): " << n << "\n";
@@ -253,7 +255,7 @@ std::vector<fs::path> glob1(const fs::path &dirname, const fs::path &pattern,
       // }
     }
   }
-  return filter(filtered_names, pattern.string());
+  return filter(filtered_names, pattern.wstring());
 }
 
 std::vector<fs::path> glob0(const fs::path &dirname, const fs::path &basename,
@@ -277,7 +279,7 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
                            bool dironly = false) {
   std::vector<fs::path> result;
 
-  const auto pathname = inpath.string();
+  const auto pathname = inpath.wstring();
   auto path = fs::path(pathname);
 
   if (pathname[0] == '~') {
@@ -304,7 +306,7 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
   }
 
   if (dirname.empty()) {
-    if (recursive && is_recursive(basename.string())) {
+    if (recursive && is_recursive(basename.wstring())) {
       return glob2(dirname, basename, dironly);
     } else {
       return glob1(dirname, basename, dironly);
@@ -312,7 +314,7 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
   }
 
   std::vector<fs::path> dirs;
-  if (dirname != fs::path(pathname) && has_magic(dirname.string())) {
+  if (dirname != fs::path(pathname) && has_magic(dirname.wstring())) {
     dirs = glob(dirname, recursive, true);
   } else {
     dirs = {dirname};
@@ -320,8 +322,8 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
 
   std::function<std::vector<fs::path>(const fs::path &, const fs::path &, bool)>
       glob_in_dir;
-  if (has_magic(basename.string())) {
-    if (recursive && is_recursive(basename.string())) {
+  if (has_magic(basename.wstring())) {
+    if (recursive && is_recursive(basename.wstring())) {
       glob_in_dir = glob2;
     } else {
       glob_in_dir = glob1;
@@ -345,15 +347,15 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
 
 } // namespace end
 
-std::vector<fs::path> glob(const std::string &pathname) {
+std::vector<fs::path> glob(const std::wstring &pathname) {
   return glob(pathname, false);
 }
 
-std::vector<fs::path> rglob(const std::string &pathname) {
+std::vector<fs::path> rglob(const std::wstring &pathname) {
   return glob(pathname, true);
 }
 
-std::vector<fs::path> glob(const std::vector<std::string> &pathnames) {
+std::vector<fs::path> glob(const std::vector<std::wstring> &pathnames) {
   std::vector<fs::path> result;
   for (auto &pathname : pathnames) {
     for (auto &match : glob(pathname, false)) {
@@ -363,7 +365,7 @@ std::vector<fs::path> glob(const std::vector<std::string> &pathnames) {
   return result;
 }
 
-std::vector<fs::path> rglob(const std::vector<std::string> &pathnames) {
+std::vector<fs::path> rglob(const std::vector<std::wstring> &pathnames) {
   std::vector<fs::path> result;
   for (auto &pathname : pathnames) {
     for (auto &match : glob(pathname, true)) {
@@ -374,13 +376,13 @@ std::vector<fs::path> rglob(const std::vector<std::string> &pathnames) {
 }
 
 std::vector<fs::path>
-glob(const std::initializer_list<std::string> &pathnames) {
-  return glob(std::vector<std::string>(pathnames));
+glob(const std::initializer_list<std::wstring> &pathnames) {
+  return glob(std::vector<std::wstring>(pathnames));
 }
 
 std::vector<fs::path>
-rglob(const std::initializer_list<std::string> &pathnames) {
-  return rglob(std::vector<std::string>(pathnames));
+rglob(const std::initializer_list<std::wstring> &pathnames) {
+  return rglob(std::vector<std::wstring>(pathnames));
 }
 
 } // namespace glob
