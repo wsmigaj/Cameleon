@@ -113,7 +113,7 @@ void MainWindow::on_actionOpenComparison_triggered()
   }
 
   QString path = QFileDialog::getOpenFileName(this, "Open Comparison", QString(),
-                                              "Comparisons (*.cml)|All files (*.*)");
+                                              "Comparisons (*.cml);;All files (*.*)");
   if (path.isEmpty())
   {
     return;
