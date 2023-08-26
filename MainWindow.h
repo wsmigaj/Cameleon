@@ -39,6 +39,7 @@ private slots:
   void on_actionNewComparison_triggered();
   void on_actionOpenComparison_triggered();
   void on_actionEditComparison_triggered();
+  void on_actionRefreshComparison_triggered();
   void on_actionSaveComparison_triggered();
   void on_actionSaveComparisonAs_triggered();
   void on_actionCloseComparison_triggered();

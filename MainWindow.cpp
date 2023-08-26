@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
   ui_.actionNewComparison->setIcon(QIcon::fromTheme("document-new"));
   ui_.actionOpenComparison->setIcon(QIcon::fromTheme("document-open"));
   ui_.actionEditComparison->setIcon(QIcon::fromTheme("document-properties"));
+  ui_.actionRefreshComparison->setIcon(QIcon::fromTheme("view-refresh"));
   ui_.actionSaveComparison->setIcon(QIcon::fromTheme("document-save"));
   ui_.actionSaveComparisonAs->setIcon(QIcon::fromTheme("document-save-as"));
 
@@ -158,6 +159,16 @@ void MainWindow::on_actionEditComparison_triggered()
     onInstancesChanged();
     goToInstance(0);
   }
+}
+
+void MainWindow::on_actionRefreshComparison_triggered()
+{
+  // For now, we'll always reset to the first case in the sequence.
+  // Later we might restore the case shown previously if certain conditions are met.
+
+  doc_->regenerateInstances();
+  onInstancesChanged();
+  goToInstance(0);
 }
 
 void MainWindow::on_actionSaveComparison_triggered()
@@ -306,6 +317,7 @@ void MainWindow::updateDocumentDependentActions()
   const bool hasInstances = isOpen && !doc_->instances().empty();
   const bool isModified = isOpen && doc_->modified();
   ui_.actionEditComparison->setEnabled(isOpen);
+  ui_.actionRefreshComparison->setEnabled(isOpen);
   ui_.actionSaveComparison->setEnabled(isModified);
   ui_.actionSaveComparisonAs->setEnabled(isOpen);
   ui_.actionCloseComparison->setEnabled(isOpen);

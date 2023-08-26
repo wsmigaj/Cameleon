@@ -41,9 +41,11 @@
     </property>
     <addaction name="actionNewComparison"/>
     <addaction name="actionOpenComparison"/>
-    <addaction name="actionEditComparison"/>
     <addaction name="actionSaveComparison"/>
     <addaction name="actionSaveComparisonAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionEditComparison"/>
+    <addaction name="actionRefreshComparison"/>
     <addaction name="separator"/>
     <addaction name="actionCloseComparison"/>
     <addaction name="separator"/>
@@ -80,6 +82,7 @@
    <addaction name="actionNewComparison"/>
    <addaction name="actionOpenComparison"/>
    <addaction name="actionEditComparison"/>
+   <addaction name="actionRefreshComparison"/>
    <addaction name="actionSaveComparison"/>
    <addaction name="separator"/>
    <addaction name="actionFirstInstance"/>
@@ -192,6 +195,14 @@
    </property>
    <property name="shortcut">
     <string>End</string>
+   </property>
+  </action>
+  <action name="actionRefreshComparison">
+   <property name="text">
+    <string>&amp;Refresh Comparison</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
  </widget>

@@ -37,7 +37,10 @@
     <file alias="16x16/go-last.png">icons/tango/16x16/actions/go-last.png</file>
     <file alias="22x22/go-last.png">icons/tango/22x22/actions/go-last.png</file>
     <file alias="32x32/go-last.png">icons/tango/32x32/actions/go-last.png</file>
- 
+    
+    <file alias="16x16/view-refresh.png">icons/tango/16x16/actions/view-refresh.png</file>
+    <file alias="22x22/view-refresh.png">icons/tango/22x22/actions/view-refresh.png</file>
+    <file alias="32x32/view-refresh.png">icons/tango/32x32/actions/view-refresh.png</file>
 </qresource>
 </RCC>
 
