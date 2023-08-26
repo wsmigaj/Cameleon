@@ -64,6 +64,7 @@ private:
   void updateDocumentModificationStatusDependentActions();
   void updateInstanceDependentActions();
 
+  void onDocumentPathChanged();
   void onInstancesChanged();
   void onActiveInstanceChanged();
 

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Caméléon</string>
   </property>
   <widget class="MainView" name="mainView">
    <widget class="QWidget" name="gridLayoutWidget">

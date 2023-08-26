@@ -102,6 +102,7 @@ void MainWindow::on_actionNewComparison_triggered()
   doc_->setPatterns(dialog.patterns());
 
   connectDocumentSignals();
+  onDocumentPathChanged();
   onInstancesChanged();
 }
 
@@ -137,6 +138,7 @@ void MainWindow::on_actionOpenComparison_triggered()
 
   doc_ = std::move(doc);
   connectDocumentSignals();
+  onDocumentPathChanged();
   onInstancesChanged();
   goToInstance(0);
 }
@@ -176,6 +178,7 @@ void MainWindow::on_actionCloseComparison_triggered()
   }
 
   doc_ = nullptr;
+  onDocumentPathChanged();
   onInstancesChanged();
 }
 
@@ -230,6 +233,25 @@ void MainWindow::on_actionLastInstance_triggered()
 void MainWindow::onDocumentModificationStatusChanged()
 {
   updateDocumentModificationStatusDependentActions();
+}
+
+void MainWindow::onDocumentPathChanged()
+{
+  QString appTitle = "Cam\u00E9l\u00E9on";
+  QString title;
+  if (doc_)
+  {
+    if (doc_->path().isEmpty())
+      title = "Untitled.cml";
+    else
+      title = QFileInfo(doc_->path()).fileName();
+    title += " - " + appTitle;
+  }
+  else
+  {
+    title = appTitle;
+  }
+  setWindowTitle(title);
 }
 
 void MainWindow::onInstanceComboBox(int currentIndex)
@@ -394,6 +416,7 @@ bool MainWindow::saveDocument(const QString& path)
   try
   {
     doc_->save(path);
+    onDocumentPathChanged();
     return true;
   }
   catch (std::exception& ex)
