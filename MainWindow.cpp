@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ComparisonDialog.h"
+#include "Constants.h"
 #include "Document.h"
 #include "MainWindow.h"
 #include "RuntimeError.h"
@@ -41,6 +42,8 @@ QString join(const std::vector<QString>& strings, const QString& sep = QString()
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
   ui_.setupUi(this);
+
+  populateLayoutSubmenu();
 
   instanceComboBox_ = new QComboBox(this);
   instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -69,6 +72,22 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
+}
+
+void MainWindow::populateLayoutSubmenu()
+{
+  ui_.menuView->addSeparator();
+  layoutMenu_ = ui_.menuView->addMenu("&Layout");
+  layoutActionGroup_ = new QActionGroup(this);
+  for (size_t rows = 1; rows <= MAX_NUM_PATTERNS; ++rows)
+    for (size_t cols = 1; rows * cols <= MAX_NUM_PATTERNS; ++cols)
+    {
+      QAction* action = layoutMenu_->addAction(QString("%1 x %2").arg(rows).arg(cols));
+      action->setCheckable(true);
+      connect(action, &QAction::triggered, this, &MainWindow::onLayoutActionTriggered);
+      layoutActionGroup_->addAction(action);
+      layoutActions_[action] = Layout{rows, cols};
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -154,7 +173,8 @@ void MainWindow::on_actionEditComparison_triggered()
     // For now, we'll always reset to the first case in the sequence.
     // Later we might restore the case shown previously if certain conditions are met.
 
-    doc_->setLayout(Settings::defaultLayout(dialog.patterns().size()));
+    if (dialog.patterns().size() != doc_->patterns().size())
+      doc_->setLayout(Settings::defaultLayout(dialog.patterns().size()));
     doc_->setPatterns(dialog.patterns());
     onInstancesChanged();
     goToInstance(0);
@@ -241,6 +261,14 @@ void MainWindow::on_actionLastInstance_triggered()
   goToInstance(doc_->instances().size() - 1);
 }
 
+void MainWindow::onLayoutActionTriggered()
+{
+  QAction* senderAction = static_cast<QAction*>(sender());
+  Layout layout = layoutActions_.at(senderAction);
+  doc_->setLayout(layout);
+  updateMainViewLayout();
+}
+
 void MainWindow::onDocumentModificationStatusChanged()
 {
   updateDocumentModificationStatusDependentActions();
@@ -279,18 +307,30 @@ void MainWindow::connectDocumentSignals()
 
 void MainWindow::updateMainViewLayout()
 {
-  if (!doc_)
+  if (!doc_ || doc_->instances().empty())
   {
     ui_.mainView->setLayout(Layout{0, 0});
-  }
-  else if (doc_->instances().empty())
-  {
-    ui_.mainView->setLayout(Layout{0, 0});
-    QMessageBox::information(this, "Information", "No pattern matches found");
   }
   else
   {
     ui_.mainView->setLayout(doc_->layout());
+  }
+}
+
+void MainWindow::updateLayoutSubmenu()
+{
+  if (doc_)
+  {
+    const size_t numPatterns = doc_->patterns().size();
+    const Layout docLayout = doc_->layout();
+    for (auto& [action, layout] : layoutActions_)
+    {
+      action->setEnabled(layout.panels() >= numPatterns);
+      if (layout == docLayout)
+      {
+        action->setChecked(true);
+      }
+    }
   }
 }
 
@@ -325,6 +365,8 @@ void MainWindow::updateDocumentDependentActions()
   ui_.actionZoomOut->setEnabled(hasInstances);
   ui_.actionZoom1to1->setEnabled(hasInstances);
 
+  layoutMenu_->setEnabled(hasInstances);
+
   updateDocumentModificationStatusDependentActions();
   updateInstanceDependentActions();
 }
@@ -349,8 +391,14 @@ void MainWindow::updateInstanceDependentActions()
 void MainWindow::onInstancesChanged()
 {
   updateMainViewLayout();
+  updateLayoutSubmenu();
   populateInstanceComboBox();
   updateDocumentDependentActions();
+
+  if (doc_ && doc_->instances().empty())
+  {
+    QMessageBox::information(this, "Information", "No pattern matches found");
+  }
 }
 
 void MainWindow::onActiveInstanceChanged()
