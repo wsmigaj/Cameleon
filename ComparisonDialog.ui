@@ -157,6 +157,48 @@
          </property>
         </widget>
        </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>G:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QComboBox" name="patternGComboBox">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QToolButton" name="fileDialogButtonG">
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>H:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QComboBox" name="patternHComboBox">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QToolButton" name="fileDialogButtonH">
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
@@ -220,6 +262,10 @@
   <tabstop>fileDialogButtonE</tabstop>
   <tabstop>patternFComboBox</tabstop>
   <tabstop>fileDialogButtonF</tabstop>
+  <tabstop>patternGComboBox</tabstop>
+  <tabstop>fileDialogButtonG</tabstop>
+  <tabstop>patternHComboBox</tabstop>
+  <tabstop>fileDialogButtonH</tabstop>
   <tabstop>okButton</tabstop>
   <tabstop>cancelButton</tabstop>
  </tabstops>

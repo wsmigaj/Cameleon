@@ -17,4 +17,4 @@
 
 #pragma once
 
-static const size_t MAX_NUM_PATTERNS = 6;
+static const size_t MAX_NUM_PATTERNS = 8;

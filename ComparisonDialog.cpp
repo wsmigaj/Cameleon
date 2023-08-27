@@ -118,14 +118,15 @@ void ComparisonDialog::done(int r)
 
 std::vector<QComboBox*> ComparisonDialog::patternComboBoxes() const
 {
-  return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox,
-          ui_.patternDComboBox, ui_.patternEComboBox, ui_.patternFComboBox};
+  return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox, ui_.patternDComboBox,
+          ui_.patternEComboBox, ui_.patternFComboBox, ui_.patternGComboBox, ui_.patternHComboBox};
 }
 
 std::vector<QToolButton*> ComparisonDialog::fileDialogButtons() const
 {
   return {ui_.fileDialogButtonA, ui_.fileDialogButtonB, ui_.fileDialogButtonC,
-          ui_.fileDialogButtonD, ui_.fileDialogButtonE, ui_.fileDialogButtonF};
+          ui_.fileDialogButtonD, ui_.fileDialogButtonE, ui_.fileDialogButtonF,
+          ui_.fileDialogButtonG, ui_.fileDialogButtonH};
 }
 
 void ComparisonDialog::connectSignals()
