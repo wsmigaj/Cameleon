@@ -17,37 +17,4 @@
 
 #pragma once
 
-#include "ui_ComparisonDialog.h"
-
-#include <QDialog>
-#include <vector>
-
-class ComparisonDialog : public QDialog
-{
-  Q_OBJECT
-
-public:
-  ComparisonDialog(QWidget* parent = nullptr);
-
-  std::vector<QString> patterns() const;
-  void setPatterns(const std::vector<QString>& patterns);
-
-  void loadRecentPatterns();
-  void saveRecentPatterns();
-
-public slots:
-  void done(int r) override;
-  void onFileDialogButtonClicked();
-
-private:
-  std::vector<QComboBox*> patternComboBoxes() const;
-  std::vector<QToolButton*> fileDialogButtons() const;
-
-  void connectSignals();
-
-private:
-  static const size_t MAX_NUM_RECENT_PATTERNS = 20;
-
-private:
-  Ui::ComparisonDialogClass ui_;
-};
+static const size_t MAX_NUM_PATTERNS = 6;

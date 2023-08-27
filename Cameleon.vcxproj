@@ -110,6 +110,7 @@
     <QtMoc Include="HeaderBar.h" />
     <QtMoc Include="ImageWidget.h" />
     <QtMoc Include="ElidedLabel.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="WildcardPatterns.h" />
     <QtRcc Include="MainWindow.qrc" />
     <QtRcc Include="tango.qrc" />

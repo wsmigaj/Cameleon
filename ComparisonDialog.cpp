@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ComparisonDialog.h"
+#include "Constants.h"
 
 namespace
 {
