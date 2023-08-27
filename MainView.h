@@ -52,7 +52,7 @@ private slots:
   void onImageWidgetHorizontalScrollBarValueChanged(int value);
   void onImageWidgetVerticalScrollBarValueChanged(int value);
   void onImageWidgetTransformChanging();
-  void onImageWidgetTransformChanged(QTransform transform);
+  void onImageWidgetTransformChanged();
 
 private:
   QGridLayout* mainLayout_;

@@ -23,6 +23,21 @@
 #include "ImageView.h"
 #include "ImageWidget.h"
 
+namespace
+{
+void copyTransformAndScrollBarPositions(const ImageWidget& source, ImageWidget& dest)
+{
+  {
+    auto guard = qScopeGuard([&dest, origAnchor = dest.transformationAnchor()]
+                             { dest.setTransformationAnchor(origAnchor); });
+    dest.setTransformationAnchor(QGraphicsView::NoAnchor);
+    dest.setTransform(source.transform());
+  }
+  dest.horizontalScrollBar()->setValue(source.horizontalScrollBar()->value());
+  dest.verticalScrollBar()->setValue(source.verticalScrollBar()->value());
+}
+} // namespace
+
 MainView::MainView(QWidget* parent) : QWidget(parent)
 {
   mainLayout_ = new QGridLayout(this);
@@ -87,10 +102,20 @@ void MainView::setLayout(const Layout& layout)
     imageViews_[i]->deleteLater();
     imageViews_.pop_back();
   }
+
+  ImageWidget* firstImageWidget = nullptr;
+  if (!imageViews_.empty())
+    firstImageWidget = imageViews_.front()->imageWidget();
+
   for (int i = imageViews_.size(); i < numViews; ++i)
   {
     ImageView* newView = new ImageView(this);
     ImageWidget* newImageWidget = newView->imageWidget();
+    if (firstImageWidget)
+    {
+      newImageWidget->setSceneRect(firstImageWidget->imageRect());
+      copyTransformAndScrollBarPositions(*firstImageWidget, *newImageWidget);
+    }
     connect(newImageWidget->horizontalScrollBar(), &QScrollBar::valueChanged, this,
             &MainView::onImageWidgetHorizontalScrollBarValueChanged);
     connect(newImageWidget->verticalScrollBar(), &QScrollBar::valueChanged, this,
@@ -103,9 +128,6 @@ void MainView::setLayout(const Layout& layout)
     newImageWidget->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     newView->headerBar()->setLabel(QString(char('A' + i)));
     imageViews_.push_back(newView);
-
-    // TODO: set the transform and scroll bar position of the new view to match those
-    // of the existing views.
   }
 
   for (int row = 0, index = 0; row < layout.rows; ++row)
@@ -158,23 +180,15 @@ void MainView::onImageWidgetTransformChanging()
   ++numOngoingTransformUpdates_;
 }
 
-void MainView::onImageWidgetTransformChanged(QTransform transform)
+void MainView::onImageWidgetTransformChanged()
 {
-  ImageWidget* senderWidget = static_cast<ImageWidget*>(sender());
+  const ImageWidget* senderWidget = static_cast<const ImageWidget*>(sender());
   for (ImageView* receiverView : imageViews_)
   {
     ImageWidget* receiverWidget = receiverView->imageWidget();
     if (receiverWidget != senderWidget)
     {
-      {
-        auto guard =
-          qScopeGuard([receiverWidget, origAnchor = receiverWidget->transformationAnchor()]
-                      { receiverWidget->setTransformationAnchor(origAnchor); });
-        receiverWidget->setTransformationAnchor(QGraphicsView::NoAnchor);
-        receiverWidget->setTransform(transform);
-      }
-      receiverWidget->horizontalScrollBar()->setValue(senderWidget->horizontalScrollBar()->value());
-      receiverWidget->verticalScrollBar()->setValue(senderWidget->verticalScrollBar()->value());
+      copyTransformAndScrollBarPositions(*senderWidget, *receiverWidget);
     }
   }
   --numOngoingTransformUpdates_;
