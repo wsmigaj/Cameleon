@@ -133,12 +133,16 @@ void MainWindow::on_actionOpenComparison_triggered()
     return;
   }
 
-  QString path = QFileDialog::getOpenFileName(this, "Open Comparison", QString(),
+  QSettings settings;
+  QString lastDir = settings.value("lastOpenDir", QString()).toString();
+  QString path = QFileDialog::getOpenFileName(this, "Open Comparison", lastDir,
                                               "Comparisons (*.cml);;All files (*.*)");
   if (path.isEmpty())
   {
     return;
   }
+
+  settings.setValue("lastOpenDir", QFileInfo(path).dir().path());
 
   std::unique_ptr<Document> doc;
   try
@@ -461,12 +465,20 @@ bool MainWindow::saveDocument()
 
 bool MainWindow::saveDocumentAs()
 {
-  QString path =
-    QFileDialog::getSaveFileName(this, "Save Comparison", doc_->path(), "Comparisons (*.cml)");
+  QSettings settings;
+
+  QString path = doc_->path();
+  if (path.isEmpty())
+  {
+    path = settings.value("lastSaveDir", QString()).toString();
+  }
+  path = QFileDialog::getSaveFileName(this, "Save Comparison", path, "Comparisons (*.cml)");
   if (path.isEmpty())
   {
     return false;
   }
+
+  settings.setValue("lastSaveDir", QFileInfo(path).dir().path());
 
   return saveDocument(path);
 }
