@@ -46,6 +46,8 @@ std::vector<QString> ComparisonDialog::patterns() const
   {
     if (QString pattern = comboBox->currentText(); !pattern.isEmpty())
     {
+      pattern.replace('/', QDir::separator());
+      pattern.replace('\\', QDir::separator());
       result.push_back(pattern);
     }
   }
