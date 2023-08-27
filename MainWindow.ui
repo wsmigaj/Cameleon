@@ -81,9 +81,10 @@
    </attribute>
    <addaction name="actionNewComparison"/>
    <addaction name="actionOpenComparison"/>
+   <addaction name="actionSaveComparison"/>
+   <addaction name="separator"/>
    <addaction name="actionEditComparison"/>
    <addaction name="actionRefreshComparison"/>
-   <addaction name="actionSaveComparison"/>
    <addaction name="separator"/>
    <addaction name="actionFirstInstance"/>
    <addaction name="actionPreviousInstance"/>
