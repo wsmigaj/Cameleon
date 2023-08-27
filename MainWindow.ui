@@ -58,6 +58,8 @@
     <addaction name="actionZoomIn"/>
     <addaction name="actionZoomOut"/>
     <addaction name="actionZoom1to1"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveScreenshot"/>
    </widget>
    <widget class="QMenu" name="menuNavigation">
     <property name="title">
@@ -204,6 +206,14 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="actionSaveScreenshot">
+   <property name="text">
+    <string>&amp;Save Screenshot...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

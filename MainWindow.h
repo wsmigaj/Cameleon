@@ -47,6 +47,7 @@ private slots:
   void on_actionZoomIn_triggered();
   void on_actionZoomOut_triggered();
   void on_actionZoom1to1_triggered();
+  void on_actionSaveScreenshot_triggered();
   void on_actionFirstInstance_triggered();
   void on_actionPreviousInstance_triggered();
   void on_actionNextInstance_triggered();
@@ -79,6 +80,8 @@ private:
   bool saveDocument();
   bool saveDocumentAs();
   bool saveDocument(const QString& path);
+
+  QRect toolBarAreaRect() const;
 
 private:
   Ui::MainWindowClass ui_;

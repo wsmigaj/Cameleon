@@ -37,6 +37,14 @@ QString join(const std::vector<QString>& strings, const QString& sep = QString()
   }
   return result;
 }
+
+QString instanceKeyToFileName(const std::vector<QString>& keys)
+{
+  QString fileName = join(keys, "...");
+  fileName.replace('/', "_");
+  fileName.replace('\\', "_");
+  return fileName;
+}
 } // namespace
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
@@ -76,8 +84,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::populateLayoutSubmenu()
 {
-  ui_.menuView->addSeparator();
-  layoutMenu_ = ui_.menuView->addMenu("&Layout");
+  layoutMenu_ = new QMenu("&Layout", ui_.menuView);
+  ui_.menuView->insertMenu(ui_.actionSaveScreenshot, layoutMenu_);
+  ui_.menuView->insertSeparator(ui_.actionSaveScreenshot);
   layoutActionGroup_ = new QActionGroup(this);
   for (size_t rows = 1; rows <= MAX_NUM_PATTERNS; ++rows)
     for (size_t cols = 1; rows * cols <= MAX_NUM_PATTERNS; ++cols)
@@ -237,6 +246,33 @@ void MainWindow::on_actionZoom1to1_triggered()
   ui_.mainView->resetScale();
 }
 
+void MainWindow::on_actionSaveScreenshot_triggered()
+{
+  QSettings settings;
+  QString lastDir = settings.value("lastSaveScreenshotDir", QString()).toString();
+  QString proposedFileName = instanceKeyToFileName(doc_->instanceKeys()[instance_]) + ".png";
+  QString path = QDir(lastDir).filePath(proposedFileName);
+
+  path = QFileDialog::getSaveFileName(this, "Save Screenshot", path, "PNG images (*.png)");
+  if (path.isEmpty())
+    return;
+
+  settings.setValue("lastSaveScreenshotDir", QFileInfo(path).dir().path());
+
+  QPixmap pixmap = grab(toolBarAreaRect());
+  QImage image = pixmap.toImage();
+  if (!image.save(path))
+  {
+    QMessageBox::warning(this, "Save Screenshot",
+                         QString("The screenshot could not be saved to %s.").arg(path));
+  }
+}
+
+QRect MainWindow::toolBarAreaRect() const
+{
+  return QRect(menuBar()->geometry().bottomLeft(), statusBar()->geometry().topRight());
+}
+
 void MainWindow::on_actionFirstInstance_triggered()
 {
   if (!doc_ || doc_->instances().empty())
@@ -368,6 +404,7 @@ void MainWindow::updateDocumentDependentActions()
   ui_.actionZoomIn->setEnabled(hasInstances);
   ui_.actionZoomOut->setEnabled(hasInstances);
   ui_.actionZoom1to1->setEnabled(hasInstances);
+  ui_.actionSaveScreenshot->setEnabled(hasInstances);
 
   layoutMenu_->setEnabled(hasInstances);
 
