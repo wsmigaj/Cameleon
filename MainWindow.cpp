@@ -88,8 +88,16 @@ void MainWindow::populateLayoutSubmenu()
   ui_.menuView->insertMenu(ui_.actionSaveScreenshot, layoutMenu_);
   ui_.menuView->insertSeparator(ui_.actionSaveScreenshot);
   layoutActionGroup_ = new QActionGroup(this);
+
+  const size_t threshold = static_cast<size_t>(std::ceil(std::sqrt(MAX_NUM_PATTERNS)));
   for (size_t rows = 1; rows <= MAX_NUM_PATTERNS; ++rows)
-    for (size_t cols = 1; rows * cols <= MAX_NUM_PATTERNS; ++cols)
+  {
+    size_t maxCols;
+    if (rows <= threshold)
+      maxCols = (MAX_NUM_PATTERNS + rows - 1) / rows; // round up
+    else
+      maxCols = MAX_NUM_PATTERNS / rows; // round down
+    for (size_t cols = 1; cols <= maxCols; ++cols)
     {
       QAction* action = layoutMenu_->addAction(QString("%1 x %2").arg(rows).arg(cols));
       action->setCheckable(true);
@@ -97,6 +105,7 @@ void MainWindow::populateLayoutSubmenu()
       layoutActionGroup_->addAction(action);
       layoutActions_[action] = Layout{rows, cols};
     }
+  }
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
