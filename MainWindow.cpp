@@ -22,6 +22,7 @@
 #include "MainWindow.h"
 #include "RuntimeError.h"
 #include "Settings.h"
+#include "Try.h"
 
 namespace
 {
@@ -162,23 +163,9 @@ void MainWindow::on_actionOpenComparison_triggered()
 
   settings.setValue("lastOpenDir", QFileInfo(path).dir().path());
 
-  std::unique_ptr<Document> doc;
-  try
-  {
-    doc = std::make_unique<Document>(path);
-  }
-  catch (std::exception& ex)
-  {
-    QMessageBox::warning(this, "Warning", ex.what());
+  if (!Try([&] { doc_ = std::make_unique<Document>(path); }))
     return;
-  }
-  catch (...)
-  {
-    QMessageBox::warning(this, "Warning", "An unidentified problem occurred.");
-    return;
-  }
 
-  doc_ = std::move(doc);
   connectDocumentSignals();
   onDocumentPathChanged();
   onInstancesChanged();
@@ -195,9 +182,11 @@ void MainWindow::on_actionEditComparison_triggered()
     // For now, we'll always reset to the first case in the sequence.
     // Later we might restore the case shown previously if certain conditions are met.
 
+    if (!Try([&] { doc_->setPatterns(dialog.patterns()); }))
+      return;
     if (dialog.patterns().size() != doc_->patterns().size())
       doc_->setLayout(Settings::defaultLayout(dialog.patterns().size()));
-    doc_->setPatterns(dialog.patterns());
+
     onInstancesChanged();
     goToInstance(0);
   }
@@ -208,7 +197,8 @@ void MainWindow::on_actionRefreshComparison_triggered()
   // For now, we'll always reset to the first case in the sequence.
   // Later we might restore the case shown previously if certain conditions are met.
 
-  doc_->regenerateInstances();
+  if (!Try([&] { doc_->regenerateInstances(); }))
+    return;
   onInstancesChanged();
   goToInstance(0);
 }
@@ -455,14 +445,11 @@ void MainWindow::onActiveInstanceChanged()
 {
   if (doc_ && !doc_->instances().empty())
   {
+    Q_ASSERT(instance_ < doc_->instances().size());
     if (instance_ < doc_->instances().size())
     {
       instanceComboBox_->setCurrentIndex(instance_);
       ui_.mainView->setPaths(doc_->instances()[instance_]);
-    }
-    else
-    {
-      throw RuntimeError("Internal error: invalid instance index");
     }
   }
   updateInstanceDependentActions();
@@ -531,19 +518,10 @@ bool MainWindow::saveDocumentAs()
 
 bool MainWindow::saveDocument(const QString& path)
 {
-  try
-  {
-    doc_->save(path);
-    onDocumentPathChanged();
-    return true;
-  }
-  catch (std::exception& ex)
-  {
-    QMessageBox::warning(this, "Warning", ex.what());
-  }
-  catch (...)
-  {
-    QMessageBox::warning(this, "Warning", "An unidentified problem occurred.");
-  }
-  return false;
+  return Try(
+    [&]
+    {
+      doc_->save(path);
+      onDocumentPathChanged();
+    });
 }

@@ -112,6 +112,8 @@ void Document::setPatterns(std::vector<QString> patterns)
 {
   if (patterns != patterns_)
   {
+    // TODO: Make this exception-safe. Probably the easiest way will be to move
+    // the instance data (instances_ and magicExpressionMatches_) into a separate class.
     patterns_ = std::move(patterns);
     modified_ = true;
     regenerateInstances();
