@@ -106,12 +106,14 @@
     <ClCompile Include="ElidedLabel.cpp" />
     <ClCompile Include="HeaderBar.cpp" />
     <ClCompile Include="ImageWidget.cpp" />
+    <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Try.cpp" />
     <ClCompile Include="WildcardPatterns.cpp" />
     <QtMoc Include="HeaderBar.h" />
     <QtMoc Include="ImageWidget.h" />
     <QtMoc Include="ElidedLabel.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Instance.h" />
     <ClInclude Include="Try.h" />
     <ClInclude Include="WildcardPatterns.h" />
     <QtRcc Include="MainWindow.qrc" />

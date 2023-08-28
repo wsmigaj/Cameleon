@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "Instance.h"
 #include "Layout.h"
 
 #include <QString>
@@ -43,8 +44,7 @@ public:
 
   void regenerateInstances();
 
-  const std::vector<std::vector<QString>>& instances() const { return instances_; }
-  const std::vector<std::vector<QString>>& instanceKeys() const { return magicExpressionMatches_; }
+  const std::vector<Instance>& instances() const { return instances_; }
 
   QJsonObject toJson() const;
   void loadFromJson(const QJsonObject& json);
@@ -55,15 +55,10 @@ signals:
   void modificationStatusChanged();
 
 private:
-  /// \brief Sorts instances alphanumerically by the magic expression matches.
-  void sortInstances();
-
-private:
   QString path_;
   Layout layout_ = Layout{0, 0};
   std::vector<QString> patterns_;
 
   bool modified_ = false;
-  std::vector<std::vector<QString>> instances_;
-  std::vector<std::vector<QString>> magicExpressionMatches_;
+  std::vector<Instance> instances_;
 };

@@ -249,7 +249,8 @@ void MainWindow::on_actionSaveScreenshot_triggered()
 {
   QSettings settings;
   QString lastDir = settings.value("lastSaveScreenshotDir", QString()).toString();
-  QString proposedFileName = instanceKeyToFileName(doc_->instanceKeys()[instance_]) + ".png";
+  QString proposedFileName =
+    instanceKeyToFileName(doc_->instances()[instance_].magicExpressionMatches) + ".png";
   QString path = QDir(lastDir).filePath(proposedFileName);
 
   path = QFileDialog::getSaveFileName(this, "Save Screenshot", path, "PNG images (*.png)");
@@ -380,9 +381,9 @@ void MainWindow::populateInstanceComboBox()
   bool anyItemIsNonempty = false;
   if (doc_ != nullptr)
   {
-    for (const std::vector<QString>& matches : doc_->instanceKeys())
+    for (const Instance& instance : doc_->instances())
     {
-      QString item = join(matches, "...");
+      QString item = join(instance.magicExpressionMatches, "...");
       anyItemIsNonempty = anyItemIsNonempty || !item.isEmpty();
       instanceComboBox_->addItem(std::move(item));
     }
@@ -449,7 +450,7 @@ void MainWindow::onActiveInstanceChanged()
     if (instance_ < doc_->instances().size())
     {
       instanceComboBox_->setCurrentIndex(instance_);
-      ui_.mainView->setPaths(doc_->instances()[instance_]);
+      ui_.mainView->setPaths(doc_->instances()[instance_].paths);
     }
   }
   updateInstanceDependentActions();
