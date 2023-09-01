@@ -182,10 +182,12 @@ void MainWindow::on_actionEditComparison_triggered()
     // For now, we'll always reset to the first case in the sequence.
     // Later we might restore the case shown previously if certain conditions are met.
 
+    const size_t previousNumPatterns = doc_->patterns().size();
     if (!Try([&] { doc_->setPatterns(dialog.patterns()); }))
       return;
-    if (dialog.patterns().size() != doc_->patterns().size())
-      doc_->setLayout(Settings::defaultLayout(dialog.patterns().size()));
+    const size_t currentNumPatterns = doc_->patterns().size();
+    if (currentNumPatterns != previousNumPatterns)
+      doc_->setLayout(Settings::defaultLayout(currentNumPatterns));
 
     onInstancesChanged();
     goToInstance(0);
