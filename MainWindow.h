@@ -53,6 +53,7 @@ private slots:
   void on_actionNextInstance_triggered();
   void on_actionLastInstance_triggered();
   void onLayoutActionTriggered();
+  void onRecentComparisonActionTriggered();
 
   void onDocumentModificationStatusChanged();
   void onInstanceComboBox(int currentIndex);
@@ -60,10 +61,14 @@ private slots:
 private:
   void connectDocumentSignals();
 
-  void populateLayoutSubmenu();
   void populateInstanceComboBox();
 
+  void initialiseRecentComparisonsSubmenu();
+  void prependToRecentComparisons(const QString& path);
+  void populateRecentComparisonsSubmenu(const QStringList& recentComparisons);
+
   void updateMainViewLayout();
+  void populateLayoutSubmenu();
   void updateLayoutSubmenu();
 
   void updateDocumentDependentActions();
@@ -84,11 +89,15 @@ private:
   QRect toolBarAreaRect() const;
 
 private:
+  static const size_t MAX_NUM_RECENT_COMPARISONS = 9;
+
+private:
   Ui::MainWindowClass ui_;
   QComboBox* instanceComboBox_ = nullptr;
   QMenu* layoutMenu_ = nullptr;
   QActionGroup* layoutActionGroup_ = nullptr;
   std::map<QAction*, Layout> layoutActions_;
+  QMenu* recentComparisonsMenu_ = nullptr;
   QGridLayout* mainLayout_ = nullptr;
   std::unique_ptr<Document> doc_;
   int instance_ = 0;

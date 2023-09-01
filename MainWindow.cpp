@@ -53,6 +53,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
   ui_.setupUi(this);
 
   populateLayoutSubmenu();
+  initialiseRecentComparisonsSubmenu();
 
   instanceComboBox_ = new QComboBox(this);
   instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -109,6 +110,45 @@ void MainWindow::populateLayoutSubmenu()
   }
 }
 
+void MainWindow::initialiseRecentComparisonsSubmenu()
+{
+  recentComparisonsMenu_ = new QMenu("&Recent Comparisons", ui_.menuFile);
+  ui_.menuFile->insertMenu(ui_.actionQuit, recentComparisonsMenu_);
+  ui_.menuFile->insertSeparator(ui_.actionQuit);
+
+  QSettings settings;
+  QStringList recentComparisons = settings.value("recentFiles", QStringList()).toStringList();
+  recentComparisons.resize(
+    std::min<qsizetype>(recentComparisons.size(), MAX_NUM_RECENT_COMPARISONS));
+  populateRecentComparisonsSubmenu(recentComparisons);
+}
+
+void MainWindow::prependToRecentComparisons(const QString& path)
+{
+  QSettings settings;
+  QStringList recentComparisons = settings.value("recentFiles", QStringList()).toStringList();
+  recentComparisons.removeAll(path);
+  recentComparisons.prepend(path);
+  recentComparisons.resize(
+    std::min<qsizetype>(recentComparisons.size(), MAX_NUM_RECENT_COMPARISONS));
+  settings.setValue("recentComparisons", recentComparisons);
+  populateRecentComparisonsSubmenu(recentComparisons);
+}
+
+void MainWindow::populateRecentComparisonsSubmenu(const QStringList& recentComparisons)
+{
+  recentComparisonsMenu_->clear();
+  int i = 1;
+  for (const QString& recentComparison : recentComparisons)
+  {
+    QAction* action =
+      recentComparisonsMenu_->addAction(QString("&%1 %2").arg(i).arg(recentComparison));
+    connect(action, &QAction::triggered, this, &MainWindow::onRecentComparisonActionTriggered);
+    ++i;
+  }
+  recentComparisonsMenu_->setEnabled(!recentComparisonsMenu_->isEmpty());
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
   if (maybeSaveDocument())
@@ -162,6 +202,27 @@ void MainWindow::on_actionOpenComparison_triggered()
   }
 
   settings.setValue("lastOpenDir", QFileInfo(path).dir().path());
+
+  if (!Try([&] { doc_ = std::make_unique<Document>(path); }))
+    return;
+
+  connectDocumentSignals();
+  onDocumentPathChanged();
+  onInstancesChanged();
+  goToInstance(0);
+}
+
+void MainWindow::onRecentComparisonActionTriggered()
+{
+  if (!maybeSaveDocument())
+    return;
+
+  const QAction* action = dynamic_cast<QAction*>(sender());
+  if (!action)
+    return;
+
+  // mid() removes the numerical prefix "&1 ", "&2 " etc.
+  const QString path = action->text().mid(3);
 
   if (!Try([&] { doc_ = std::make_unique<Document>(path); }))
     return;
@@ -333,6 +394,9 @@ void MainWindow::onDocumentPathChanged()
     title = appTitle;
   }
   setWindowTitle(title);
+
+  if (doc_ && !doc_->path().isEmpty())
+    prependToRecentComparisons(doc_->path());
 }
 
 void MainWindow::onInstanceComboBox(int currentIndex)
