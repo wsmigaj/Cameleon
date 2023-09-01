@@ -28,7 +28,7 @@ Document::Document(const QString& path) : path_(path)
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly))
   {
-    throw RuntimeError("Couldn't open file " + path + "for reading.");
+    throw RuntimeError("Couldn't open file " + path + " for reading.");
   }
 
   QByteArray saveData = file.readAll();
