@@ -20,8 +20,8 @@
 
 Layout defaultLayout(size_t numImages)
 {
-  const size_t numRows = std::max<size_t>(0, static_cast<size_t>(std::ceil(numImages / 3.0)));
+  const size_t numRows = static_cast<size_t>(std::floor(std::sqrt(numImages)));
   const size_t numColumns =
-    std::max<size_t>(0, static_cast<size_t>(std::ceil(numImages / double(numRows))));
+    numRows == 0 ? 0 : static_cast<size_t>(std::ceil(numImages / double(numRows)));
   return Layout{numRows, numColumns};
 }
