@@ -35,3 +35,5 @@ inline bool operator!=(const Layout& a, const Layout& b)
 {
   return !(a == b);
 }
+
+Layout defaultLayout(size_t numImages);

@@ -15,12 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include "stdafx.h"
+#include "Layout.h"
 
-class Layout;
-
-class Settings
+Layout defaultLayout(size_t numImages)
 {
-public:
-  static Layout defaultLayout(size_t numImages);
-};
+  const size_t numRows = std::max<size_t>(0, static_cast<size_t>(std::ceil(numImages / 3.0)));
+  const size_t numColumns =
+    std::max<size_t>(0, static_cast<size_t>(std::ceil(numImages / double(numRows))));
+  return Layout{numRows, numColumns};
+}

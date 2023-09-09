@@ -21,7 +21,6 @@
 #include "Document.h"
 #include "MainWindow.h"
 #include "RuntimeError.h"
-#include "Settings.h"
 #include "Try.h"
 
 namespace
@@ -177,7 +176,7 @@ void MainWindow::on_actionNewComparison_triggered()
   }
 
   doc_ = std::make_unique<Document>();
-  doc_->setLayout(Settings::defaultLayout(dialog.patterns().size()));
+  doc_->setLayout(defaultLayout(dialog.patterns().size()));
   doc_->setPatterns(dialog.patterns());
 
   connectDocumentSignals();
@@ -247,7 +246,7 @@ void MainWindow::on_actionEditComparison_triggered()
       return;
     const size_t currentNumPatterns = doc_->patterns().size();
     if (currentNumPatterns != previousNumPatterns)
-      doc_->setLayout(Settings::defaultLayout(currentNumPatterns));
+      doc_->setLayout(defaultLayout(currentNumPatterns));
 
     onInstancesChanged();
 
