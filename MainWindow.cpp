@@ -240,8 +240,7 @@ void MainWindow::on_actionEditComparison_triggered()
   dialog.setPatterns(doc_->patterns());
   if (dialog.exec() == QDialog::Accepted)
   {
-    // For now, we'll always reset to the first case in the sequence.
-    // Later we might restore the case shown previously if certain conditions are met.
+    const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();
 
     const size_t previousNumPatterns = doc_->patterns().size();
     if (!Try([&] { doc_->setPatterns(dialog.patterns()); }))
@@ -251,19 +250,32 @@ void MainWindow::on_actionEditComparison_triggered()
       doc_->setLayout(Settings::defaultLayout(currentNumPatterns));
 
     onInstancesChanged();
-    goToInstance(0);
+
+    const int newInstance =
+      previousInstanceKey ? findInstance(*doc_, *previousInstanceKey).value_or(0) : 0;
+    goToInstance(newInstance);
   }
+}
+
+std::optional<std::vector<QString>> MainWindow::currentInstanceKey() const
+{
+  if (instance_ < doc_->instances().size())
+    return doc_->instances()[instance_].magicExpressionMatches;
+  return std::nullopt;
 }
 
 void MainWindow::on_actionRefreshComparison_triggered()
 {
-  // For now, we'll always reset to the first case in the sequence.
-  // Later we might restore the case shown previously if certain conditions are met.
+  const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();
 
   if (!Try([&] { doc_->regenerateInstances(); }))
     return;
+
   onInstancesChanged();
-  goToInstance(0);
+
+  const int newInstance =
+    previousInstanceKey ? findInstance(*doc_, *previousInstanceKey).value_or(0) : 0;
+  goToInstance(newInstance);
 }
 
 void MainWindow::on_actionSaveComparison_triggered()

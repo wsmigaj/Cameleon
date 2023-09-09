@@ -79,6 +79,7 @@ private:
   void onInstancesChanged();
   void onActiveInstanceChanged();
 
+  std::optional<std::vector<QString>> currentInstanceKey() const;
   void goToInstance(int instance);
 
   bool maybeSaveDocument();

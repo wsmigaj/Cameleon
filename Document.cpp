@@ -113,3 +113,15 @@ void Document::save(const QString& path)
   path_ = path;
   modificationStatusChanged();
 }
+
+std::optional<int> findInstance(const Document& doc, const std::vector<QString>& key)
+{
+  auto matchingInstanceIt = std::find_if(doc.instances().begin(), doc.instances().end(),
+                                         [&key](const Instance& instance)
+                                         { return instance.magicExpressionMatches == key; });
+
+  if (matchingInstanceIt == doc.instances().end())
+    return std::nullopt;
+  else
+    return matchingInstanceIt - doc.instances().begin();
+}

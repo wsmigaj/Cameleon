@@ -62,3 +62,5 @@ private:
   bool modified_ = false;
   std::vector<Instance> instances_;
 };
+
+std::optional<int> findInstance(const Document& doc, const std::vector<QString>& key);
