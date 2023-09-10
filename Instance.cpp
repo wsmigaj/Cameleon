@@ -50,6 +50,9 @@ PatternMatches matchWildcardPattern(const std::wstring& pattern,
   matches.numMagicExpressions = patternAsRegex.mark_count();
   for (const std::filesystem::path& path : globResults)
   {
+    if (std::filesystem::is_directory(path))
+      continue;
+
     const std::wstring pathAsString = path.wstring();
     std::wsmatch match;
     std::vector<std::wstring> magicExpressionMatches;
