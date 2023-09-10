@@ -63,11 +63,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
   connect(instanceComboBox_, &QComboBox::currentIndexChanged, this,
           &MainWindow::onInstanceComboBox);
 
-  QIcon::setThemeName("tango");
+  QIcon::setThemeName("crystalsvg");
 
   ui_.actionNewComparison->setIcon(QIcon::fromTheme("document-new"));
   ui_.actionOpenComparison->setIcon(QIcon::fromTheme("document-open"));
-  ui_.actionEditComparison->setIcon(QIcon::fromTheme("document-properties"));
+  ui_.actionEditComparison->setIcon(QIcon::fromTheme("document-edit"));
   ui_.actionRefreshComparison->setIcon(QIcon::fromTheme("view-refresh"));
   ui_.actionSaveComparison->setIcon(QIcon::fromTheme("document-save"));
   ui_.actionSaveComparisonAs->setIcon(QIcon::fromTheme("document-save-as"));

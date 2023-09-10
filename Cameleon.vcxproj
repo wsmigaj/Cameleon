@@ -121,8 +121,8 @@
     <ClInclude Include="PatternMatchingProgressDialog.h" />
     <ClInclude Include="Try.h" />
     <ClInclude Include="WildcardPatterns.h" />
+    <QtRcc Include="crystalsvg.qrc" />
     <QtRcc Include="MainWindow.qrc" />
-    <QtRcc Include="tango.qrc" />
     <QtUic Include="ComparisonDialog.ui" />
     <QtUic Include="HeaderBar.ui" />
     <QtUic Include="MainWindow.ui" />
