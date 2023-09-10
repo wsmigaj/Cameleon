@@ -15,40 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
-#include "Try.h"
-#include "CancellationException.h"
+#pragma once
 
-namespace
-{
-QMainWindow* mainWindow()
-{
-  for (QWidget* w : qApp->topLevelWidgets())
-    if (QMainWindow* mainWin = qobject_cast<QMainWindow*>(w))
-      return mainWin;
-  return nullptr;
-}
-} // namespace
+#include <QProgressDialog>
 
-bool Try(const std::function<void()>& f)
+class PatternMatchingProgressDialog : public QProgressDialog
 {
-  try
-  {
-    f();
-    return true;
-  }
-  catch (CancellationException&)
-  {
-    return false;
-  }
-  catch (std::exception& ex)
-  {
-    QMessageBox::warning(mainWindow(), "Warning", ex.what());
-    return false;
-  }
-  catch (...)
-  {
-    QMessageBox::warning(mainWindow(), "Warning", "An unidentified problem occurred.");
-    return false;
-  }
-}
+public:
+  PatternMatchingProgressDialog(QWidget* parent = nullptr);
+
+  QSize sizeHint() const override;
+
+  /// Increment numVisitedFiles_, process events and throw an exception
+  /// if cancellation has been requested.
+  void incrementProgressAndCheckForCancellation();
+
+private slots:
+  void onTimeout();
+
+private:
+  int numVisitedFiles_ = 0;
+  QString labelTextTemplate_;
+};

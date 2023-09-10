@@ -38,11 +38,13 @@ struct PatternMatches
   std::vector<MatchingPath> matchingPaths;
 };
 
-PatternMatches matchWildcardPattern(const std::wstring& pattern)
+PatternMatches matchWildcardPattern(const std::wstring& pattern,
+                                    const std::function<void()>& onFilesystemTraversalProgress)
 {
   PatternMatches matches;
 
-  const std::vector<std::filesystem::path> globResults = glob::rglob(pattern);
+  const std::vector<std::filesystem::path> globResults =
+    glob::rglob(pattern, onFilesystemTraversalProgress);
 
   const std::wregex patternAsRegex(wildcardPatternToRegex(pattern));
   matches.numMagicExpressions = patternAsRegex.mark_count();
@@ -92,7 +94,8 @@ void sortInstances(std::vector<Instance>& instances)
 }
 } // namespace
 
-std::vector<Instance> findInstances(const std::vector<QString>& patterns)
+std::vector<Instance> findInstances(const std::vector<QString>& patterns,
+                                    const std::function<void()>& onFilesystemTraversalProgress)
 {
   std::size_t numMagicExpressions = 0;
   for (const QString& pattern : patterns)
@@ -114,9 +117,10 @@ std::vector<Instance> findInstances(const std::vector<QString>& patterns)
   }
 
   std::vector<PatternMatches> matchesByPattern;
-  std::transform(patterns.begin(), patterns.end(), std::back_inserter(matchesByPattern),
-                 [](const QString& pattern)
-                 { return matchWildcardPattern(pattern.toStdWString()); });
+  std::transform(
+    patterns.begin(), patterns.end(), std::back_inserter(matchesByPattern),
+    [&onFilesystemTraversalProgress](const QString& pattern)
+    { return matchWildcardPattern(pattern.toStdWString(), onFilesystemTraversalProgress); });
 
   using StringsToIndexMap = std::map<std::vector<std::wstring>, std::size_t>;
   StringsToIndexMap magicExpressionMatchIndex;

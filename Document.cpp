@@ -23,7 +23,8 @@ Document::Document()
 {
 }
 
-Document::Document(const QString& path) : path_(path)
+Document::Document(const QString& path, const std::function<void()>& onFilesystemTraversalProgress)
+  : path_(path)
 {
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly))
@@ -34,7 +35,7 @@ Document::Document(const QString& path) : path_(path)
   QByteArray saveData = file.readAll();
 
   QJsonDocument jsonDoc(QJsonDocument::fromJson(saveData));
-  loadFromJson(jsonDoc.object());
+  loadFromJson(jsonDoc.object(), onFilesystemTraversalProgress);
 }
 
 void Document::setLayout(const Layout& layout)
@@ -47,20 +48,21 @@ void Document::setLayout(const Layout& layout)
   }
 }
 
-void Document::setPatterns(std::vector<QString> patterns)
+void Document::setPatterns(std::vector<QString> patterns,
+                           const std::function<void()>& onFilesystemTraversalProgress)
 {
   if (patterns != patterns_)
   {
-    instances_ = findInstances(patterns);
+    instances_ = findInstances(patterns, onFilesystemTraversalProgress);
     patterns_ = std::move(patterns);
     modified_ = true;
     modificationStatusChanged();
   }
 }
 
-void Document::regenerateInstances()
+void Document::regenerateInstances(const std::function<void()>& onFilesystemTraversalProgress)
 {
-  instances_ = findInstances(patterns_);
+  instances_ = findInstances(patterns_, onFilesystemTraversalProgress);
 }
 
 QJsonObject Document::toJson() const
@@ -79,7 +81,8 @@ QJsonObject Document::toJson() const
   return json;
 }
 
-void Document::loadFromJson(const QJsonObject& json)
+void Document::loadFromJson(const QJsonObject& json,
+                            const std::function<void()>& onFilesystemTraversalProgress)
 {
   QJsonObject jsonLayout = json["layout"].toObject();
   // TODO: (Graceful) error handling
@@ -89,7 +92,7 @@ void Document::loadFromJson(const QJsonObject& json)
   std::vector<QString> patterns;
   std::transform(jsonPatterns.begin(), jsonPatterns.end(), std::back_inserter(patterns),
                  [](const QJsonValue& jsonPattern) { return jsonPattern.toString(); });
-  setPatterns(std::move(patterns));
+  setPatterns(std::move(patterns), onFilesystemTraversalProgress);
 
   modified_ = false;
   modificationStatusChanged();

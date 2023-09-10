@@ -25,4 +25,6 @@ struct Instance
   std::vector<QString> magicExpressionMatches;
 };
 
-std::vector<Instance> findInstances(const std::vector<QString>& patterns);
+std::vector<Instance> findInstances(
+  const std::vector<QString>& patterns,
+  const std::function<void()>& onFilesystemTraversalProgress = []() {});

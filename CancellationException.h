@@ -15,40 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
-#include "Try.h"
-#include "CancellationException.h"
+#pragma once
 
-namespace
+class CancellationException
 {
-QMainWindow* mainWindow()
-{
-  for (QWidget* w : qApp->topLevelWidgets())
-    if (QMainWindow* mainWin = qobject_cast<QMainWindow*>(w))
-      return mainWin;
-  return nullptr;
-}
-} // namespace
-
-bool Try(const std::function<void()>& f)
-{
-  try
-  {
-    f();
-    return true;
-  }
-  catch (CancellationException&)
-  {
-    return false;
-  }
-  catch (std::exception& ex)
-  {
-    QMessageBox::warning(mainWindow(), "Warning", ex.what());
-    return false;
-  }
-  catch (...)
-  {
-    QMessageBox::warning(mainWindow(), "Warning", "An unidentified problem occurred.");
-    return false;
-  }
-}
+};

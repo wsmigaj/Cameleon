@@ -30,7 +30,8 @@ class Document : public QObject
 
 public:
   Document();
-  explicit Document(const QString& path);
+  explicit Document(
+    const QString& path, const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
   const QString& path() const { return path_; }
 
@@ -38,16 +39,19 @@ public:
   void setLayout(const Layout& layout);
 
   const std::vector<QString>& patterns() const { return patterns_; }
-  void setPatterns(std::vector<QString> patterns);
+  void setPatterns(
+    std::vector<QString> patterns,
+    const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
   bool modified() const { return modified_; }
 
-  void regenerateInstances();
+  void regenerateInstances(const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
   const std::vector<Instance>& instances() const { return instances_; }
 
   QJsonObject toJson() const;
-  void loadFromJson(const QJsonObject& json);
+  void loadFromJson(
+    const QJsonObject& json, const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
   void save(const QString& path);
 

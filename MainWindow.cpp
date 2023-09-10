@@ -16,12 +16,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "stdafx.h"
+#include "CancellationException.h"
 #include "ComparisonDialog.h"
 #include "Constants.h"
 #include "Document.h"
 #include "MainWindow.h"
 #include "RuntimeError.h"
 #include "Try.h"
+#include "PatternMatchingProgressDialog.h"
 
 namespace
 {
@@ -177,7 +179,14 @@ void MainWindow::on_actionNewComparison_triggered()
 
   doc_ = std::make_unique<Document>();
   doc_->setLayout(defaultLayout(dialog.patterns().size()));
-  doc_->setPatterns(dialog.patterns());
+
+  PatternMatchingProgressDialog progressDialog(this);
+  progressDialog.show();
+
+  auto onFilesystemTraversalProgress = [&progressDialog]()
+  { progressDialog.incrementProgressAndCheckForCancellation(); };
+
+  doc_->setPatterns(dialog.patterns(), onFilesystemTraversalProgress);
 
   connectDocumentSignals();
   onDocumentPathChanged();
@@ -202,7 +211,13 @@ void MainWindow::on_actionOpenComparison_triggered()
 
   settings.setValue("lastOpenDir", QFileInfo(path).dir().path());
 
-  if (!Try([&] { doc_ = std::make_unique<Document>(path); }))
+  PatternMatchingProgressDialog progressDialog(this);
+  progressDialog.show();
+
+  auto onFilesystemTraversalProgress = [&progressDialog]()
+  { progressDialog.incrementProgressAndCheckForCancellation(); };
+
+  if (!Try([&] { doc_ = std::make_unique<Document>(path, onFilesystemTraversalProgress); }))
     return;
 
   connectDocumentSignals();
@@ -242,8 +257,16 @@ void MainWindow::on_actionEditComparison_triggered()
     const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();
 
     const size_t previousNumPatterns = doc_->patterns().size();
-    if (!Try([&] { doc_->setPatterns(dialog.patterns()); }))
+
+    PatternMatchingProgressDialog progressDialog(this);
+    progressDialog.show();
+
+    auto onFilesystemTraversalProgress = [&progressDialog]()
+    { progressDialog.incrementProgressAndCheckForCancellation(); };
+
+    if (!Try([&] { doc_->setPatterns(dialog.patterns(), onFilesystemTraversalProgress); }))
       return;
+
     const size_t currentNumPatterns = doc_->patterns().size();
     if (currentNumPatterns != previousNumPatterns)
       doc_->setLayout(defaultLayout(currentNumPatterns));
@@ -267,7 +290,13 @@ void MainWindow::on_actionRefreshComparison_triggered()
 {
   const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();
 
-  if (!Try([&] { doc_->regenerateInstances(); }))
+  PatternMatchingProgressDialog progressDialog(this);
+  progressDialog.show();
+
+  auto onFilesystemTraversalProgress = [&progressDialog]()
+  { progressDialog.incrementProgressAndCheckForCancellation(); };
+
+  if (!Try([&] { doc_->regenerateInstances(onFilesystemTraversalProgress); }))
     return;
 
   onInstancesChanged();

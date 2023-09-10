@@ -108,14 +108,17 @@
     <ClCompile Include="ImageWidget.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Layout.cpp" />
+    <ClCompile Include="PatternMatchingProgressDialog.cpp" />
     <ClCompile Include="Try.cpp" />
     <ClCompile Include="WildcardPatterns.cpp" />
     <QtMoc Include="HeaderBar.h" />
     <QtMoc Include="ImageWidget.h" />
     <QtMoc Include="ElidedLabel.h" />
+    <ClInclude Include="CancellationException.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="Layout.h" />
+    <ClInclude Include="PatternMatchingProgressDialog.h" />
     <ClInclude Include="Try.h" />
     <ClInclude Include="WildcardPatterns.h" />
     <QtRcc Include="MainWindow.qrc" />
