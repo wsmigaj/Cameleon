@@ -35,6 +35,16 @@ QString getDirPrefix(const QString& pattern)
 ComparisonDialog::ComparisonDialog(QWidget* parent) : QDialog(parent)
 {
   ui_.setupUi(this);
+
+  ui_.fileDialogButtonA->adjustSize();
+  ui_.swapABButton->adjustSize();
+  const int maxToolButtonWidth =
+    std::max(ui_.fileDialogButtonA->width(), ui_.swapABButton->width());
+  for (QToolButton* button : fileDialogButtons())
+    button->setMinimumWidth(maxToolButtonWidth);
+  for (QToolButton* button : swapPatternsButtons())
+    button->setMinimumWidth(maxToolButtonWidth);
+
   connectSignals();
   loadRecentPatterns();
 }
@@ -131,10 +141,18 @@ std::vector<QToolButton*> ComparisonDialog::fileDialogButtons() const
           ui_.fileDialogButtonG, ui_.fileDialogButtonH};
 }
 
+std::vector<QToolButton*> ComparisonDialog::swapPatternsButtons() const
+{
+  return {ui_.swapABButton, ui_.swapBCButton, ui_.swapCDButton, ui_.swapDEButton,
+          ui_.swapEFButton, ui_.swapFGButton, ui_.swapGHButton};
+}
+
 void ComparisonDialog::connectSignals()
 {
   for (QToolButton* button : fileDialogButtons())
     connect(button, &QToolButton::clicked, this, &ComparisonDialog::onFileDialogButtonClicked);
+  for (QToolButton* button : swapPatternsButtons())
+    connect(button, &QToolButton::clicked, this, &ComparisonDialog::onSwapPatternsButtonClicked);
 }
 
 void ComparisonDialog::onFileDialogButtonClicked()
@@ -150,4 +168,18 @@ void ComparisonDialog::onFileDialogButtonClicked()
   QString file = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, "caption", dir));
   if (!file.isEmpty())
     comboBox->setCurrentText(file);
+}
+
+void ComparisonDialog::onSwapPatternsButtonClicked()
+{
+  const std::vector<QToolButton*> buttons = swapPatternsButtons();
+  const int index = std::find(buttons.begin(), buttons.end(), sender()) - buttons.begin();
+
+  QComboBox* firstComboBox = patternComboBoxes()[index];
+  QComboBox* secondComboBox = patternComboBoxes()[index + 1];
+  const QString firstPattern = firstComboBox->currentText();
+  const QString secondPattern = secondComboBox->currentText();
+
+  firstComboBox->setCurrentText(secondPattern);
+  secondComboBox->setCurrentText(firstPattern);
 }

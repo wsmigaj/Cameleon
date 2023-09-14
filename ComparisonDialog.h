@@ -38,10 +38,12 @@ public:
 public slots:
   void done(int r) override;
   void onFileDialogButtonClicked();
+  void onSwapPatternsButtonClicked();
 
 private:
   std::vector<QComboBox*> patternComboBoxes() const;
   std::vector<QToolButton*> fileDialogButtons() const;
+  std::vector<QToolButton*> swapPatternsButtons() const;
 
   void connectSignals();
 
