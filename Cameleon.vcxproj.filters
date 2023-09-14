@@ -47,7 +47,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <QtRcc Include="tango.qrc">
+    <QtRcc Include="crystalsvg.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
   </ItemGroup>
@@ -67,9 +67,6 @@
     <ClCompile Include="MainView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Settings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="3pty\glob\glob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -86,6 +83,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Try.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PatternMatchingProgressDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -124,9 +130,6 @@
     <ClInclude Include="RuntimeError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Settings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="3pty\glob\glob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -140,6 +143,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Try.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CancellationException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PatternMatchingProgressDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
