@@ -118,7 +118,7 @@ void MainWindow::initialiseRecentComparisonsSubmenu()
   ui_.menuFile->insertSeparator(ui_.actionQuit);
 
   QSettings settings;
-  QStringList recentComparisons = settings.value("recentFiles", QStringList()).toStringList();
+  QStringList recentComparisons = settings.value("recentComparisons", QStringList()).toStringList();
   recentComparisons.resize(
     std::min<qsizetype>(recentComparisons.size(), MAX_NUM_RECENT_COMPARISONS));
   populateRecentComparisonsSubmenu(recentComparisons);
@@ -127,7 +127,7 @@ void MainWindow::initialiseRecentComparisonsSubmenu()
 void MainWindow::prependToRecentComparisons(const QString& path)
 {
   QSettings settings;
-  QStringList recentComparisons = settings.value("recentFiles", QStringList()).toStringList();
+  QStringList recentComparisons = settings.value("recentComparisons", QStringList()).toStringList();
   recentComparisons.removeAll(path);
   recentComparisons.prepend(path);
   recentComparisons.resize(
