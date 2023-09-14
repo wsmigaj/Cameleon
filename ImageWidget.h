@@ -27,7 +27,7 @@ public:
   ~ImageWidget() override;
 
   /// If `path` is empty, the image is cleared.
-  void loadImage(const QString& path);
+  bool loadImage(const QString& path);
   void clear();
 
   QRectF imageRect() const;

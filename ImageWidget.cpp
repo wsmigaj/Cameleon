@@ -47,11 +47,12 @@ void ImageWidget::createActions()
   connect(openInExplorerAction_, &QAction::triggered, this, &ImageWidget::onOpenInExplorer);
 }
 
-void ImageWidget::loadImage(const QString& path)
+bool ImageWidget::loadImage(const QString& path)
 {
   QPixmap pixmap;
   if (!path.isEmpty())
-    pixmap.load(path);
+    if (!pixmap.load(path))
+      return false;
 
   if (!item_)
   {
@@ -64,6 +65,7 @@ void ImageWidget::loadImage(const QString& path)
   }
   image_ = pixmap.toImage();
   path_ = path;
+  return true;
 }
 
 void ImageWidget::clear()

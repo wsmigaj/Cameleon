@@ -24,11 +24,17 @@ ImageView::ImageView(QWidget* parent) : QWidget(parent)
 {
   headerBar_ = new HeaderBar(this);
   imageWidget_ = new ImageWidget(this);
+  imageWidget_->hide();
+  placeholderLabel_ = new QLabel(this);
+  placeholderLabel_->setAlignment(Qt::AlignCenter);
+  placeholderLabel_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  placeholderLabel_->show();
 
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(headerBar_);
   layout->addWidget(imageWidget_, 1);
+  layout->addWidget(placeholderLabel_, 1);
 
   connect(imageWidget_, &ImageWidget::mouseMovedOverImage, this, &ImageView::onMouseMovedOverImage);
   connect(imageWidget_, &ImageWidget::mouseLeftImage, this, &ImageView::onMouseLeftImage);
@@ -42,7 +48,33 @@ void ImageView::loadImage(const QString& path)
 {
   headerBar_->setPath(path);
   headerBar_->clearPixelProperties();
-  imageWidget_->loadImage(path);
+  const bool imageLoadedSuccessfully = !path.isEmpty() && imageWidget_->loadImage(path);
+  imageWidget_->setVisible(imageLoadedSuccessfully);
+  if (!imageLoadedSuccessfully)
+  {
+    QString msg;
+    if (path.isEmpty())
+    {
+      msg = "No matching file.";
+    }
+    else
+    {
+      QFileInfo info(path);
+      if (info.exists())
+      {
+        if (info.isDir())
+          msg = "Path points to a directory.";
+        else
+          msg = "Image failed to load.";
+      }
+      else
+      {
+        msg = "File does not exist.";
+      }
+    }
+    placeholderLabel_->setText(msg);
+  }
+  placeholderLabel_->setVisible(!imageLoadedSuccessfully);
 }
 
 void ImageView::clear()
@@ -51,6 +83,9 @@ void ImageView::clear()
   headerBar_->clearPath();
   headerBar_->clearPixelProperties();
   imageWidget_->loadImage(QString());
+  imageWidget_->hide();
+  placeholderLabel_->setText(QString("No matching file."));
+  placeholderLabel_->show();
 }
 
 void ImageView::onMouseMovedOverImage(QPoint pixelCoords, QColor pixelColour)

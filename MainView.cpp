@@ -140,7 +140,7 @@ void MainView::setLayout(const Layout& layout)
     mainLayout_->setRowStretch(row, 0);
   for (int column = 0; column < layout.columns; ++column)
     mainLayout_->setColumnStretch(column, 1);
-  for (int column = 0; column < mainLayout_->columnCount(); ++column)
+  for (int column = layout.columns; column < mainLayout_->columnCount(); ++column)
     mainLayout_->setColumnStretch(column, 0);
 }
 

@@ -46,4 +46,5 @@ private slots:
 private:
   HeaderBar* headerBar_ = nullptr;
   ImageWidget* imageWidget_ = nullptr;
+  QLabel* placeholderLabel_ = nullptr;
 };
