@@ -55,8 +55,20 @@ void Document::setPatterns(std::vector<QString> patterns,
   {
     instances_ = findInstances(patterns, onFilesystemTraversalProgress);
     patterns_ = std::move(patterns);
+    captions_.resize(patterns_.size(), "%f");
     modified_ = true;
     modificationStatusChanged();
+  }
+}
+
+void Document::setCaptions(std::vector<QString> captions)
+{
+  if (captions.size() != patterns_.size())
+    throw RuntimeError("The number of captions must match the number of patterns.");
+
+  if (captions != captions_)
+  {
+    captions_ = std::move(captions);
   }
 }
 

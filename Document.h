@@ -43,6 +43,9 @@ public:
     std::vector<QString> patterns,
     const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
+  const std::vector<QString>& captions() const { return captions_; }
+  void setCaptions(std::vector<QString> captions);
+
   bool modified() const { return modified_; }
 
   void regenerateInstances(const std::function<void()>& onFilesystemTraversalProgress = []() {});
@@ -62,6 +65,7 @@ private:
   QString path_;
   Layout layout_ = Layout{0, 0};
   std::vector<QString> patterns_;
+  std::vector<QString> captions_;
 
   bool modified_ = false;
   std::vector<Instance> instances_;

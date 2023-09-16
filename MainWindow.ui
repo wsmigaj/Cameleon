@@ -59,6 +59,8 @@
     <addaction name="actionZoomOut"/>
     <addaction name="actionZoom1to1"/>
     <addaction name="separator"/>
+    <addaction name="actionEditCaptions"/>
+    <addaction name="separator"/>
     <addaction name="actionSaveScreenshot"/>
    </widget>
    <widget class="QMenu" name="menuNavigation">
@@ -214,6 +216,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionEditCaptions">
+   <property name="text">
+    <string>Edit Captions...</string>
+   </property>
+   <property name="toolTip">
+    <string>Edit captions shown at the top of each panel</string>
    </property>
   </action>
  </widget>

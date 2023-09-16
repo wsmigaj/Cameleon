@@ -48,6 +48,7 @@ private slots:
   void on_actionZoomOut_triggered();
   void on_actionZoom1to1_triggered();
   void on_actionSaveScreenshot_triggered();
+  void on_actionEditCaptions_triggered();
   void on_actionFirstInstance_triggered();
   void on_actionPreviousInstance_triggered();
   void on_actionNextInstance_triggered();
@@ -78,6 +79,7 @@ private:
   void onDocumentPathChanged();
   void onInstancesChanged();
   void onActiveInstanceChanged();
+  void onCaptionsChanged();
 
   std::optional<std::vector<QString>> currentInstanceKey() const;
   void goToInstance(int instance);

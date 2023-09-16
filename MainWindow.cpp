@@ -88,8 +88,8 @@ MainWindow::~MainWindow()
 void MainWindow::populateLayoutSubmenu()
 {
   layoutMenu_ = new QMenu("&Layout", ui_.menuView);
-  ui_.menuView->insertMenu(ui_.actionSaveScreenshot, layoutMenu_);
-  ui_.menuView->insertSeparator(ui_.actionSaveScreenshot);
+  ui_.menuView->insertMenu(ui_.actionEditCaptions, layoutMenu_);
+  ui_.menuView->insertSeparator(ui_.actionEditCaptions);
   layoutActionGroup_ = new QActionGroup(this);
 
   const size_t threshold = static_cast<size_t>(std::ceil(std::sqrt(MAX_NUM_PATTERNS)));
@@ -371,6 +371,23 @@ void MainWindow::on_actionSaveScreenshot_triggered()
   }
 }
 
+void MainWindow::on_actionEditCaptions_triggered()
+{
+  ComparisonDialog dialog(this, "recentCaptions");
+  dialog.setWindowTitle("Edit Captions");
+  dialog.setPrompt("");
+  dialog.setNumberOfRows(doc_->captions().size());
+  dialog.setFileDialogButtonsVisibility(false);
+  dialog.setSwapValuesButtonsVisibility(false);
+  dialog.setValues(doc_->captions());
+  if (dialog.exec() == QDialog::Accepted)
+  {
+    if (!Try([&] { doc_->setCaptions(dialog.values()); }))
+      return;
+    onCaptionsChanged();
+  }
+}
+
 QRect MainWindow::toolBarAreaRect() const
 {
   return QRect(menuBar()->geometry().bottomLeft(), statusBar()->geometry().topRight());
@@ -502,6 +519,7 @@ void MainWindow::updateDocumentDependentActions()
   const bool isOpen = doc_ != nullptr;
   const bool hasInstances = isOpen && !doc_->instances().empty();
   const bool isModified = isOpen && doc_->modified();
+  const bool hasPatterns = isOpen && !doc_->patterns().empty();
   ui_.actionEditComparison->setEnabled(isOpen);
   ui_.actionRefreshComparison->setEnabled(isOpen);
   ui_.actionSaveComparison->setEnabled(isModified);
@@ -510,6 +528,7 @@ void MainWindow::updateDocumentDependentActions()
   ui_.actionZoomIn->setEnabled(hasInstances);
   ui_.actionZoomOut->setEnabled(hasInstances);
   ui_.actionZoom1to1->setEnabled(hasInstances);
+  ui_.actionEditCaptions->setEnabled(hasPatterns);
   ui_.actionSaveScreenshot->setEnabled(hasInstances);
 
   layoutMenu_->setEnabled(hasInstances);
@@ -560,6 +579,10 @@ void MainWindow::onActiveInstanceChanged()
     }
   }
   updateInstanceDependentActions();
+}
+
+void MainWindow::onCaptionsChanged()
+{
 }
 
 void MainWindow::goToInstance(int instance)
