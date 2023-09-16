@@ -169,16 +169,16 @@ void MainWindow::on_actionNewComparison_triggered()
     return;
   }
 
-  ComparisonDialog dialog(this);
+  ComparisonDialog dialog(this, "recentPatterns");
   dialog.setWindowTitle("New Comparison");
-  dialog.setPatterns({});
+  dialog.setValues({});
   if (dialog.exec() != QDialog::Accepted)
   {
     return;
   }
 
   doc_ = std::make_unique<Document>();
-  doc_->setLayout(defaultLayout(dialog.patterns().size()));
+  doc_->setLayout(defaultLayout(dialog.values().size()));
 
   PatternMatchingProgressDialog progressDialog(this);
   progressDialog.show();
@@ -186,7 +186,7 @@ void MainWindow::on_actionNewComparison_triggered()
   auto onFilesystemTraversalProgress = [&progressDialog]()
   { progressDialog.incrementProgressAndCheckForCancellation(); };
 
-  doc_->setPatterns(dialog.patterns(), onFilesystemTraversalProgress);
+  doc_->setPatterns(dialog.values(), onFilesystemTraversalProgress);
 
   connectDocumentSignals();
   onDocumentPathChanged();
@@ -249,9 +249,9 @@ void MainWindow::onRecentComparisonActionTriggered()
 
 void MainWindow::on_actionEditComparison_triggered()
 {
-  ComparisonDialog dialog(this);
+  ComparisonDialog dialog(this, "recentPatterns");
   dialog.setWindowTitle("Edit Comparison");
-  dialog.setPatterns(doc_->patterns());
+  dialog.setValues(doc_->patterns());
   if (dialog.exec() == QDialog::Accepted)
   {
     const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();
@@ -264,7 +264,7 @@ void MainWindow::on_actionEditComparison_triggered()
     auto onFilesystemTraversalProgress = [&progressDialog]()
     { progressDialog.incrementProgressAndCheckForCancellation(); };
 
-    if (!Try([&] { doc_->setPatterns(dialog.patterns(), onFilesystemTraversalProgress); }))
+    if (!Try([&] { doc_->setPatterns(dialog.values(), onFilesystemTraversalProgress); }))
       return;
 
     const size_t currentNumPatterns = doc_->patterns().size();

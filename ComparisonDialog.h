@@ -27,29 +27,30 @@ class ComparisonDialog : public QDialog
   Q_OBJECT
 
 public:
-  ComparisonDialog(QWidget* parent = nullptr);
+  ComparisonDialog(QWidget* parent, const QString& recentValuesSettingsKey);
 
-  std::vector<QString> patterns() const;
-  void setPatterns(const std::vector<QString>& patterns);
+  std::vector<QString> values() const;
+  void setValues(const std::vector<QString>& patterns);
 
-  void loadRecentPatterns();
-  void saveRecentPatterns();
+  void loadRecentValues();
+  void saveRecentValues();
 
 public slots:
   void done(int r) override;
   void onFileDialogButtonClicked();
-  void onSwapPatternsButtonClicked();
+  void onSwapValuesButtonClicked();
 
 private:
-  std::vector<QComboBox*> patternComboBoxes() const;
+  std::vector<QComboBox*> valueComboBoxes() const;
   std::vector<QToolButton*> fileDialogButtons() const;
-  std::vector<QToolButton*> swapPatternsButtons() const;
+  std::vector<QToolButton*> swapValuesButtons() const;
 
   void connectSignals();
 
 private:
-  static const size_t MAX_NUM_RECENT_PATTERNS = 20;
+  static const size_t MAX_NUM_RECENT_VALUES = 20;
 
 private:
   Ui::ComparisonDialogClass ui_;
+  QString recentValuesSettingsKey_;
 };

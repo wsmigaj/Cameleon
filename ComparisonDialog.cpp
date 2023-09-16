@@ -32,7 +32,8 @@ QString getDirPrefix(const QString& pattern)
 }
 } // namespace
 
-ComparisonDialog::ComparisonDialog(QWidget* parent) : QDialog(parent)
+ComparisonDialog::ComparisonDialog(QWidget* parent, const QString& recentValuesSettingsKey)
+  : QDialog(parent), recentValuesSettingsKey_(recentValuesSettingsKey)
 {
   ui_.setupUi(this);
 
@@ -42,39 +43,39 @@ ComparisonDialog::ComparisonDialog(QWidget* parent) : QDialog(parent)
     std::max(ui_.fileDialogButtonA->width(), ui_.swapABButton->width());
   for (QToolButton* button : fileDialogButtons())
     button->setMinimumWidth(maxToolButtonWidth);
-  for (QToolButton* button : swapPatternsButtons())
+  for (QToolButton* button : swapValuesButtons())
     button->setMinimumWidth(maxToolButtonWidth);
 
   connectSignals();
-  loadRecentPatterns();
+  loadRecentValues();
 }
 
-std::vector<QString> ComparisonDialog::patterns() const
+std::vector<QString> ComparisonDialog::values() const
 {
   std::vector<QString> result;
-  for (QComboBox* comboBox : patternComboBoxes())
+  for (QComboBox* comboBox : valueComboBoxes())
   {
-    if (QString pattern = comboBox->currentText(); !pattern.isEmpty())
+    if (QString value = comboBox->currentText(); !value.isEmpty())
     {
-      pattern.replace('/', QDir::separator());
-      pattern.replace('\\', QDir::separator());
-      result.push_back(pattern);
+      value.replace('/', QDir::separator());
+      value.replace('\\', QDir::separator());
+      result.push_back(value);
     }
   }
   return result;
 }
 
-void ComparisonDialog::setPatterns(const std::vector<QString>& patterns)
+void ComparisonDialog::setValues(const std::vector<QString>& values)
 {
-  const std::vector<QComboBox*> comboBoxes = patternComboBoxes();
+  const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
 
   for (size_t i = 0; i < comboBoxes.size(); ++i)
   {
-    if (i < patterns.size())
+    if (i < values.size())
     {
-      if (int index = comboBoxes[i]->findText(patterns[i]); index >= 0)
+      if (int index = comboBoxes[i]->findText(values[i]); index >= 0)
         comboBoxes[i]->removeItem(index);
-      comboBoxes[i]->insertItem(0, patterns[i]);
+      comboBoxes[i]->insertItem(0, values[i]);
       comboBoxes[i]->setCurrentIndex(0);
     }
     else
@@ -84,38 +85,38 @@ void ComparisonDialog::setPatterns(const std::vector<QString>& patterns)
   }
 }
 
-void ComparisonDialog::loadRecentPatterns()
+void ComparisonDialog::loadRecentValues()
 {
   QSettings settings;
-  const std::vector<QComboBox*> comboBoxes = patternComboBoxes();
+  const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
 
   for (size_t i = 0; i < MAX_NUM_PATTERNS; ++i)
   {
     QComboBox* comboBox = comboBoxes[i];
-    const QString key = QString("recentPatterns/%1").arg(i);
-    QStringList patterns = settings.value(key, QStringList()).toStringList();
-    patterns.resize(std::min<qsizetype>(patterns.size(), MAX_NUM_RECENT_PATTERNS));
-    for (QString pattern : patterns)
-      comboBox->addItem(pattern);
+    const QString key = QString("%1/%2").arg(recentValuesSettingsKey_).arg(i);
+    QStringList values = settings.value(key, QStringList()).toStringList();
+    values.resize(std::min<qsizetype>(values.size(), MAX_NUM_RECENT_VALUES));
+    for (QString value : values)
+      comboBox->addItem(value);
   }
 }
 
-void ComparisonDialog::saveRecentPatterns()
+void ComparisonDialog::saveRecentValues()
 {
   QSettings settings;
-  const std::vector<QComboBox*> comboBoxes = patternComboBoxes();
+  const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
 
   for (size_t i = 0; i < comboBoxes.size(); ++i)
   {
     QComboBox* comboBox = comboBoxes[i];
-    if (QString currentPattern = comboBox->currentText(); !currentPattern.isEmpty())
+    if (QString currentValue = comboBox->currentText(); !currentValue.isEmpty())
     {
-      const QString key = QString("recentPatterns/%1").arg(i);
-      QStringList patterns = settings.value(key, QStringList()).toStringList();
-      patterns.resize(std::min<qsizetype>(patterns.size(), MAX_NUM_RECENT_PATTERNS));
-      patterns.removeAll(currentPattern);
-      patterns.prepend(currentPattern);
-      settings.setValue(key, patterns);
+      const QString key = QString("%1/%2").arg(recentValuesSettingsKey_).arg(i);
+      QStringList values = settings.value(key, QStringList()).toStringList();
+      values.resize(std::min<qsizetype>(values.size(), MAX_NUM_RECENT_VALUES));
+      values.removeAll(currentValue);
+      values.prepend(currentValue);
+      settings.setValue(key, values);
     }
   }
 }
@@ -123,12 +124,12 @@ void ComparisonDialog::saveRecentPatterns()
 void ComparisonDialog::done(int r)
 {
   if (r == QDialog::Accepted)
-    saveRecentPatterns();
+    saveRecentValues();
 
   QDialog::done(r);
 }
 
-std::vector<QComboBox*> ComparisonDialog::patternComboBoxes() const
+std::vector<QComboBox*> ComparisonDialog::valueComboBoxes() const
 {
   return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox, ui_.patternDComboBox,
           ui_.patternEComboBox, ui_.patternFComboBox, ui_.patternGComboBox, ui_.patternHComboBox};
@@ -141,7 +142,7 @@ std::vector<QToolButton*> ComparisonDialog::fileDialogButtons() const
           ui_.fileDialogButtonG, ui_.fileDialogButtonH};
 }
 
-std::vector<QToolButton*> ComparisonDialog::swapPatternsButtons() const
+std::vector<QToolButton*> ComparisonDialog::swapValuesButtons() const
 {
   return {ui_.swapABButton, ui_.swapBCButton, ui_.swapCDButton, ui_.swapDEButton,
           ui_.swapEFButton, ui_.swapFGButton, ui_.swapGHButton};
@@ -151,35 +152,35 @@ void ComparisonDialog::connectSignals()
 {
   for (QToolButton* button : fileDialogButtons())
     connect(button, &QToolButton::clicked, this, &ComparisonDialog::onFileDialogButtonClicked);
-  for (QToolButton* button : swapPatternsButtons())
-    connect(button, &QToolButton::clicked, this, &ComparisonDialog::onSwapPatternsButtonClicked);
+  for (QToolButton* button : swapValuesButtons())
+    connect(button, &QToolButton::clicked, this, &ComparisonDialog::onSwapValuesButtonClicked);
 }
 
 void ComparisonDialog::onFileDialogButtonClicked()
 {
   const std::vector<QToolButton*> buttons = fileDialogButtons();
   const int index = std::find(buttons.begin(), buttons.end(), sender()) - buttons.begin();
-  QComboBox* comboBox = patternComboBoxes()[index];
+  QComboBox* comboBox = valueComboBoxes()[index];
 
-  QString pattern = comboBox->currentText();
-  if (pattern.isEmpty() && comboBox->count() > 0)
-    pattern = comboBox->itemText(0);
-  QString dir = getDirPrefix(pattern);
+  QString value = comboBox->currentText();
+  if (value.isEmpty() && comboBox->count() > 0)
+    value = comboBox->itemText(0);
+  QString dir = getDirPrefix(value);
   QString file = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, "caption", dir));
   if (!file.isEmpty())
     comboBox->setCurrentText(file);
 }
 
-void ComparisonDialog::onSwapPatternsButtonClicked()
+void ComparisonDialog::onSwapValuesButtonClicked()
 {
-  const std::vector<QToolButton*> buttons = swapPatternsButtons();
+  const std::vector<QToolButton*> buttons = swapValuesButtons();
   const int index = std::find(buttons.begin(), buttons.end(), sender()) - buttons.begin();
 
-  QComboBox* firstComboBox = patternComboBoxes()[index];
-  QComboBox* secondComboBox = patternComboBoxes()[index + 1];
-  const QString firstPattern = firstComboBox->currentText();
-  const QString secondPattern = secondComboBox->currentText();
+  QComboBox* firstComboBox = valueComboBoxes()[index];
+  QComboBox* secondComboBox = valueComboBoxes()[index + 1];
+  const QString firstValue = firstComboBox->currentText();
+  const QString secondValue = secondComboBox->currentText();
 
-  firstComboBox->setCurrentText(secondPattern);
-  secondComboBox->setCurrentText(firstPattern);
+  firstComboBox->setCurrentText(secondValue);
+  secondComboBox->setCurrentText(firstValue);
 }
