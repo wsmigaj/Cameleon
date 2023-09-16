@@ -83,7 +83,10 @@ std::vector<QString> Document::captions(size_t instanceIndex) const
   std::vector<QString> result = captionTemplates_;
   for (size_t i = 0; i < captionTemplates_.size(); ++i)
   {
-    result[i].replace("%p", instance.paths[i]);
+    if (instance.paths[i].isEmpty())
+      result[i] = QString();
+    else
+      result[i].replace("%p", instance.paths[i]);
   }
   return result;
 }
