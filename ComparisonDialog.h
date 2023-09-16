@@ -19,6 +19,8 @@
 
 #include "ui_ComparisonDialog.h"
 
+#include "Constants.h"
+
 #include <QDialog>
 #include <vector>
 
@@ -35,17 +37,28 @@ public:
   void loadRecentValues();
   void saveRecentValues();
 
+  void setPrompt(const QString& prompt);
+  void setNumberOfRows(size_t n);
+  void setFileDialogButtonsVisibility(bool visible);
+  void setSwapValuesButtonsVisibility(bool visible);
+
 public slots:
   void done(int r) override;
   void onFileDialogButtonClicked();
   void onSwapValuesButtonClicked();
 
 private:
+  std::vector<QLabel*> rowLabels() const;
   std::vector<QComboBox*> valueComboBoxes() const;
   std::vector<QToolButton*> fileDialogButtons() const;
   std::vector<QToolButton*> swapValuesButtons() const;
 
   void connectSignals();
+
+  void updateRowLabelsVisibility();
+  void updateComboBoxesVisibility();
+  void updateFileDialogButtonsVisibility();
+  void updateSwapValuesButtonsVisibility();
 
 private:
   static const size_t MAX_NUM_RECENT_VALUES = 20;
@@ -53,4 +66,7 @@ private:
 private:
   Ui::ComparisonDialogClass ui_;
   QString recentValuesSettingsKey_;
+  size_t numRows_ = MAX_NUM_PATTERNS;
+  bool fileDialogButtonsVisible_ = true;
+  bool swapValuesButtonsVisible_ = true;
 };

@@ -121,12 +121,92 @@ void ComparisonDialog::saveRecentValues()
   }
 }
 
+void ComparisonDialog::setPrompt(const QString& prompt)
+{
+  ui_.promptLabel->setText(prompt);
+}
+
+void ComparisonDialog::setNumberOfRows(size_t n)
+{
+  if (n != numRows_)
+  {
+    numRows_ = n;
+    updateRowLabelsVisibility();
+    updateComboBoxesVisibility();
+    updateFileDialogButtonsVisibility();
+    updateSwapValuesButtonsVisibility();
+    adjustSize();
+  }
+}
+
+void ComparisonDialog::setFileDialogButtonsVisibility(bool visible)
+{
+  if (visible != fileDialogButtonsVisible_)
+  {
+    fileDialogButtonsVisible_ = visible;
+    updateFileDialogButtonsVisibility();
+    adjustSize();
+  }
+}
+
+void ComparisonDialog::setSwapValuesButtonsVisibility(bool visible)
+{
+  if (visible != swapValuesButtonsVisible_)
+  {
+    swapValuesButtonsVisible_ = visible;
+    updateSwapValuesButtonsVisibility();
+    adjustSize();
+  }
+}
+
+void ComparisonDialog::updateRowLabelsVisibility()
+{
+  const std::vector<QLabel*> v = rowLabels();
+  for (size_t i = 0; i < numRows_; ++i)
+    v[i]->setVisible(true);
+  for (size_t i = numRows_; i < MAX_NUM_PATTERNS; ++i)
+    v[i]->setVisible(false);
+}
+
+void ComparisonDialog::updateComboBoxesVisibility()
+{
+  const std::vector<QComboBox*> v = valueComboBoxes();
+  for (size_t i = 0; i < numRows_; ++i)
+    v[i]->setVisible(true);
+  for (size_t i = numRows_; i < MAX_NUM_PATTERNS; ++i)
+    v[i]->setVisible(false);
+}
+
+void ComparisonDialog::updateFileDialogButtonsVisibility()
+{
+  const std::vector<QToolButton*> v = fileDialogButtons();
+  for (size_t i = 0; i < numRows_; ++i)
+    v[i]->setVisible(fileDialogButtonsVisible_);
+  for (size_t i = numRows_; i < MAX_NUM_PATTERNS; ++i)
+    v[i]->setVisible(false);
+}
+
+void ComparisonDialog::updateSwapValuesButtonsVisibility()
+{
+  const std::vector<QToolButton*> v = swapValuesButtons();
+  for (size_t i = 0; i + 1 < numRows_; ++i)
+    v[i]->setVisible(swapValuesButtonsVisible_);
+  for (size_t i = (numRows_ == 0 ? 0 : numRows_ - 1); i + 1 < MAX_NUM_PATTERNS; ++i)
+    v[i]->setVisible(false);
+}
+
 void ComparisonDialog::done(int r)
 {
   if (r == QDialog::Accepted)
     saveRecentValues();
 
   QDialog::done(r);
+}
+
+std::vector<QLabel*> ComparisonDialog::rowLabels() const
+{
+  return {ui_.labelA, ui_.labelB, ui_.labelC, ui_.labelD,
+          ui_.labelE, ui_.labelF, ui_.labelG, ui_.labelH};
 }
 
 std::vector<QComboBox*> ComparisonDialog::valueComboBoxes() const
