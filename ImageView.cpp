@@ -46,7 +46,6 @@ ImageView::~ImageView()
 
 void ImageView::loadImage(const QString& path)
 {
-  headerBar_->setPath(path);
   headerBar_->clearPixelProperties();
   const bool imageLoadedSuccessfully = !path.isEmpty() && imageWidget_->loadImage(path);
   imageWidget_->setVisible(imageLoadedSuccessfully);
@@ -77,10 +76,15 @@ void ImageView::loadImage(const QString& path)
   placeholderLabel_->setVisible(!imageLoadedSuccessfully);
 }
 
+void ImageView::setCaption(const QString& caption)
+{
+  headerBar_->setCaption(caption);
+}
+
 void ImageView::clear()
 {
-  headerBar_->clearLabel();
-  headerBar_->clearPath();
+  headerBar_->clearId();
+  headerBar_->clearCaption();
   headerBar_->clearPixelProperties();
   imageWidget_->loadImage(QString());
   imageWidget_->hide();

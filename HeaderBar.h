@@ -28,12 +28,12 @@ public:
   HeaderBar(QWidget* parent = nullptr);
   ~HeaderBar() override;
 
-  void setLabel(const QString& label);
-  void setPath(const QString& path);
+  void setId(const QString& id);
+  void setCaption(const QString& caption);
   void setPixelProperties(const QPoint& pt, const QColor& colour);
 
-  void clearLabel();
-  void clearPath();
+  void clearId();
+  void clearCaption();
   void clearPixelProperties();
 
 private:

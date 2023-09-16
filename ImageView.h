@@ -33,6 +33,8 @@ public:
   void loadImage(const QString& path);
   void clear();
 
+  void setCaption(const QString& caption);
+
   HeaderBar* headerBar() { return headerBar_; }
   const HeaderBar* headerBar() const { return headerBar_; }
 

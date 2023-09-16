@@ -29,7 +29,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0">
      <item>
-      <widget class="QLabel" name="mainLabel">
+      <widget class="QLabel" name="idLabel">
        <property name="font">
         <font>
          <bold>true</bold>
@@ -41,7 +41,7 @@
       </widget>
      </item>
      <item>
-      <widget class="ElidedLabel" name="pathLabel">
+      <widget class="ElidedLabel" name="captionLabel">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
          <horstretch>0</horstretch>

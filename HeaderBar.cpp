@@ -30,14 +30,14 @@ HeaderBar::~HeaderBar()
 {
 }
 
-void HeaderBar::setLabel(const QString& label)
+void HeaderBar::setId(const QString& id)
 {
-  ui.mainLabel->setText(label);
+  ui.idLabel->setText(id);
 }
 
-void HeaderBar::setPath(const QString& path)
+void HeaderBar::setCaption(const QString& caption)
 {
-  ui.pathLabel->setText(path);
+  ui.captionLabel->setText(caption);
 }
 
 void HeaderBar::setPixelProperties(const QPoint& pt, const QColor& colour)
@@ -51,14 +51,14 @@ void HeaderBar::setPixelProperties(const QPoint& pt, const QColor& colour)
                            .arg(colour.alpha()));
 }
 
-void HeaderBar::clearLabel()
+void HeaderBar::clearId()
 {
-  ui.mainLabel->setText(QString());
+  ui.idLabel->setText(QString());
 }
 
-void HeaderBar::clearPath()
+void HeaderBar::clearCaption()
 {
-  ui.pathLabel->setText(QString());
+  ui.captionLabel->setText(QString());
 }
 
 void HeaderBar::clearPixelProperties()

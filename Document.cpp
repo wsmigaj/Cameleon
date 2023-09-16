@@ -55,21 +55,37 @@ void Document::setPatterns(std::vector<QString> patterns,
   {
     instances_ = findInstances(patterns, onFilesystemTraversalProgress);
     patterns_ = std::move(patterns);
-    captions_.resize(patterns_.size(), "%f");
+    captionTemplates_.resize(patterns_.size(), "%p");
     modified_ = true;
     modificationStatusChanged();
   }
 }
 
-void Document::setCaptions(std::vector<QString> captions)
+void Document::setCaptionTemplates(std::vector<QString> captionTemplates)
 {
-  if (captions.size() != patterns_.size())
+  if (captionTemplates.size() != patterns_.size())
     throw RuntimeError("The number of captions must match the number of patterns.");
 
-  if (captions != captions_)
+  if (captionTemplates != captionTemplates_)
   {
-    captions_ = std::move(captions);
+    captionTemplates_ = std::move(captionTemplates);
+    modified_ = true;
+    modificationStatusChanged();
   }
+}
+
+std::vector<QString> Document::captions(size_t instanceIndex) const
+{
+  if (instanceIndex >= instances_.size())
+    throw RuntimeError("Invalid instance index");
+  const Instance& instance = instances_[instanceIndex];
+
+  std::vector<QString> result = captionTemplates_;
+  for (size_t i = 0; i < captionTemplates_.size(); ++i)
+  {
+    result[i].replace("%p", instance.paths[i]);
+  }
+  return result;
 }
 
 void Document::regenerateInstances(const std::function<void()>& onFilesystemTraversalProgress)
@@ -81,14 +97,25 @@ QJsonObject Document::toJson() const
 {
   QJsonObject json;
 
-  QJsonObject jsonLayout;
-  jsonLayout["rows"] = static_cast<int>(layout_.rows);
-  jsonLayout["columns"] = static_cast<int>(layout_.columns);
-  json["layout"] = jsonLayout;
+  {
+    QJsonObject jsonLayout;
+    jsonLayout["rows"] = static_cast<int>(layout_.rows);
+    jsonLayout["columns"] = static_cast<int>(layout_.columns);
+    json["layout"] = jsonLayout;
+  }
 
-  QJsonArray jsonPatterns;
-  std::copy(patterns_.begin(), patterns_.end(), std::back_inserter(jsonPatterns));
-  json["patterns"] = jsonPatterns;
+  {
+    QJsonArray jsonPatterns;
+    std::copy(patterns_.begin(), patterns_.end(), std::back_inserter(jsonPatterns));
+    json["patterns"] = jsonPatterns;
+  }
+
+  {
+    QJsonArray jsonCaptionTemplates;
+    std::copy(captionTemplates_.begin(), captionTemplates_.end(),
+              std::back_inserter(jsonCaptionTemplates));
+    json["captionTemplates"] = jsonCaptionTemplates;
+  }
 
   return json;
 }
@@ -96,15 +123,33 @@ QJsonObject Document::toJson() const
 void Document::loadFromJson(const QJsonObject& json,
                             const std::function<void()>& onFilesystemTraversalProgress)
 {
-  QJsonObject jsonLayout = json["layout"].toObject();
   // TODO: (Graceful) error handling
-  setLayout(Layout{static_cast<size_t>(jsonLayout["rows"].toInt()),
-                   static_cast<size_t>(jsonLayout["columns"].toInt())});
-  QJsonArray jsonPatterns = json["patterns"].toArray();
-  std::vector<QString> patterns;
-  std::transform(jsonPatterns.begin(), jsonPatterns.end(), std::back_inserter(patterns),
-                 [](const QJsonValue& jsonPattern) { return jsonPattern.toString(); });
-  setPatterns(std::move(patterns), onFilesystemTraversalProgress);
+  {
+    QJsonObject jsonLayout = json["layout"].toObject();
+    setLayout(Layout{static_cast<size_t>(jsonLayout["rows"].toInt()),
+                     static_cast<size_t>(jsonLayout["columns"].toInt())});
+  }
+  {
+    QJsonArray jsonPatterns = json["patterns"].toArray();
+    std::vector<QString> patterns;
+    std::transform(jsonPatterns.begin(), jsonPatterns.end(), std::back_inserter(patterns),
+                   [](const QJsonValue& jsonPattern) { return jsonPattern.toString(); });
+    setPatterns(std::move(patterns), onFilesystemTraversalProgress);
+  }
+  if (json.contains("captionTemplates"))
+  {
+    QJsonArray jsonCaptionTemplates = json["captionTemplates"].toArray();
+    std::vector<QString> captionTemplates;
+    std::transform(jsonCaptionTemplates.begin(), jsonCaptionTemplates.end(),
+                   std::back_inserter(captionTemplates),
+                   [](const QJsonValue& jsonCaptionTemplate)
+                   { return jsonCaptionTemplate.toString(); });
+    setCaptionTemplates(std::move(captionTemplates));
+  }
+  else
+  {
+    setCaptionTemplates(std::vector<QString>(patterns().size(), "%p"));
+  }
 
   modified_ = false;
   modificationStatusChanged();

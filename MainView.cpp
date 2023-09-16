@@ -54,6 +54,14 @@ void MainView::setPaths(std::vector<QString> paths)
   reloadImages();
 }
 
+void MainView::setCaptions(const std::vector<QString>& captions)
+{
+  for (size_t i = 0; i < captions.size() && i < imageViews_.size(); ++i)
+  {
+    imageViews_[i]->setCaption(captions[i]);
+  }
+}
+
 void MainView::clearPaths()
 {
   setPaths({});
@@ -126,7 +134,7 @@ void MainView::setLayout(const Layout& layout)
             &MainView::onImageWidgetTransformChanged);
     newImageWidget->setDragMode(QGraphicsView::ScrollHandDrag);
     newImageWidget->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    newView->headerBar()->setLabel(QString(char('A' + i)));
+    newView->headerBar()->setId(QString(char('A' + i)));
     imageViews_.push_back(newView);
   }
 

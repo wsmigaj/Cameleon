@@ -79,7 +79,7 @@ private:
   void onDocumentPathChanged();
   void onInstancesChanged();
   void onActiveInstanceChanged();
-  void onCaptionsChanged();
+  void onCaptionTemplatesChanged();
 
   std::optional<std::vector<QString>> currentInstanceKey() const;
   void goToInstance(int instance);

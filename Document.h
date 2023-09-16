@@ -43,8 +43,10 @@ public:
     std::vector<QString> patterns,
     const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
-  const std::vector<QString>& captions() const { return captions_; }
-  void setCaptions(std::vector<QString> captions);
+  const std::vector<QString>& captionTemplates() const { return captionTemplates_; }
+  void setCaptionTemplates(std::vector<QString> captionTemplates);
+
+  std::vector<QString> captions(size_t instance) const;
 
   bool modified() const { return modified_; }
 
@@ -65,7 +67,7 @@ private:
   QString path_;
   Layout layout_ = Layout{0, 0};
   std::vector<QString> patterns_;
-  std::vector<QString> captions_;
+  std::vector<QString> captionTemplates_;
 
   bool modified_ = false;
   std::vector<Instance> instances_;

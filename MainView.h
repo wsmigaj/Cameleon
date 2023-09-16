@@ -43,6 +43,8 @@ public:
   void setPaths(std::vector<QString> paths);
   void clearPaths();
 
+  void setCaptions(const std::vector<QString>& captions);
+
   void reloadImages();
 
   void zoom(double relativeScale);

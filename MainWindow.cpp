@@ -376,15 +376,15 @@ void MainWindow::on_actionEditCaptions_triggered()
   ComparisonDialog dialog(this, "recentCaptions");
   dialog.setWindowTitle("Edit Captions");
   dialog.setPrompt("");
-  dialog.setNumberOfRows(doc_->captions().size());
+  dialog.setNumberOfRows(doc_->captionTemplates().size());
   dialog.setFileDialogButtonsVisibility(false);
   dialog.setSwapValuesButtonsVisibility(false);
-  dialog.setValues(doc_->captions());
+  dialog.setValues(doc_->captionTemplates());
   if (dialog.exec() == QDialog::Accepted)
   {
-    if (!Try([&] { doc_->setCaptions(dialog.values()); }))
+    if (!Try([&] { doc_->setCaptionTemplates(dialog.values()); }))
       return;
-    onCaptionsChanged();
+    onCaptionTemplatesChanged();
   }
 }
 
@@ -576,13 +576,22 @@ void MainWindow::onActiveInstanceChanged()
     {
       instanceComboBox_->setCurrentIndex(instance_);
       ui_.mainView->setPaths(doc_->instances()[instance_].paths);
+      ui_.mainView->setCaptions(doc_->captions(instance_));
     }
   }
   updateInstanceDependentActions();
 }
 
-void MainWindow::onCaptionsChanged()
+void MainWindow::onCaptionTemplatesChanged()
 {
+  if (doc_ && !doc_->instances().empty())
+  {
+    Q_ASSERT(instance_ < doc_->instances().size());
+    if (instance_ < doc_->instances().size())
+    {
+      ui_.mainView->setCaptions(doc_->captions(instance_));
+    }
+  }
 }
 
 void MainWindow::goToInstance(int instance)
