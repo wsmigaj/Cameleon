@@ -60,6 +60,10 @@ void MainView::setCaptions(const std::vector<QString>& captions)
   {
     imageViews_[i]->setCaption(captions[i]);
   }
+  for (size_t i = captions.size(); i < imageViews_.size(); ++i)
+  {
+    imageViews_[i]->setCaption(QString());
+  }
 }
 
 void MainView::clearPaths()
