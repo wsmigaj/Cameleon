@@ -371,6 +371,43 @@ void MainWindow::on_actionSaveScreenshot_triggered()
   }
 }
 
+void MainWindow::on_actionSaveAllScreenshots_triggered()
+{
+  QSettings settings;
+  QString lastDir = settings.value("lastSaveScreenshotDir", QString()).toString();
+  QString dir = lastDir;
+
+  dir = QFileDialog::getExistingDirectory(this, "Save All Screenshots", dir);
+  if (dir.isEmpty())
+    return;
+
+  settings.setValue("lastSaveScreenshotDir", dir);
+
+  on_actionFirstInstance_triggered();
+  qApp->processEvents();
+  while (true)
+  {
+    QString path = dir + "\\" +
+                   instanceKeyToFileName(doc_->instances()[instance_].magicExpressionMatches) +
+                   ".png";
+
+    QPixmap pixmap = grab(toolBarAreaRect());
+    QImage image = pixmap.toImage();
+    if (!image.save(path))
+    {
+      QMessageBox::warning(this, "Save Screenshot",
+                           QString("The screenshot could not be saved to %s.").arg(path));
+      return;
+    }
+
+    if (instance_ + 1 == doc_->instances().size())
+      return;
+
+    on_actionNextInstance_triggered();
+    qApp->processEvents();
+  }
+}
+
 void MainWindow::on_actionEditCaptions_triggered()
 {
   ComparisonDialog dialog(this, "recentCaptions");

@@ -48,6 +48,7 @@ private slots:
   void on_actionZoomOut_triggered();
   void on_actionZoom1to1_triggered();
   void on_actionSaveScreenshot_triggered();
+  void on_actionSaveAllScreenshots_triggered();
   void on_actionEditCaptions_triggered();
   void on_actionFirstInstance_triggered();
   void on_actionPreviousInstance_triggered();
