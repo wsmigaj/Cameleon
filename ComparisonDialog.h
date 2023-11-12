@@ -41,6 +41,7 @@ public:
   void setNumberOfRows(size_t n);
   void setFileDialogButtonsVisibility(bool visible);
   void setSwapValuesButtonsVisibility(bool visible);
+  void normalisePathSeparators(bool normalise);
 
 public slots:
   void done(int r) override;
@@ -69,4 +70,5 @@ private:
   size_t numRows_ = MAX_NUM_PATTERNS;
   bool fileDialogButtonsVisible_ = true;
   bool swapValuesButtonsVisible_ = true;
+  bool normalisePathSeparators_ = false;
 };

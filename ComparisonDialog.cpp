@@ -57,8 +57,11 @@ std::vector<QString> ComparisonDialog::values() const
   {
     if (QString value = comboBox->currentText(); !value.isEmpty())
     {
-      value.replace('/', QDir::separator());
-      value.replace('\\', QDir::separator());
+      if (normalisePathSeparators_)
+      {
+        value.replace('/', QDir::separator());
+        value.replace('\\', QDir::separator());
+      }
       result.push_back(value);
     }
   }
@@ -157,6 +160,11 @@ void ComparisonDialog::setSwapValuesButtonsVisibility(bool visible)
     updateSwapValuesButtonsVisibility();
     adjustSize();
   }
+}
+
+void ComparisonDialog::normalisePathSeparators(bool normalise)
+{
+  normalisePathSeparators_ = normalise;
 }
 
 void ComparisonDialog::updateRowLabelsVisibility()

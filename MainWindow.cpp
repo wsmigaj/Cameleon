@@ -171,6 +171,7 @@ void MainWindow::on_actionNewComparison_triggered()
 
   ComparisonDialog dialog(this, "recentPatterns");
   dialog.setWindowTitle("New Comparison");
+  dialog.normalisePathSeparators(true);
   dialog.setValues({});
   if (dialog.exec() != QDialog::Accepted)
   {
@@ -251,6 +252,7 @@ void MainWindow::on_actionEditComparison_triggered()
 {
   ComparisonDialog dialog(this, "recentPatterns");
   dialog.setWindowTitle("Edit Comparison");
+  dialog.normalisePathSeparators(true);
   dialog.setValues(doc_->patterns());
   if (dialog.exec() == QDialog::Accepted)
   {
@@ -416,6 +418,7 @@ void MainWindow::on_actionEditCaptions_triggered()
   dialog.setNumberOfRows(doc_->captionTemplates().size());
   dialog.setFileDialogButtonsVisibility(false);
   dialog.setSwapValuesButtonsVisibility(false);
+  dialog.normalisePathSeparators(false);
   dialog.setValues(doc_->captionTemplates());
   if (dialog.exec() == QDialog::Accepted)
   {
