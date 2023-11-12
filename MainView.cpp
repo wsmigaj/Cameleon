@@ -23,6 +23,8 @@
 #include "ImageView.h"
 #include "ImageWidget.h"
 
+#include <QtConcurrent>
+
 namespace
 {
 void copyTransformAndScrollBarPositions(const ImageWidget& source, ImageWidget& dest)
@@ -96,39 +98,38 @@ void MainView::reloadImages()
 
 std::vector<std::variant<QPixmap, QString>> MainView::loadViewContents() const
 {
-  std::vector<std::variant<QPixmap, QString>> viewContents;
-  for (const QString& path : paths_)
-  {
-    if (path.isEmpty())
-    {
-      viewContents.push_back(QString("No matching file."));
-    }
-    else
-    {
-      if (QPixmap pixmap; pixmap.load(path))
-      {
-        viewContents.push_back(std::move(pixmap));
-      }
-      else
-      {
-        QString message;
-        QFileInfo info(path);
-        if (info.exists())
-        {
-          if (info.isDir())
-            message = "Matching path points to a directory.";
-          else
-            message = "Image failed to load.";
-        }
-        else
-        {
-          message = "File does not exist.";
-        }
-        viewContents.push_back(std::move(message));
-      }
-    }
-  }
-  return viewContents;
+  return QtConcurrent::blockingMapped(paths_,
+                                      [](const QString& path) -> std::variant<QPixmap, QString>
+                                      {
+                                        if (path.isEmpty())
+                                        {
+                                          return QString("No matching file.");
+                                        }
+                                        else
+                                        {
+                                          if (QPixmap pixmap; pixmap.load(path))
+                                          {
+                                            return pixmap;
+                                          }
+                                          else
+                                          {
+                                            QString message;
+                                            QFileInfo info(path);
+                                            if (info.exists())
+                                            {
+                                              if (info.isDir())
+                                                message = "Matching path points to a directory.";
+                                              else
+                                                message = "Image failed to load.";
+                                            }
+                                            else
+                                            {
+                                              message = "File does not exist.";
+                                            }
+                                            return message;
+                                          }
+                                        }
+                                      });
 }
 
 void MainView::setImageViewContents(ImageView& imageView, const QPixmap& pixmap)
