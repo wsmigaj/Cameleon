@@ -465,19 +465,22 @@ void MainWindow::on_actionAboutCameleon_triggered()
 {
   QMessageBox::about(
     this, "About Cam\u00E9l\u00E9on",
-    "Copyright (C) 2023 Wojciech \u015Amigaj.\n\n"
+    "Copyright (C) 2023 Wojciech \u015Amigaj.<br><br>\n\n"
+    "Application icon by <a href=\"http://icons8.com/\">Icons8</a>.<br><br>\n\n"
     "This software uses the following open-source libraries:\n\n"
-    "* Qt Toolkit. Copyright (C) 2017 The Qt Company Ltd. "
-    "Contact: https://www.qt.io/licensing. "
+    "<ul>"
+    "<li> Qt Toolkit. Copyright (C) 2017 The Qt Company Ltd. "
+    "Contact: <a href=\"https://www.qt.io/licensing\">https://www.qt.io/licensing</a>. "
     "You may use, distribute and copy the Qt GUI Toolkit under the terms of "
     "GNU Lesser General Public License version 3, which supplements GNU General "
     "Public License Version 3.\n\n"
-    "* glob for C++17. Copyright (c) 2019 Pranav.\n\n"
-    "* KDE Crystal theme icons. Copyright (C) 2002 and following years KDE Artists. "
+    "<li> glob for C++17. Copyright (C) 2019 Pranav.\n\n"
+    "<li> KDE Crystal theme icons. Copyright (C) 2002 and following years KDE Artists. "
     "This library is free software; you can redistribute it and/or "
     "modify it under the terms of the GNU Lesser General Public "
     "License as published by the Free Software Foundation, "
-    "version 2.1 of the License.");
+    "version 2.1 of the License."
+    "</ul>");
 }
 
 void MainWindow::onLayoutActionTriggered()
