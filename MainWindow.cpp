@@ -239,7 +239,13 @@ void MainWindow::onRecentComparisonActionTriggered()
   // mid() removes the numerical prefix "&1 ", "&2 " etc.
   const QString path = action->text().mid(3);
 
-  if (!Try([&] { doc_ = std::make_unique<Document>(path); }))
+  PatternMatchingProgressDialog progressDialog(this);
+  progressDialog.show();
+
+  auto onFilesystemTraversalProgress = [&progressDialog]()
+  { progressDialog.incrementProgressAndCheckForCancellation(); };
+
+  if (!Try([&] { doc_ = std::make_unique<Document>(path, onFilesystemTraversalProgress); }))
     return;
 
   connectDocumentSignals();
