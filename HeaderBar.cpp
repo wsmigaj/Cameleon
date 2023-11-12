@@ -21,9 +21,6 @@
 HeaderBar::HeaderBar(QWidget* parent) : QWidget(parent)
 {
   ui.setupUi(this);
-  ui.pixelLabel->setMinimumWidth(ui.pixelLabel->fontMetrics()
-                                   .size(0, "(X: 0000, Y: 0000)   (R: 000, G: 000, B: 000, A: 000)")
-                                   .width());
 }
 
 HeaderBar::~HeaderBar()
