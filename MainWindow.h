@@ -54,6 +54,7 @@ private slots:
   void on_actionPreviousInstance_triggered();
   void on_actionNextInstance_triggered();
   void on_actionLastInstance_triggered();
+  void on_actionAboutCameleon_triggered();
   void onLayoutActionTriggered();
   void onRecentComparisonActionTriggered();
 
