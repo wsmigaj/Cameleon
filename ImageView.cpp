@@ -44,36 +44,30 @@ ImageView::~ImageView()
 {
 }
 
-void ImageView::loadImage(const QString& path)
+void ImageView::setPath(const QString& path)
+{
+  imageWidget_->setPath(path);
+}
+
+void ImageView::setPixmap(const QPixmap& pixmap)
+{
+  if (pixmap.isNull())
+    throw std::invalid_argument("Pixmap must not be null.");
+
+  headerBar_->clearPixelProperties();
+  imageWidget_->setPixmap(pixmap);
+  imageWidget_->setVisible(true);
+  placeholderLabel_->setText(QString());
+  placeholderLabel_->setVisible(false);
+}
+
+void ImageView::setMessage(const QString& message)
 {
   headerBar_->clearPixelProperties();
-  const bool imageLoadedSuccessfully = !path.isEmpty() && imageWidget_->loadImage(path);
-  imageWidget_->setVisible(imageLoadedSuccessfully);
-  if (!imageLoadedSuccessfully)
-  {
-    QString msg;
-    if (path.isEmpty())
-    {
-      msg = "No matching file.";
-    }
-    else
-    {
-      QFileInfo info(path);
-      if (info.exists())
-      {
-        if (info.isDir())
-          msg = "Path points to a directory.";
-        else
-          msg = "Image failed to load.";
-      }
-      else
-      {
-        msg = "File does not exist.";
-      }
-    }
-    placeholderLabel_->setText(msg);
-  }
-  placeholderLabel_->setVisible(!imageLoadedSuccessfully);
+  imageWidget_->setPixmap(QPixmap());
+  imageWidget_->setVisible(false);
+  placeholderLabel_->setText(message);
+  placeholderLabel_->setVisible(true);
 }
 
 void ImageView::setCaption(const QString& caption)
@@ -86,7 +80,7 @@ void ImageView::clear()
   headerBar_->clearId();
   headerBar_->clearCaption();
   headerBar_->clearPixelProperties();
-  imageWidget_->loadImage(QString());
+  imageWidget_->clear();
   imageWidget_->hide();
   placeholderLabel_->setText(QString("No matching file."));
   placeholderLabel_->show();

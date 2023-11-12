@@ -73,13 +73,17 @@ void MainView::clearPaths()
 
 void MainView::reloadImages()
 {
+  const std::vector<std::variant<QPixmap, QString>> viewContents = loadViewContents();
   QRectF unitedRect;
-  for (size_t i = 0; i < paths_.size() && i < imageViews_.size(); ++i)
+
+  for (size_t i = 0; i < viewContents.size() && i < imageViews_.size(); ++i)
   {
-    imageViews_[i]->loadImage(paths_[i]);
+    std::visit([this, i](auto&& contents) { setImageViewContents(*imageViews_[i], contents); },
+               viewContents[i]);
+    imageViews_[i]->setPath(paths_[i]);
     unitedRect = unitedRect.united(imageViews_[i]->imageWidget()->imageRect());
   }
-  for (size_t i = paths_.size(); i < imageViews_.size(); ++i)
+  for (size_t i = viewContents.size(); i < imageViews_.size(); ++i)
   {
     imageViews_[i]->clear();
   }
@@ -88,6 +92,53 @@ void MainView::reloadImages()
   {
     imageView->imageWidget()->setSceneRect(unitedRect);
   }
+}
+
+std::vector<std::variant<QPixmap, QString>> MainView::loadViewContents() const
+{
+  std::vector<std::variant<QPixmap, QString>> viewContents;
+  for (const QString& path : paths_)
+  {
+    if (path.isEmpty())
+    {
+      viewContents.push_back(QString("No matching file."));
+    }
+    else
+    {
+      if (QPixmap pixmap; pixmap.load(path))
+      {
+        viewContents.push_back(std::move(pixmap));
+      }
+      else
+      {
+        QString message;
+        QFileInfo info(path);
+        if (info.exists())
+        {
+          if (info.isDir())
+            message = "Matching path points to a directory.";
+          else
+            message = "Image failed to load.";
+        }
+        else
+        {
+          message = "File does not exist.";
+        }
+        viewContents.push_back(std::move(message));
+      }
+    }
+  }
+  return viewContents;
+}
+
+void MainView::setImageViewContents(ImageView& imageView, const QPixmap& pixmap)
+{
+  imageView.setPixmap(pixmap);
+}
+
+void MainView::setImageViewContents(ImageView& imageView, const QString& message)
+{
+  imageView.setMessage(message);
 }
 
 void MainView::setLayout(const Layout& layout)

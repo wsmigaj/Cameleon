@@ -47,13 +47,13 @@ void ImageWidget::createActions()
   connect(openInExplorerAction_, &QAction::triggered, this, &ImageWidget::onOpenInExplorer);
 }
 
-bool ImageWidget::loadImage(const QString& path)
+void ImageWidget::setPath(const QString& path)
 {
-  QPixmap pixmap;
-  if (!path.isEmpty())
-    if (!pixmap.load(path))
-      return false;
+  path_ = path;
+}
 
+void ImageWidget::setPixmap(const QPixmap& pixmap)
+{
   if (!item_)
   {
     item_ = new QGraphicsPixmapItem(pixmap);
@@ -64,13 +64,12 @@ bool ImageWidget::loadImage(const QString& path)
     item_->setPixmap(pixmap);
   }
   image_ = pixmap.toImage();
-  path_ = path;
-  return true;
 }
 
 void ImageWidget::clear()
 {
-  loadImage(QString());
+  setPath(QString());
+  setPixmap(QPixmap());
 }
 
 QRectF ImageWidget::imageRect() const

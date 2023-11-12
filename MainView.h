@@ -20,6 +20,7 @@
 #include "Layout.h"
 
 #include <QWidget>
+#include <variant>
 
 class Document;
 class ImageView;
@@ -55,6 +56,11 @@ private slots:
   void onImageWidgetVerticalScrollBarValueChanged(int value);
   void onImageWidgetTransformChanging();
   void onImageWidgetTransformChanged();
+
+private:
+  std::vector<std::variant<QPixmap, QString>> loadViewContents() const;
+  void setImageViewContents(ImageView& imageView, const QPixmap& pixmap);
+  void setImageViewContents(ImageView& imageView, const QString& message);
 
 private:
   QGridLayout* mainLayout_;

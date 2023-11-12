@@ -26,8 +26,8 @@ public:
   explicit ImageWidget(QWidget* parent = nullptr);
   ~ImageWidget() override;
 
-  /// If `path` is empty, the image is cleared.
-  bool loadImage(const QString& path);
+  void setPath(const QString& path);
+  void setPixmap(const QPixmap& pixmap);
   void clear();
 
   QRectF imageRect() const;

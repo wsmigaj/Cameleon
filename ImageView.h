@@ -29,8 +29,9 @@ public:
   explicit ImageView(QWidget* parent = nullptr);
   ~ImageView() override;
 
-  /// If `path` is empty, the image is cleared.
-  void loadImage(const QString& path);
+  void setPath(const QString& path);
+  void setPixmap(const QPixmap& pixmap);
+  void setMessage(const QString& msg);
   void clear();
 
   void setCaption(const QString& caption);
