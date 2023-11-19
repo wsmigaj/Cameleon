@@ -129,19 +129,6 @@ bool fnmatch(const fs::path &name, const std::wstring &pattern) {
   return std::regex_match(name.wstring(), compile_pattern(pattern));
 }
 
-std::vector<fs::path> filter(const std::vector<fs::path> &names,
-                             const std::wstring &pattern) {
-  // std::cout << "Pattern: " << pattern << "\n";
-  std::vector<fs::path> result;
-  for (auto &name : names) {
-    // std::cout << "Checking for " << name.wstring() << "\n";
-    if (fnmatch(name, pattern)) {
-      result.push_back(name);
-    }
-  }
-  return result;
-}
-
 fs::path expand_tilde(fs::path path) {
   if (path.empty()) return path;
 
@@ -176,9 +163,9 @@ bool is_hidden(const std::wstring &pathname) { return pathname[0] == '.'; }
 
 bool is_recursive(const std::wstring &pattern) { return pattern == L"**"; }
 
-std::vector<fs::path> iter_directory(const fs::path &dirname, bool dironly,
+std::vector<PathInfo> iter_directory(const fs::path &dirname, bool dironly,
                                      const std::function<void()> &onFilesystemTraversalProgress) {
-  std::vector<fs::path> result;
+  std::vector<PathInfo> result;
 
   auto current_directory = dirname;
   if (current_directory.empty()) {
@@ -192,9 +179,9 @@ std::vector<fs::path> iter_directory(const fs::path &dirname, bool dironly,
                                       fs::directory_options::skip_permission_denied)) {
         if (!dironly || entry.is_directory()) {
           if (dirname.is_absolute()) {
-            result.push_back(entry.path());
+            result.emplace_back(entry.path(), entry.status());
           } else {
-            result.push_back(fs::relative(entry.path()));
+            result.emplace_back(fs::relative(entry.path()), entry.status());
           }
         }
         onFilesystemTraversalProgress();
@@ -209,14 +196,14 @@ std::vector<fs::path> iter_directory(const fs::path &dirname, bool dironly,
 }
 
 // Recursively yields relative pathnames inside a literal directory.
-std::vector<fs::path> rlistdir(const fs::path &dirname, bool dironly,
+std::vector<PathInfo> rlistdir(const fs::path &dirname, bool dironly,
                                const std::function<void()> &onFilesystemTraversalProgress) {
-  std::vector<fs::path> result;
-  auto names = iter_directory(dirname, dironly, onFilesystemTraversalProgress);
-  for (auto &x : names) {
-    if (!is_hidden(x.wstring())) {
+  std::vector<PathInfo> result;
+  auto infos = iter_directory(dirname, dironly, onFilesystemTraversalProgress);
+  for (auto &x : infos) {
+    if (!is_hidden(x.path.wstring())) {
       result.push_back(x);
-      for (auto &y : rlistdir(x, dironly, onFilesystemTraversalProgress)) {
+      for (auto &y : rlistdir(x.path, dironly, onFilesystemTraversalProgress)) {
         result.push_back(y);
       }
     }
@@ -226,13 +213,13 @@ std::vector<fs::path> rlistdir(const fs::path &dirname, bool dironly,
 
 // This helper function recursively yields relative pathnames inside a literal
 // directory.
-std::vector<fs::path> glob2(const fs::path &dirname, [[maybe_unused]] const fs::path &pattern,
+std::vector<PathInfo> glob2(const PathInfo &dirinfo, [[maybe_unused]] const fs::path &pattern,
                             bool dironly,
                             const std::function<void()> &onFilesystemTraversalProgress) {
   // std::cout << "In glob2\n";
-  std::vector<fs::path> result{"."};
+  std::vector<PathInfo> result{{".", dirinfo.status}};
   assert(is_recursive(pattern.wstring()));
-  for (auto &dir : rlistdir(dirname, dironly, onFilesystemTraversalProgress)) {
+  for (auto &dir : rlistdir(dirinfo.path, dironly, onFilesystemTraversalProgress)) {
     result.push_back(dir);
   }
   return result;
@@ -242,51 +229,45 @@ std::vector<fs::path> glob2(const fs::path &dirname, [[maybe_unused]] const fs::
 // They return a list of basenames.  _glob1 accepts a pattern while _glob0
 // takes a literal basename (so it only has to check for its existence).
 
-std::vector<fs::path> glob1(const fs::path &dirname, const fs::path &pattern,
+std::vector<PathInfo> glob1(const PathInfo &dirinfo, const fs::path &pattern,
                             bool dironly,
                             const std::function<void()> &onFilesystemTraversalProgress) {
   // std::cout << "In glob1\n";
-  auto names = iter_directory(dirname, dironly, onFilesystemTraversalProgress);
-  std::vector<fs::path> filtered_names;
-  for (auto &n : names) {
-    if (!is_hidden(n.wstring())) {
-      filtered_names.push_back(n.filename());
-      // if (n.is_relative()) {
-      //   // std::cout << "Filtered (Relative): " << n << "\n";
-      //   filtered_names.push_back(fs::relative(n));
-      // } else {
-      //   // std::cout << "Filtered (Absolute): " << n << "\n";
-      //   filtered_names.push_back(n.filename());
-      // }
+  auto infos = iter_directory(dirinfo.path, dironly, onFilesystemTraversalProgress);
+  std::vector<PathInfo> result;
+  for (auto &info : infos) {
+    if (!is_hidden(info.path.wstring())) {
+      if (fnmatch(info.path.filename(), pattern.wstring()))
+        result.push_back(info);
     }
   }
-  return filter(filtered_names, pattern.wstring());
-}
-
-std::vector<fs::path> glob0(const fs::path &dirname, const fs::path &basename,
-                            bool /*dironly*/, 
-                            const std::function<void()> &onFilesystemTraversalProgress) {
-  // std::cout << "In glob0\n";
-  std::vector<fs::path> result;
-  if (basename.empty()) {
-    // 'q*x/' should match only directories.
-    if (fs::is_directory(dirname)) {
-      result = {basename};
-    }
-  } else {
-    if (fs::exists(dirname / basename)) {
-      result = {basename};
-    }
-  }
-  onFilesystemTraversalProgress();
   return result;
 }
 
-std::vector<fs::path> glob(const fs::path &inpath, 
+std::vector<PathInfo> glob0(const PathInfo &dirinfo, const fs::path &basename,
+                            bool /*dironly*/, 
+                            const std::function<void()> &onFilesystemTraversalProgress) {
+  // std::cout << "In glob0\n";
+  std::vector<PathInfo> result;
+  if (basename.empty()) {
+    // 'q*x/' should match only directories.
+    if (fs::is_directory(dirinfo.status)) {
+      result = {{basename, dirinfo.status}};
+    }
+  } else {
+    if (fs::file_status status = fs::status(dirinfo.path / basename); fs::exists(status)) {
+      result = {{basename, status}};
+    }
+  }
+  onFilesystemTraversalProgress();  
+  return result;
+}
+
+std::vector<PathInfo> glob(const fs::path &inpath, 
                            const std::function<void()> &onFilesystemTraversalProgress,
                            bool recursive = false,
                            bool dironly = false) {
-  std::vector<fs::path> result;
+  std::vector<PathInfo> result;
 
   const auto pathname = inpath.wstring();
   auto path = fs::path(pathname);
@@ -302,34 +283,35 @@ std::vector<fs::path> glob(const fs::path &inpath,
   if (!has_magic(pathname)) {
     assert(!dironly);
     if (!basename.empty()) {
-      if (fs::exists(path)) {
-        result.push_back(path);
+      if (fs::file_status status = fs::status(path); fs::exists(status)) {
+        result.emplace_back(path, status);
       }
     } else {
       // Patterns ending with a slash should match only directories
-      if (fs::is_directory(dirname)) {
-        result.push_back(path);
+      if (fs::file_status status = fs::status(dirname); fs::is_directory(dirname)) {
+        result.emplace_back(path, status);
       }
     }
     return result;
   }
 
   if (dirname.empty()) {
+    PathInfo dirinfo{dirname, fs::status(dirname)};
     if (recursive && is_recursive(basename.wstring())) {
-      return glob2(dirname, basename, dironly, onFilesystemTraversalProgress);
+      return glob2(dirinfo, basename, dironly, onFilesystemTraversalProgress);
     } else {
-      return glob1(dirname, basename, dironly, onFilesystemTraversalProgress);
+      return glob1(dirinfo, basename, dironly, onFilesystemTraversalProgress);
     }
   }
 
-  std::vector<fs::path> dirs;
+  std::vector<PathInfo> dirinfos;
   if (dirname != fs::path(pathname) && has_magic(dirname.wstring())) {
-    dirs = glob(dirname, onFilesystemTraversalProgress, recursive, true);
+    dirinfos = glob(dirname, onFilesystemTraversalProgress, recursive, true);
   } else {
-    dirs = {dirname};
+    dirinfos = {{dirname, fs::status(dirname)}};
   }
 
-  std::function<std::vector<fs::path>(const fs::path &, const fs::path &, bool, const std::function<void()> &)>
+  std::function<std::vector<PathInfo>(const PathInfo &, const fs::path &, bool, const std::function<void()> &)>
       glob_in_dir;
   if (has_magic(basename.wstring())) {
     if (recursive && is_recursive(basename.wstring())) {
@@ -341,13 +323,15 @@ std::vector<fs::path> glob(const fs::path &inpath,
     glob_in_dir = glob0;
   }
 
-  for (auto &d : dirs) {
-    for (auto &name : glob_in_dir(d, basename, dironly, onFilesystemTraversalProgress)) {
-      fs::path subresult = name;
-      if (name.parent_path().empty()) {
-        subresult = d / name;
+  for (auto &dirinfo : dirinfos) {
+    for (auto &info : glob_in_dir(dirinfo, basename, dironly, onFilesystemTraversalProgress)) {
+      PathInfo subresult = info;
+      if (info.path.parent_path().empty()) {
+        subresult.path = dirinfo.path / info.path;
+        subresult.status = fs::status(subresult.path);
       }
-      result.push_back(subresult.lexically_normal());
+      subresult.path = subresult.path.lexically_normal();
+      result.push_back(std::move(subresult));
     }
   }
 
@@ -356,19 +340,19 @@ std::vector<fs::path> glob(const fs::path &inpath,
 
 } // namespace end
 
-std::vector<fs::path> glob(const std::wstring &pathname, 
+std::vector<PathInfo> glob(const std::wstring &pathname, 
                            const std::function<void()> &onFilesystemTraversalProgress) {
   return glob(pathname, onFilesystemTraversalProgress, false);
 }
 
-std::vector<fs::path> rglob(const std::wstring &pathname,
+std::vector<PathInfo> rglob(const std::wstring &pathname,
                             const std::function<void()> &onFilesystemTraversalProgress) {
   return glob(pathname, onFilesystemTraversalProgress, true);
 }
 
-std::vector<fs::path> glob(const std::vector<std::wstring> &pathnames,
+std::vector<PathInfo> glob(const std::vector<std::wstring> &pathnames,
                            const std::function<void()> &onFilesystemTraversalProgress) {
-  std::vector<fs::path> result;
+  std::vector<PathInfo> result;
   for (auto &pathname : pathnames) {
     for (auto &match : glob(pathname, onFilesystemTraversalProgress, false)) {
       result.push_back(std::move(match));
@@ -377,9 +361,9 @@ std::vector<fs::path> glob(const std::vector<std::wstring> &pathnames,
   return result;
 }
 
-std::vector<fs::path> rglob(const std::vector<std::wstring> &pathnames,
+std::vector<PathInfo> rglob(const std::vector<std::wstring> &pathnames,
                             const std::function<void()> &onFilesystemTraversalProgress) {
-  std::vector<fs::path> result;
+  std::vector<PathInfo> result;
   for (auto &pathname : pathnames) {
     for (auto &match : glob(pathname, onFilesystemTraversalProgress, true)) {
       result.push_back(std::move(match));
@@ -388,13 +372,13 @@ std::vector<fs::path> rglob(const std::vector<std::wstring> &pathnames,
   return result;
 }
 
-std::vector<fs::path>
+std::vector<PathInfo>
 glob(const std::initializer_list<std::wstring> &pathnames,
      const std::function<void()> &onFilesystemTraversalProgress) {
   return glob(std::vector<std::wstring>(pathnames), onFilesystemTraversalProgress);
 }
 
-std::vector<fs::path>
+std::vector<PathInfo>
 rglob(const std::initializer_list<std::wstring> &pathnames,
       const std::function<void()> &onFilesystemTraversalProgress) {
   return rglob(std::vector<std::wstring>(pathnames), onFilesystemTraversalProgress);

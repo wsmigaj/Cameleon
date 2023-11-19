@@ -43,24 +43,24 @@ PatternMatches matchWildcardPattern(const std::wstring& pattern,
 {
   PatternMatches matches;
 
-  const std::vector<std::filesystem::path> globResults =
+  const std::vector<glob::PathInfo> globResults =
     glob::rglob(pattern, onFilesystemTraversalProgress);
 
   const std::wregex patternAsRegex(wildcardPatternToRegex(pattern));
   matches.numMagicExpressions = patternAsRegex.mark_count();
-  for (const std::filesystem::path& path : globResults)
+  for (const glob::PathInfo& info : globResults)
   {
-    if (std::filesystem::is_directory(path))
+    if (std::filesystem::is_directory(info.status))
       continue;
 
-    const std::wstring pathAsString = path.wstring();
+    const std::wstring path = info.path.wstring();
     std::wsmatch match;
     std::vector<std::wstring> magicExpressionMatches;
-    if (std::regex_match(pathAsString, match, patternAsRegex))
+    if (std::regex_match(path, match, patternAsRegex))
     {
       if (match.size() != matches.numMagicExpressions + 1)
       {
-        throw RuntimeError(QString::fromStdWString(L"Internal error: the path '" + pathAsString +
+        throw RuntimeError(QString::fromStdWString(L"Internal error: the path '" + path +
                                                    L"' did not match all magic expressions"));
       }
       for (std::size_t i = 1; i < match.size(); ++i)
@@ -71,7 +71,7 @@ PatternMatches matchWildcardPattern(const std::wstring& pattern,
     else
     {
       throw RuntimeError(
-        QString::fromStdWString(L"Internal error: the path '" + pathAsString +
+        QString::fromStdWString(L"Internal error: the path '" + path +
                                 L"' unexpectedly did not match a regular expression."));
     }
     matches.matchingPaths.push_back(MatchingPath{path, std::move(magicExpressionMatches)});
