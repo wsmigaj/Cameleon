@@ -142,6 +142,33 @@ void ComparisonDialog::setNumberOfRows(size_t n)
   }
 }
 
+void ComparisonDialog::setInfoLabelsVisibility(bool visible)
+{
+  if (visible != infoLabelsVisible_)
+  {
+    infoLabelsVisible_ = visible;
+    updateInfoLabelsVisibility();
+    adjustSize();
+  }
+}
+
+void ComparisonDialog::setInfoLabels(const std::vector<QString>& labels)
+{
+  const std::vector<QLabel*> widgets = infoLabels();
+
+  for (size_t i = 0; i < widgets.size(); ++i)
+  {
+    if (i < labels.size())
+    {
+      widgets[i]->setToolTip(labels[i]);
+    }
+    else
+    {
+      widgets[i]->setToolTip(QString());
+    }
+  }
+}
+
 void ComparisonDialog::setFileDialogButtonsVisibility(bool visible)
 {
   if (visible != fileDialogButtonsVisible_)
@@ -194,6 +221,15 @@ void ComparisonDialog::updateFileDialogButtonsVisibility()
     v[i]->setVisible(false);
 }
 
+void ComparisonDialog::updateInfoLabelsVisibility()
+{
+  const std::vector<QLabel*> v = infoLabels();
+  for (size_t i = 0; i < numRows_; ++i)
+    v[i]->setVisible(infoLabelsVisible_);
+  for (size_t i = numRows_; i < MAX_NUM_PATTERNS; ++i)
+    v[i]->setVisible(false);
+}
+
 void ComparisonDialog::updateSwapValuesButtonsVisibility()
 {
   const std::vector<QToolButton*> v = swapValuesButtons();
@@ -230,6 +266,12 @@ std::vector<QToolButton*> ComparisonDialog::fileDialogButtons() const
           ui_.fileDialogButtonG, ui_.fileDialogButtonH};
 }
 
+std::vector<QLabel*> ComparisonDialog::infoLabels() const
+{
+  return {ui_.infoLabelA, ui_.infoLabelB, ui_.infoLabelC, ui_.infoLabelD,
+          ui_.infoLabelE, ui_.infoLabelF, ui_.infoLabelG, ui_.infoLabelH};
+}
+
 std::vector<QToolButton*> ComparisonDialog::swapValuesButtons() const
 {
   return {ui_.swapABButton, ui_.swapBCButton, ui_.swapCDButton, ui_.swapDEButton,
@@ -264,11 +306,23 @@ void ComparisonDialog::onSwapValuesButtonClicked()
   const std::vector<QToolButton*> buttons = swapValuesButtons();
   const int index = std::find(buttons.begin(), buttons.end(), sender()) - buttons.begin();
 
-  QComboBox* firstComboBox = valueComboBoxes()[index];
-  QComboBox* secondComboBox = valueComboBoxes()[index + 1];
-  const QString firstValue = firstComboBox->currentText();
-  const QString secondValue = secondComboBox->currentText();
+  {
+    QComboBox* firstComboBox = valueComboBoxes()[index];
+    QComboBox* secondComboBox = valueComboBoxes()[index + 1];
+    const QString firstValue = firstComboBox->currentText();
+    const QString secondValue = secondComboBox->currentText();
 
-  firstComboBox->setCurrentText(secondValue);
-  secondComboBox->setCurrentText(firstValue);
+    firstComboBox->setCurrentText(secondValue);
+    secondComboBox->setCurrentText(firstValue);
+  }
+
+  {
+    QLabel* firstInfoLabel = infoLabels()[index];
+    QLabel* secondInfoLabel = infoLabels()[index + 1];
+    const QString firstToolTip = firstInfoLabel->toolTip();
+    const QString secondToolTip = secondInfoLabel->toolTip();
+
+    firstInfoLabel->setToolTip(secondToolTip);
+    secondInfoLabel->setToolTip(firstToolTip);
+  }
 }

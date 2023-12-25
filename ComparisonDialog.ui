@@ -35,7 +35,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0">
+        <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,0">
          <item row="6" column="0">
           <widget class="QLabel" name="labelF">
            <property name="text">
@@ -43,8 +43,57 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QToolButton" name="fileDialogButtonA">
+         <item row="4" column="2">
+          <widget class="QToolButton" name="fileDialogButtonD">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="patternAComboBox">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="labelG">
+           <property name="text">
+            <string>G:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="labelH">
+           <property name="text">
+            <string>H:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="2">
+          <widget class="QToolButton" name="fileDialogButtonG">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="labelE">
+           <property name="text">
+            <string>E:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QComboBox" name="patternGComboBox">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="2">
+          <widget class="QToolButton" name="fileDialogButtonH">
            <property name="text">
             <string>...</string>
            </property>
@@ -57,8 +106,39 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="patternAComboBox">
+         <item row="1" column="2">
+          <widget class="QToolButton" name="fileDialogButtonA">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QToolButton" name="fileDialogButtonE">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="infoLabelA">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelA">
+           <property name="text">
+            <string>A:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QComboBox" name="patternFComboBox">
            <property name="editable">
             <bool>true</bool>
            </property>
@@ -71,8 +151,36 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="2">
-          <widget class="QToolButton" name="fileDialogButtonD">
+         <item row="6" column="2">
+          <widget class="QToolButton" name="fileDialogButtonF">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QToolButton" name="fileDialogButtonC">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QComboBox" name="patternEComboBox">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="labelC">
+           <property name="text">
+            <string>C:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QToolButton" name="fileDialogButtonB">
            <property name="text">
             <string>...</string>
            </property>
@@ -85,38 +193,10 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <widget class="QComboBox" name="patternEComboBox">
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="labelA">
-           <property name="text">
-            <string>A:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QToolButton" name="fileDialogButtonB">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
          <item row="4" column="1">
           <widget class="QComboBox" name="patternDComboBox">
            <property name="editable">
             <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="2">
-          <widget class="QToolButton" name="fileDialogButtonC">
-           <property name="text">
-            <string>...</string>
            </property>
           </widget>
          </item>
@@ -127,69 +207,6 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="labelC">
-           <property name="text">
-            <string>C:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="labelE">
-           <property name="text">
-            <string>E:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="2">
-          <widget class="QToolButton" name="fileDialogButtonE">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QComboBox" name="patternFComboBox">
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="2">
-          <widget class="QToolButton" name="fileDialogButtonF">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="labelG">
-           <property name="text">
-            <string>G:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QComboBox" name="patternGComboBox">
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="2">
-          <widget class="QToolButton" name="fileDialogButtonG">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="labelH">
-           <property name="text">
-            <string>H:</string>
-           </property>
-          </widget>
-         </item>
          <item row="8" column="1">
           <widget class="QComboBox" name="patternHComboBox">
            <property name="editable">
@@ -197,10 +214,73 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="2">
-          <widget class="QToolButton" name="fileDialogButtonH">
+         <item row="2" column="3">
+          <widget class="QLabel" name="infoLabelB">
            <property name="text">
-            <string>...</string>
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QLabel" name="infoLabelC">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="QLabel" name="infoLabelD">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="3">
+          <widget class="QLabel" name="infoLabelE">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="3">
+          <widget class="QLabel" name="infoLabelF">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="3">
+          <widget class="QLabel" name="infoLabelG">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="3">
+          <widget class="QLabel" name="infoLabelH">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="crystalsvg.qrc">:/icons/crystalsvg/16x16/dialog-information.png</pixmap>
            </property>
           </widget>
          </item>
@@ -376,7 +456,9 @@
   <tabstop>okButton</tabstop>
   <tabstop>cancelButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="crystalsvg.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>okButton</sender>

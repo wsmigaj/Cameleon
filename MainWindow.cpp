@@ -423,6 +423,8 @@ void MainWindow::on_actionEditCaptions_triggered()
   dialog.setPrompt("");
   dialog.setNumberOfRows(doc_->captionTemplates().size());
   dialog.setFileDialogButtonsVisibility(false);
+  dialog.setInfoLabelsVisibility(true);
+  dialog.setInfoLabels(doc_->patterns());
   dialog.setSwapValuesButtonsVisibility(false);
   dialog.normalisePathSeparators(false);
   dialog.setValues(doc_->captionTemplates());

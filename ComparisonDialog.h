@@ -40,6 +40,8 @@ public:
   void setPrompt(const QString& prompt);
   void setNumberOfRows(size_t n);
   void setFileDialogButtonsVisibility(bool visible);
+  void setInfoLabelsVisibility(bool visible);
+  void setInfoLabels(const std::vector<QString>& labels);
   void setSwapValuesButtonsVisibility(bool visible);
   void normalisePathSeparators(bool normalise);
 
@@ -52,6 +54,7 @@ private:
   std::vector<QLabel*> rowLabels() const;
   std::vector<QComboBox*> valueComboBoxes() const;
   std::vector<QToolButton*> fileDialogButtons() const;
+  std::vector<QLabel*> infoLabels() const;
   std::vector<QToolButton*> swapValuesButtons() const;
 
   void connectSignals();
@@ -59,6 +62,7 @@ private:
   void updateRowLabelsVisibility();
   void updateComboBoxesVisibility();
   void updateFileDialogButtonsVisibility();
+  void updateInfoLabelsVisibility();
   void updateSwapValuesButtonsVisibility();
 
 private:
@@ -69,6 +73,7 @@ private:
   QString recentValuesSettingsKey_;
   size_t numRows_ = MAX_NUM_PATTERNS;
   bool fileDialogButtonsVisible_ = true;
+  bool infoLabelsVisible_ = false;
   bool swapValuesButtonsVisible_ = true;
   bool normalisePathSeparators_ = false;
 };
