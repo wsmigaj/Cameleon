@@ -420,7 +420,7 @@ void MainWindow::on_actionEditCaptions_triggered()
 {
   ComparisonDialog dialog(this, "recentCaptions");
   dialog.setWindowTitle("Edit Captions");
-  dialog.setPrompt("");
+  dialog.setPrompt("Panel captions:");
   dialog.setNumberOfRows(doc_->captionTemplates().size());
   dialog.setFileDialogButtonsVisibility(false);
   dialog.setInfoLabelsVisibility(true);
