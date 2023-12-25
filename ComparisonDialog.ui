@@ -28,7 +28,7 @@
      <item>
       <widget class="QLabel" name="promptLabel">
        <property name="text">
-        <string>Wildcard patterns defining the sequences of image files to be visualized:</string>
+        <string>Wildcard patterns defining the sequences of image files shown in panels A-H:</string>
        </property>
       </widget>
      </item>
