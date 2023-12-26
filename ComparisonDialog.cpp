@@ -45,6 +45,7 @@ ComparisonDialog::ComparisonDialog(QWidget* parent, const QString& recentValuesS
     button->setMinimumWidth(maxToolButtonWidth);
   for (QToolButton* button : swapValuesButtons())
     button->setMinimumWidth(maxToolButtonWidth);
+  updateInfoLabelsVisibility();
 
   connectSignals();
   loadRecentValues();
