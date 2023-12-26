@@ -26,16 +26,16 @@
 
 namespace
 {
-struct MatchingPath
+struct PatternMatch
 {
   std::filesystem::path path;
   std::vector<std::wstring> magicExpressionMatches;
 };
 
-struct PatternMatches
+struct PatternMatchingResult
 {
   size_t numMagicExpressions = 0;
-  std::vector<MatchingPath> matchingPaths;
+  std::vector<PatternMatch> patternMatches;
 };
 
 using StringsToIndexMap = std::map<std::vector<std::wstring>, std::size_t>;
@@ -63,16 +63,17 @@ size_t countMagicExpressions(const std::vector<QString>& patterns)
   return numMagicExpressions;
 }
 
-PatternMatches matchWildcardPattern(const std::wstring& pattern,
-                                    const std::function<void()>& onFilesystemTraversalProgress)
+PatternMatchingResult
+matchWildcardPattern(const std::wstring& pattern,
+                     const std::function<void()>& onFilesystemTraversalProgress)
 {
-  PatternMatches matches;
+  PatternMatchingResult result;
 
   const std::vector<glob::PathInfo> globResults =
     glob::rglob(pattern, onFilesystemTraversalProgress);
 
   const std::wregex patternAsRegex(wildcardPatternToRegex(pattern));
-  matches.numMagicExpressions = patternAsRegex.mark_count();
+  result.numMagicExpressions = patternAsRegex.mark_count();
   for (const glob::PathInfo& info : globResults)
   {
     if (std::filesystem::is_directory(info.status))
@@ -83,7 +84,7 @@ PatternMatches matchWildcardPattern(const std::wstring& pattern,
     std::vector<std::wstring> magicExpressionMatches;
     if (std::regex_match(path, match, patternAsRegex))
     {
-      if (match.size() != matches.numMagicExpressions + 1)
+      if (match.size() != result.numMagicExpressions + 1)
       {
         throw RuntimeError(QString::fromStdWString(L"Internal error: the path '" + path +
                                                    L"' did not match all magic expressions"));
@@ -99,35 +100,35 @@ PatternMatches matchWildcardPattern(const std::wstring& pattern,
         QString::fromStdWString(L"Internal error: the path '" + path +
                                 L"' unexpectedly did not match a regular expression."));
     }
-    matches.matchingPaths.push_back(MatchingPath{path, std::move(magicExpressionMatches)});
+    result.patternMatches.push_back(PatternMatch{path, std::move(magicExpressionMatches)});
   }
 
-  return matches;
+  return result;
 }
 
 StringsToIndexMap
-enumerateUniqueMagicExpressionMatches(const std::vector<PatternMatches>& matchesByPattern)
+enumerateUniqueMagicExpressionMatches(const std::vector<PatternMatchingResult>& results)
 {
-  StringsToIndexMap magicExpressionMatchIndex;
-  for (const PatternMatches& patternMatches : matchesByPattern)
+  StringsToIndexMap uniqueMagicExpressionMatchesIndex;
+  for (const PatternMatchingResult& result : results)
   {
-    if (patternMatches.numMagicExpressions != 0)
+    if (result.numMagicExpressions != 0)
     {
-      for (const MatchingPath& path : patternMatches.matchingPaths)
+      for (const PatternMatch& patternMatch : result.patternMatches)
       {
-        magicExpressionMatchIndex[path.magicExpressionMatches] = 0;
+        uniqueMagicExpressionMatchesIndex[patternMatch.magicExpressionMatches] = 0;
       }
     }
   }
 
   {
     std::size_t i = 0;
-    for (auto& kv : magicExpressionMatchIndex)
+    for (auto& [magicExpressionMatches, index] : uniqueMagicExpressionMatchesIndex)
     {
-      kv.second = i++;
+      index = i++;
     }
   }
-  return magicExpressionMatchIndex;
+  return uniqueMagicExpressionMatchesIndex;
 }
 
 void sortInstances(std::vector<Instance>& instances)
@@ -147,32 +148,31 @@ void sortInstances(std::vector<Instance>& instances)
 }
 
 std::vector<Instance> createInstances(std::size_t numMagicExpressions,
-                                      const std::vector<PatternMatches>& matchesByPattern,
-                                      const StringsToIndexMap& magicExpressionMatchIndex)
+                                      const std::vector<PatternMatchingResult>& results,
+                                      const StringsToIndexMap& uniqueMagicExpressionMatchesIndex)
 {
   std::vector<Instance> instances;
   if (numMagicExpressions == 0)
   {
     std::vector<QString> paths;
-    for (const PatternMatches& patternMatches : matchesByPattern)
+    for (const PatternMatchingResult& result : results)
     {
-      if (patternMatches.matchingPaths.empty())
+      if (result.patternMatches.empty())
       {
         paths.push_back(QString());
       }
       else
       {
-        paths.push_back(
-          QString::fromStdWString(patternMatches.matchingPaths.front().path.wstring()));
+        paths.push_back(QString::fromStdWString(result.patternMatches.front().path.wstring()));
       }
     }
     instances.push_back(Instance{paths, {}});
   }
   else
   {
-    const size_t numPatterns = matchesByPattern.size();
-    std::transform(magicExpressionMatchIndex.begin(), magicExpressionMatchIndex.end(),
-                   std::back_inserter(instances),
+    const size_t numPatterns = results.size();
+    std::transform(uniqueMagicExpressionMatchesIndex.begin(),
+                   uniqueMagicExpressionMatchesIndex.end(), std::back_inserter(instances),
                    [numPatterns](const StringsToIndexMap::value_type& matchAndIndex)
                    {
                      std::vector<QString> matches;
@@ -182,25 +182,25 @@ std::vector<Instance> createInstances(std::size_t numMagicExpressions,
                    });
     for (size_t iPattern = 0; iPattern < numPatterns; ++iPattern)
     {
-      const PatternMatches& patternMatches = matchesByPattern[iPattern];
-      if (patternMatches.numMagicExpressions == 0)
+      const PatternMatchingResult& result = results[iPattern];
+      if (result.numMagicExpressions == 0)
       {
-        if (!patternMatches.matchingPaths.empty())
+        if (!result.patternMatches.empty())
         {
           const QString path =
-            QString::fromStdWString(patternMatches.matchingPaths.front().path.wstring());
+            QString::fromStdWString(result.patternMatches.front().path.wstring());
           for (Instance& instance : instances)
             instance.paths[iPattern] = path;
         }
       }
       else
       {
-        for (const MatchingPath& matchingPath : patternMatches.matchingPaths)
+        for (const PatternMatch& patternMatch : result.patternMatches)
         {
           const std::size_t iInstance =
-            magicExpressionMatchIndex.at(matchingPath.magicExpressionMatches);
+            uniqueMagicExpressionMatchesIndex.at(patternMatch.magicExpressionMatches);
           instances[iInstance].paths[iPattern] =
-            QString::fromStdWString(matchingPath.path.wstring());
+            QString::fromStdWString(patternMatch.path.wstring());
         }
       }
     }
@@ -215,15 +215,15 @@ std::vector<Instance> findInstances(const std::vector<QString>& patterns,
 {
   const std::size_t numMagicExpressions = countMagicExpressions(patterns);
 
-  std::vector<PatternMatches> matchesByPattern;
+  std::vector<PatternMatchingResult> results;
   std::transform(
-    patterns.begin(), patterns.end(), std::back_inserter(matchesByPattern),
+    patterns.begin(), patterns.end(), std::back_inserter(results),
     [&onFilesystemTraversalProgress](const QString& pattern)
     { return matchWildcardPattern(pattern.toStdWString(), onFilesystemTraversalProgress); });
 
   // Assign an index to each unique set of magic expression matches.
-  const StringsToIndexMap magicExpressionMatchIndex =
-    enumerateUniqueMagicExpressionMatches(matchesByPattern);
+  const StringsToIndexMap uniqueMagicExpressionMatchesIndex =
+    enumerateUniqueMagicExpressionMatches(results);
 
-  return createInstances(numMagicExpressions, matchesByPattern, magicExpressionMatchIndex);
+  return createInstances(numMagicExpressions, results, uniqueMagicExpressionMatchesIndex);
 }
