@@ -108,9 +108,10 @@
     <ClCompile Include="ImageWidget.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Layout.cpp" />
+    <ClCompile Include="PatternMatching.cpp" />
     <ClCompile Include="PatternMatchingProgressDialog.cpp" />
     <ClCompile Include="Try.cpp" />
-    <ClCompile Include="WildcardPatterns.cpp" />
+    <ClCompile Include="PatternUtils.cpp" />
     <QtMoc Include="HeaderBar.h" />
     <QtMoc Include="ImageWidget.h" />
     <QtMoc Include="ElidedLabel.h" />
@@ -118,9 +119,10 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="Layout.h" />
+    <ClInclude Include="PatternMatching.h" />
     <ClInclude Include="PatternMatchingProgressDialog.h" />
     <ClInclude Include="Try.h" />
-    <ClInclude Include="WildcardPatterns.h" />
+    <ClInclude Include="PatternUtils.h" />
     <QtRcc Include="crystalsvg.qrc" />
     <QtRcc Include="MainWindow.qrc" />
     <QtUic Include="ComparisonDialog.ui" />

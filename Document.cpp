@@ -17,11 +17,14 @@
 
 #include "stdafx.h"
 #include "Document.h"
+#include "PatternMatching.h"
 #include "RuntimeError.h"
 
 Document::Document()
 {
 }
+
+Document::~Document() = default;
 
 Document::Document(const QString& path, const std::function<void()>& onFilesystemTraversalProgress)
   : path_(path)
@@ -53,7 +56,19 @@ void Document::setPatterns(std::vector<QString> patterns,
 {
   if (patterns != patterns_)
   {
-    instances_ = findInstances(patterns, onFilesystemTraversalProgress);
+    checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(patterns);
+    std::vector<std::shared_ptr<PatternMatchingResult>> patternMatchingResults;
+    if (patternMatchingResults_.size() == patterns_.size())
+    {
+      patternMatchingResults = matchPatternsReusingPreviousResults(
+        patterns, patterns_, patternMatchingResults_, onFilesystemTraversalProgress);
+    }
+    else
+    {
+      patternMatchingResults = matchPatterns(patterns, onFilesystemTraversalProgress);
+    }
+    instances_ = findInstances(patternMatchingResults);
+    patternMatchingResults_ = std::move(patternMatchingResults);
     patterns_ = std::move(patterns);
     captionTemplates_.resize(patterns_.size(), "%p");
     modified_ = true;
@@ -93,7 +108,12 @@ std::vector<QString> Document::captions(size_t instanceIndex) const
 
 void Document::regenerateInstances(const std::function<void()>& onFilesystemTraversalProgress)
 {
-  instances_ = findInstances(patterns_, onFilesystemTraversalProgress);
+  // This check may not be strictly necessary but better safe than sorry.
+  checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(patterns_);
+  std::vector<std::shared_ptr<PatternMatchingResult>> patternMatchingResults =
+    matchPatterns(patterns_, onFilesystemTraversalProgress);
+  instances_ = findInstances(patternMatchingResults);
+  patternMatchingResults_ = std::move(patternMatchingResults_);
 }
 
 QJsonObject Document::toJson() const

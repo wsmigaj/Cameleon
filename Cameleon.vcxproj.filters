@@ -70,7 +70,7 @@
     <ClCompile Include="3pty\glob\glob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WildcardPatterns.cpp">
+    <ClCompile Include="PatternUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HeaderBar.cpp">
@@ -92,6 +92,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PatternMatchingProgressDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PatternMatching.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -133,7 +136,7 @@
     <ClInclude Include="3pty\glob\glob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WildcardPatterns.h">
+    <ClInclude Include="PatternUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
@@ -152,6 +155,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PatternMatchingProgressDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PatternMatching.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

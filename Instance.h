@@ -17,7 +17,12 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
+
+class QString;
+
+struct PatternMatchingResult;
 
 struct Instance
 {
@@ -25,6 +30,5 @@ struct Instance
   std::vector<QString> magicExpressionMatches;
 };
 
-std::vector<Instance> findInstances(
-  const std::vector<QString>& patterns,
-  const std::function<void()>& onFilesystemTraversalProgress = []() {});
+std::vector<Instance>
+findInstances(const std::vector<std::shared_ptr<PatternMatchingResult>>& patternMatchingResults);

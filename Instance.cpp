@@ -17,104 +17,39 @@
 
 #include "stdafx.h"
 #include "Instance.h"
+#include "PatternMatching.h"
 #include "RuntimeError.h"
-#include "WildcardPatterns.h"
-
-#include <glob/glob.h>
-
-#include <regex>
 
 namespace
 {
-struct PatternMatch
-{
-  std::filesystem::path path;
-  std::vector<std::wstring> magicExpressionMatches;
-};
-
-struct PatternMatchingResult
-{
-  size_t numMagicExpressions = 0;
-  std::vector<PatternMatch> patternMatches;
-};
-
 using StringsToIndexMap = std::map<std::vector<std::wstring>, std::size_t>;
 
-size_t countMagicExpressions(const std::vector<QString>& patterns)
+std::size_t numberOfMagicExpressions(
+  const std::vector<std::shared_ptr<PatternMatchingResult>>& patternMatchingResults)
 {
-  size_t numMagicExpressions = 0;
-  for (const QString& pattern : patterns)
-  {
-    const std::wregex patternAsRegex(wildcardPatternToRegex(pattern.toStdWString()));
-    const std::size_t markCount = patternAsRegex.mark_count();
-    if (markCount > 0)
-    {
-      if (numMagicExpressions == 0)
-      {
-        numMagicExpressions = markCount;
-      }
-      else if (markCount != numMagicExpressions)
-      {
-        throw RuntimeError("The number of wildcard expressions must be the same in all patterns "
-                           "containing any such expressions.");
-      }
-    }
-  }
-  return numMagicExpressions;
+  if (patternMatchingResults.empty())
+    return 0;
+
+  if (std::any_of(patternMatchingResults.begin(), patternMatchingResults.end(),
+                  [&patternMatchingResults](const std::shared_ptr<PatternMatchingResult>& result) {
+                    return result->numMagicExpressions !=
+                           patternMatchingResults.front()->numMagicExpressions;
+                  }))
+    throw RuntimeError("The number of wildcard expressions must be the same in all patterns "
+                       "containing any such expressions.");
+
+  return patternMatchingResults.front()->numMagicExpressions;
 }
 
-PatternMatchingResult
-matchWildcardPattern(const std::wstring& pattern,
-                     const std::function<void()>& onFilesystemTraversalProgress)
-{
-  PatternMatchingResult result;
-
-  const std::vector<glob::PathInfo> globResults =
-    glob::rglob(pattern, onFilesystemTraversalProgress);
-
-  const std::wregex patternAsRegex(wildcardPatternToRegex(pattern));
-  result.numMagicExpressions = patternAsRegex.mark_count();
-  for (const glob::PathInfo& info : globResults)
-  {
-    if (std::filesystem::is_directory(info.status))
-      continue;
-
-    const std::wstring path = info.path.wstring();
-    std::wsmatch match;
-    std::vector<std::wstring> magicExpressionMatches;
-    if (std::regex_match(path, match, patternAsRegex))
-    {
-      if (match.size() != result.numMagicExpressions + 1)
-      {
-        throw RuntimeError(QString::fromStdWString(L"Internal error: the path '" + path +
-                                                   L"' did not match all magic expressions"));
-      }
-      for (std::size_t i = 1; i < match.size(); ++i)
-      {
-        magicExpressionMatches.push_back(match[i].str());
-      }
-    }
-    else
-    {
-      throw RuntimeError(
-        QString::fromStdWString(L"Internal error: the path '" + path +
-                                L"' unexpectedly did not match a regular expression."));
-    }
-    result.patternMatches.push_back(PatternMatch{path, std::move(magicExpressionMatches)});
-  }
-
-  return result;
-}
-
-StringsToIndexMap
-enumerateUniqueMagicExpressionMatches(const std::vector<PatternMatchingResult>& results)
+StringsToIndexMap enumerateUniqueMagicExpressionMatches(
+  const std::vector<std::shared_ptr<PatternMatchingResult>>& results)
 {
   StringsToIndexMap uniqueMagicExpressionMatchesIndex;
-  for (const PatternMatchingResult& result : results)
+  for (const std::shared_ptr<PatternMatchingResult>& result : results)
   {
-    if (result.numMagicExpressions != 0)
+    if (result->numMagicExpressions != 0)
     {
-      for (const PatternMatch& patternMatch : result.patternMatches)
+      for (const PatternMatch& patternMatch : result->patternMatches)
       {
         uniqueMagicExpressionMatchesIndex[patternMatch.magicExpressionMatches] = 0;
       }
@@ -147,23 +82,24 @@ void sortInstances(std::vector<Instance>& instances)
   std::sort(instances.begin(), instances.end(), lessThan);
 }
 
-std::vector<Instance> createInstances(std::size_t numMagicExpressions,
-                                      const std::vector<PatternMatchingResult>& results,
-                                      const StringsToIndexMap& uniqueMagicExpressionMatchesIndex)
+std::vector<Instance>
+createInstances(std::size_t numMagicExpressions,
+                const std::vector<std::shared_ptr<PatternMatchingResult>>& results,
+                const StringsToIndexMap& uniqueMagicExpressionMatchesIndex)
 {
   std::vector<Instance> instances;
   if (numMagicExpressions == 0)
   {
     std::vector<QString> paths;
-    for (const PatternMatchingResult& result : results)
+    for (const std::shared_ptr<PatternMatchingResult>& result : results)
     {
-      if (result.patternMatches.empty())
+      if (result->patternMatches.empty())
       {
         paths.push_back(QString());
       }
       else
       {
-        paths.push_back(QString::fromStdWString(result.patternMatches.front().path.wstring()));
+        paths.push_back(QString::fromStdWString(result->patternMatches.front().path.wstring()));
       }
     }
     instances.push_back(Instance{paths, {}});
@@ -182,20 +118,20 @@ std::vector<Instance> createInstances(std::size_t numMagicExpressions,
                    });
     for (size_t iPattern = 0; iPattern < numPatterns; ++iPattern)
     {
-      const PatternMatchingResult& result = results[iPattern];
-      if (result.numMagicExpressions == 0)
+      const std::shared_ptr<PatternMatchingResult>& result = results[iPattern];
+      if (result->numMagicExpressions == 0)
       {
-        if (!result.patternMatches.empty())
+        if (!result->patternMatches.empty())
         {
           const QString path =
-            QString::fromStdWString(result.patternMatches.front().path.wstring());
+            QString::fromStdWString(result->patternMatches.front().path.wstring());
           for (Instance& instance : instances)
             instance.paths[iPattern] = path;
         }
       }
       else
       {
-        for (const PatternMatch& patternMatch : result.patternMatches)
+        for (const PatternMatch& patternMatch : result->patternMatches)
         {
           const std::size_t iInstance =
             uniqueMagicExpressionMatchesIndex.at(patternMatch.magicExpressionMatches);
@@ -210,20 +146,15 @@ std::vector<Instance> createInstances(std::size_t numMagicExpressions,
 }
 } // namespace
 
-std::vector<Instance> findInstances(const std::vector<QString>& patterns,
-                                    const std::function<void()>& onFilesystemTraversalProgress)
+std::vector<Instance>
+findInstances(const std::vector<std::shared_ptr<PatternMatchingResult>>& patternMatchingResults)
 {
-  const std::size_t numMagicExpressions = countMagicExpressions(patterns);
-
-  std::vector<PatternMatchingResult> results;
-  std::transform(
-    patterns.begin(), patterns.end(), std::back_inserter(results),
-    [&onFilesystemTraversalProgress](const QString& pattern)
-    { return matchWildcardPattern(pattern.toStdWString(), onFilesystemTraversalProgress); });
+  const std::size_t numMagicExpressions = numberOfMagicExpressions(patternMatchingResults);
 
   // Assign an index to each unique set of magic expression matches.
   const StringsToIndexMap uniqueMagicExpressionMatchesIndex =
-    enumerateUniqueMagicExpressionMatches(results);
+    enumerateUniqueMagicExpressionMatches(patternMatchingResults);
 
-  return createInstances(numMagicExpressions, results, uniqueMagicExpressionMatchesIndex);
+  return createInstances(numMagicExpressions, patternMatchingResults,
+                         uniqueMagicExpressionMatchesIndex);
 }

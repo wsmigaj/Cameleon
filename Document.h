@@ -24,6 +24,8 @@
 
 #include <vector>
 
+class PatternMatchingResult;
+
 class Document : public QObject
 {
   Q_OBJECT
@@ -32,6 +34,11 @@ public:
   Document();
   explicit Document(
     const QString& path, const std::function<void()>& onFilesystemTraversalProgress = []() {});
+  Document(const Document&) = delete;
+  Document(Document&&) = default;
+  Document& operator=(const Document&) = delete;
+  Document& operator=(Document&&) = default;
+  ~Document() override;
 
   const QString& path() const { return path_; }
 
@@ -70,6 +77,7 @@ private:
   std::vector<QString> captionTemplates_;
 
   bool modified_ = false;
+  std::vector<std::shared_ptr<PatternMatchingResult>> patternMatchingResults_;
   std::vector<Instance> instances_;
 };
 
