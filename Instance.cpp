@@ -38,6 +38,31 @@ struct PatternMatches
   std::vector<MatchingPath> matchingPaths;
 };
 
+using StringsToIndexMap = std::map<std::vector<std::wstring>, std::size_t>;
+
+size_t countMagicExpressions(const std::vector<QString>& patterns)
+{
+  size_t numMagicExpressions = 0;
+  for (const QString& pattern : patterns)
+  {
+    const std::wregex patternAsRegex(wildcardPatternToRegex(pattern.toStdWString()));
+    const std::size_t markCount = patternAsRegex.mark_count();
+    if (markCount > 0)
+    {
+      if (numMagicExpressions == 0)
+      {
+        numMagicExpressions = markCount;
+      }
+      else if (markCount != numMagicExpressions)
+      {
+        throw RuntimeError("The number of wildcard expressions must be the same in all patterns "
+                           "containing any such expressions.");
+      }
+    }
+  }
+  return numMagicExpressions;
+}
+
 PatternMatches matchWildcardPattern(const std::wstring& pattern,
                                     const std::function<void()>& onFilesystemTraversalProgress)
 {
@@ -80,52 +105,9 @@ PatternMatches matchWildcardPattern(const std::wstring& pattern,
   return matches;
 }
 
-void sortInstances(std::vector<Instance>& instances)
+StringsToIndexMap
+enumerateUniqueMagicExpressionMatches(const std::vector<PatternMatches>& matchesByPattern)
 {
-  const size_t numInstances = instances.size();
-
-  QCollator collator;
-  collator.setCaseSensitivity(Qt::CaseInsensitive);
-  collator.setNumericMode(true);
-  auto lessThan = [&collator](const Instance& va, const Instance& vb)
-  {
-    return std::lexicographical_compare(
-      va.magicExpressionMatches.begin(), va.magicExpressionMatches.end(),
-      vb.magicExpressionMatches.begin(), vb.magicExpressionMatches.end(), collator);
-  };
-  std::sort(instances.begin(), instances.end(), lessThan);
-}
-} // namespace
-
-std::vector<Instance> findInstances(const std::vector<QString>& patterns,
-                                    const std::function<void()>& onFilesystemTraversalProgress)
-{
-  std::size_t numMagicExpressions = 0;
-  for (const QString& pattern : patterns)
-  {
-    const std::wregex patternAsRegex(wildcardPatternToRegex(pattern.toStdWString()));
-    const std::size_t markCount = patternAsRegex.mark_count();
-    if (markCount > 0)
-    {
-      if (numMagicExpressions == 0)
-      {
-        numMagicExpressions = markCount;
-      }
-      else if (markCount != numMagicExpressions)
-      {
-        throw RuntimeError("The number of wildcard expressions must be the same in all patterns "
-                           "containing any such expressions.");
-      }
-    }
-  }
-
-  std::vector<PatternMatches> matchesByPattern;
-  std::transform(
-    patterns.begin(), patterns.end(), std::back_inserter(matchesByPattern),
-    [&onFilesystemTraversalProgress](const QString& pattern)
-    { return matchWildcardPattern(pattern.toStdWString(), onFilesystemTraversalProgress); });
-
-  using StringsToIndexMap = std::map<std::vector<std::wstring>, std::size_t>;
   StringsToIndexMap magicExpressionMatchIndex;
   for (const PatternMatches& patternMatches : matchesByPattern)
   {
@@ -145,7 +127,29 @@ std::vector<Instance> findInstances(const std::vector<QString>& patterns,
       kv.second = i++;
     }
   }
+  return magicExpressionMatchIndex;
+}
 
+void sortInstances(std::vector<Instance>& instances)
+{
+  const size_t numInstances = instances.size();
+
+  QCollator collator;
+  collator.setCaseSensitivity(Qt::CaseInsensitive);
+  collator.setNumericMode(true);
+  auto lessThan = [&collator](const Instance& va, const Instance& vb)
+  {
+    return std::lexicographical_compare(
+      va.magicExpressionMatches.begin(), va.magicExpressionMatches.end(),
+      vb.magicExpressionMatches.begin(), vb.magicExpressionMatches.end(), collator);
+  };
+  std::sort(instances.begin(), instances.end(), lessThan);
+}
+
+std::vector<Instance> createInstances(std::size_t numMagicExpressions,
+                                      const std::vector<PatternMatches>& matchesByPattern,
+                                      const StringsToIndexMap& magicExpressionMatchIndex)
+{
   std::vector<Instance> instances;
   if (numMagicExpressions == 0)
   {
@@ -166,7 +170,7 @@ std::vector<Instance> findInstances(const std::vector<QString>& patterns,
   }
   else
   {
-    const size_t numPatterns = patterns.size();
+    const size_t numPatterns = matchesByPattern.size();
     std::transform(magicExpressionMatchIndex.begin(), magicExpressionMatchIndex.end(),
                    std::back_inserter(instances),
                    [numPatterns](const StringsToIndexMap::value_type& matchAndIndex)
@@ -200,9 +204,26 @@ std::vector<Instance> findInstances(const std::vector<QString>& patterns,
         }
       }
     }
-
     sortInstances(instances);
   }
-
   return instances;
+}
+} // namespace
+
+std::vector<Instance> findInstances(const std::vector<QString>& patterns,
+                                    const std::function<void()>& onFilesystemTraversalProgress)
+{
+  const std::size_t numMagicExpressions = countMagicExpressions(patterns);
+
+  std::vector<PatternMatches> matchesByPattern;
+  std::transform(
+    patterns.begin(), patterns.end(), std::back_inserter(matchesByPattern),
+    [&onFilesystemTraversalProgress](const QString& pattern)
+    { return matchWildcardPattern(pattern.toStdWString(), onFilesystemTraversalProgress); });
+
+  // Assign an index to each unique set of magic expression matches.
+  const StringsToIndexMap magicExpressionMatchIndex =
+    enumerateUniqueMagicExpressionMatches(matchesByPattern);
+
+  return createInstances(numMagicExpressions, matchesByPattern, magicExpressionMatchIndex);
 }
