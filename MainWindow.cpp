@@ -506,6 +506,7 @@ void MainWindow::onLayoutActionTriggered()
 void MainWindow::onDocumentModificationStatusChanged()
 {
   updateDocumentModificationStatusDependentActions();
+  setWindowModified(doc_ && doc_->modified());
 }
 
 void MainWindow::onDocumentPathChanged()
@@ -518,13 +519,14 @@ void MainWindow::onDocumentPathChanged()
       title = "Untitled.cml";
     else
       title = QFileInfo(doc_->path()).fileName();
-    title += " - " + appTitle;
+    title += "[*] - " + appTitle;
   }
   else
   {
     title = appTitle;
   }
   setWindowTitle(title);
+  setWindowModified(doc_ && doc_->modified());
 
   if (doc_ && !doc_->path().isEmpty())
     prependToRecentComparisons(doc_->path());
