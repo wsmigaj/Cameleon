@@ -208,3 +208,64 @@ std::optional<int> findInstance(const Document& doc, const std::vector<QString>&
   else
     return matchingInstanceIt - doc.instances().begin();
 }
+
+std::vector<QString> updateCaptionTemplates(const std::vector<QString>& previousCaptionTemplates,
+                                            const std::vector<QString>& previousPatterns,
+                                            const std::vector<QString>& newPatterns)
+{
+  const size_t previousNumPatterns = previousPatterns.size();
+  const size_t newNumPatterns = newPatterns.size();
+  if (previousCaptionTemplates.size() != previousNumPatterns)
+  {
+    throw RuntimeError("Internal error: mismatch between the number of patterns and the number of "
+                       "caption templates");
+  }
+
+  const QString defaultCaptionTemplate = "%p";
+  std::vector<QString> newCaptionTemplates(newNumPatterns);
+  std::vector<bool> isPreviousCaptionTemplateReused(previousNumPatterns, false);
+  std::vector<bool> isNewCaptionTemplateReady(newNumPatterns, false);
+
+  for (size_t patternIndex = 0; patternIndex < std::min(newNumPatterns, previousNumPatterns);
+       ++patternIndex)
+  {
+    if (newPatterns[patternIndex] == previousPatterns[patternIndex])
+    {
+      newCaptionTemplates[patternIndex] = previousCaptionTemplates[patternIndex];
+      isPreviousCaptionTemplateReused[patternIndex] = true;
+      isNewCaptionTemplateReady[patternIndex] = true;
+    }
+  }
+
+  for (size_t newPatternIndex = 0; newPatternIndex < newNumPatterns; ++newPatternIndex)
+  {
+    if (isNewCaptionTemplateReady[newPatternIndex])
+      continue;
+
+    for (size_t previousPatternIndex = 0; previousPatternIndex < previousNumPatterns;
+         ++previousPatternIndex)
+    {
+      if (!isPreviousCaptionTemplateReused[previousPatternIndex] &&
+          previousPatterns[previousPatternIndex] == newPatterns[newPatternIndex])
+      {
+        newCaptionTemplates[newPatternIndex] = previousCaptionTemplates[previousPatternIndex];
+        isPreviousCaptionTemplateReused[previousPatternIndex] = true;
+        isNewCaptionTemplateReady[newPatternIndex] = true;
+        break;
+      }
+    }
+  }
+
+  for (size_t patternIndex = 0; patternIndex < newNumPatterns; ++patternIndex)
+  {
+    if (isNewCaptionTemplateReady[patternIndex])
+      continue;
+
+    if (patternIndex < previousNumPatterns && !isPreviousCaptionTemplateReused[patternIndex])
+      newCaptionTemplates[patternIndex] = previousCaptionTemplates[patternIndex];
+    else
+      newCaptionTemplates[patternIndex] = defaultCaptionTemplate;
+  }
+
+  return newCaptionTemplates;
+}

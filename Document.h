@@ -82,3 +82,7 @@ private:
 };
 
 std::optional<int> findInstance(const Document& doc, const std::vector<QString>& key);
+
+std::vector<QString> updateCaptionTemplates(const std::vector<QString>& previousCaptionTemplates,
+                                            const std::vector<QString>& previousPatterns,
+                                            const std::vector<QString>& newPatterns);

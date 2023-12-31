@@ -264,7 +264,8 @@ void MainWindow::on_actionEditComparison_triggered()
   {
     const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();
 
-    const size_t previousNumPatterns = doc_->patterns().size();
+    const std::vector<QString> previousPatterns = doc_->patterns();
+    const std::vector<QString> previousCaptionTemplates = doc_->captionTemplates();
 
     PatternMatchingProgressDialog progressDialog(this);
     progressDialog.show();
@@ -275,9 +276,12 @@ void MainWindow::on_actionEditComparison_triggered()
     if (!Try([&] { doc_->setPatterns(dialog.values(), onFilesystemTraversalProgress); }))
       return;
 
-    const size_t currentNumPatterns = doc_->patterns().size();
-    if (currentNumPatterns != previousNumPatterns)
-      doc_->setLayout(defaultLayout(currentNumPatterns));
+    const size_t newNumPatterns = doc_->patterns().size();
+    if (newNumPatterns != previousPatterns.size())
+      doc_->setLayout(defaultLayout(newNumPatterns));
+
+    doc_->setCaptionTemplates(
+      updateCaptionTemplates(previousCaptionTemplates, previousPatterns, doc_->patterns()));
 
     onInstancesChanged();
 
