@@ -1,4 +1,4 @@
-// This file is part of Caméléon.
+﻿// This file is part of Caméléon.
 //
 // Copyright (C) 2023-2024 Wojciech Śmigaj
 //
@@ -476,7 +476,7 @@ void MainWindow::on_actionAboutCameleon_triggered()
 {
   QMessageBox::about(
     this, "About Cam\u00E9l\u00E9on",
-    "Copyright (C) 2023 Wojciech \u015Amigaj.<br><br>\n\n"
+    "Copyright (C) 2023-2024 Wojciech \u015Amigaj.<br><br>\n\n"
     "Application icon by <a href=\"http://icons8.com/\">Icons8</a>.<br><br>\n\n"
     "This software uses the following open-source libraries:\n\n"
     "<ul>"
