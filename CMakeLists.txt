@@ -48,6 +48,7 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY QT_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER QtInternalTargets)
+set_property(GLOBAL PROPERTY AUTOGEN_SOURCE_GROUP "Generated Files")
 
 file(GLOB CAMELEON_HEADERS CONFIGURE_DEPENDS *.h 3pty/glob/*.h)
 file(GLOB CAMELEON_SOURCES CONFIGURE_DEPENDS *.cpp 3pty/glob/*.cpp)
