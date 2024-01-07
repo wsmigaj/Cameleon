@@ -56,5 +56,11 @@ file(GLOB CAMELEON_RESOURCES CONFIGURE_DEPENDS *.qrc)
 qt_add_executable(Cameleon ${CAMELEON_SOURCES} ${CAMELEON_HEADERS} ${CAMELEON_RESOURCES})
 target_link_libraries(Cameleon PRIVATE Qt6::Core Qt6::Concurrent Qt6::Widgets)
 target_include_directories(Cameleon PRIVATE 3pty)
-
 target_precompile_headers(Cameleon PRIVATE <QtWidgets>)
+set_target_properties(Cameleon PROPERTIES
+    WIN32_EXECUTABLE ON
+    MACOSX_BUNDLE ON
+    VS_DEBUGGER_ENVIRONMENT "PATH=%PATH%;$<TARGET_FILE_DIR:Qt6::Widgets>"
+)
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Cameleon)
