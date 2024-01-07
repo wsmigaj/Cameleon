@@ -4,8 +4,9 @@ project(Cameleon)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Core Concurrent Widgets)
-# qt_standard_project_setup()
+# Set up the Qt dependency.
+
+find_package(Qt6 6.2 REQUIRED COMPONENTS Core Concurrent Widgets Tools)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -50,6 +51,8 @@ set_property(GLOBAL PROPERTY QT_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_SOURCE_GROUP "Generated Files")
 
+# Set up a target for the Cameleon application.
+
 file(GLOB CAMELEON_HEADERS CONFIGURE_DEPENDS *.h 3pty/glob/*.h)
 file(GLOB CAMELEON_SOURCES CONFIGURE_DEPENDS *.cpp 3pty/glob/*.cpp)
 file(GLOB CAMELEON_RESOURCES CONFIGURE_DEPENDS *.qrc)
@@ -65,3 +68,22 @@ set_target_properties(Cameleon PROPERTIES
 )
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Cameleon)
+
+# Set up installation.
+
+install(TARGETS Cameleon
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+set(deployScript ${CMAKE_CURRENT_BINARY_DIR}/deployscript-$<CONFIG>.cmake)
+file(GENERATE OUTPUT "${deployScript}" CONTENT [[
+execute_process(
+    WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
+    COMMAND "$<TARGET_FILE:Qt6::windeployqt>"
+        bin/Cameleon.exe
+        --no-translations
+        COMMAND_ERROR_IS_FATAL LAST
+)
+]])
+install(SCRIPT "${deployScript}")
