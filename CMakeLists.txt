@@ -55,7 +55,7 @@ set_property(GLOBAL PROPERTY AUTOGEN_SOURCE_GROUP "Generated Files")
 
 file(GLOB CAMELEON_HEADERS CONFIGURE_DEPENDS *.h 3pty/glob/*.h)
 file(GLOB CAMELEON_SOURCES CONFIGURE_DEPENDS *.cpp 3pty/glob/*.cpp)
-file(GLOB CAMELEON_RESOURCES CONFIGURE_DEPENDS *.qrc)
+file(GLOB CAMELEON_RESOURCES CONFIGURE_DEPENDS *.qrc *.rc)
 
 qt_add_executable(Cameleon ${CAMELEON_SOURCES} ${CAMELEON_HEADERS} ${CAMELEON_RESOURCES})
 target_link_libraries(Cameleon PRIVATE Qt6::Core Qt6::Concurrent Qt6::Widgets)
