@@ -56,3 +56,5 @@ file(GLOB CAMELEON_RESOURCES CONFIGURE_DEPENDS *.qrc)
 qt_add_executable(Cameleon ${CAMELEON_SOURCES} ${CAMELEON_HEADERS} ${CAMELEON_RESOURCES})
 target_link_libraries(Cameleon PRIVATE Qt6::Core Qt6::Concurrent Qt6::Widgets)
 target_include_directories(Cameleon PRIVATE 3pty)
+
+target_precompile_headers(Cameleon PRIVATE <QtWidgets>)
