@@ -207,21 +207,6 @@ void MainView::setLayout(const Layout& layout)
     mainLayout_->setColumnStretch(column, 0);
 }
 
-//void MainView::onInstancesChanged()
-//{
-//  // In fact, if the patterns change, the most intuitive behaviour would be to:
-//  // - update the layout (without reloading any images)
-//  // - if a non-empty instance was being displayed, identify the new current instance most similar to that instance; otherwise use the instance index 0
-//  // - set the current instance index to that instance and reload the images
-//  onLayoutChanged();
-//  int newInstanceIndex = 0;
-//  if (doc_ && !std::all_of(currentInstance_.begin(), currentInstance_.end(), [](const QString &s) { return s.isEmpty(); }))
-//  {
-//    newInstanceIndex = doc_->closestInstanceIndex(currentInstance_);
-//  }
-//  setCurrentInstanceIndex(newInstanceIndex, ForceReload::YES);
-//}
-
 void MainView::zoom(double relativeScale)
 {
   if (!imageViews_.empty())
