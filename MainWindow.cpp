@@ -177,8 +177,8 @@ void MainWindow::on_actionNewComparison_triggered()
     return;
   }
 
-  doc_ = std::make_unique<Document>();
-  doc_->setLayout(defaultLayout(dialog.values().size()));
+  std::unique_ptr<Document> newDoc = std::make_unique<Document>();
+  newDoc->setLayout(defaultLayout(dialog.values().size()));
 
   PatternMatchingProgressDialog progressDialog(this);
   progressDialog.show();
@@ -186,7 +186,10 @@ void MainWindow::on_actionNewComparison_triggered()
   auto onFilesystemTraversalProgress = [&progressDialog]()
   { progressDialog.incrementProgressAndCheckForCancellation(); };
 
-  doc_->setPatterns(dialog.values(), onFilesystemTraversalProgress);
+  if (!Try([&] { newDoc->setPatterns(dialog.values(), onFilesystemTraversalProgress); }))
+    return;
+
+  doc_ = std::move(newDoc);
 
   connectDocumentSignals();
   onDocumentPathChanged();
