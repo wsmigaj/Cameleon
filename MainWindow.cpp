@@ -172,6 +172,7 @@ void MainWindow::on_actionNewComparison_triggered()
   dialog.setWindowTitle("New Comparison");
   dialog.normalisePathSeparators(true);
   dialog.setValues({});
+  setComboBoxPromptsToPatternExamples(dialog);
   if (dialog.exec() != QDialog::Accepted)
   {
     return;
@@ -262,6 +263,7 @@ void MainWindow::on_actionEditComparison_triggered()
   dialog.setWindowTitle("Edit Comparison");
   dialog.normalisePathSeparators(true);
   dialog.setValues(doc_->patterns());
+  setComboBoxPromptsToPatternExamples(dialog);
   if (dialog.exec() == QDialog::Accepted)
   {
     const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();

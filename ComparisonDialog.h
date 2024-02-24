@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ public:
 
   void setPrompt(const QString& prompt);
   void setNumberOfRows(size_t n);
+  void setComboBoxPrompts(const std::vector<QString>& prompts);
   void setFileDialogButtonsVisibility(bool visible);
   void setInfoLabelsVisibility(bool visible);
   void setInfoLabels(const std::vector<QString>& labels);
@@ -77,3 +78,5 @@ private:
   bool swapValuesButtonsVisible_ = true;
   bool normalisePathSeparators_ = false;
 };
+
+void setComboBoxPromptsToPatternExamples(ComparisonDialog& dialog);

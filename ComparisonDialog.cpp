@@ -142,6 +142,15 @@ void ComparisonDialog::setNumberOfRows(size_t n)
   }
 }
 
+void ComparisonDialog::setComboBoxPrompts(const std::vector<QString>& prompts)
+{
+  const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
+  for (size_t i = 0; i < prompts.size() && i < numRows_; ++i)
+    comboBoxes[i]->lineEdit()->setPlaceholderText(prompts[i]);
+  for (size_t i = prompts.size(); i < numRows_; ++i)
+    comboBoxes[i]->lineEdit()->setPlaceholderText(QString());
+}
+
 void ComparisonDialog::setInfoLabelsVisibility(bool visible)
 {
   if (visible != infoLabelsVisible_)
@@ -325,4 +334,11 @@ void ComparisonDialog::onSwapValuesButtonClicked()
     firstInfoLabel->setToolTip(secondToolTip);
     secondInfoLabel->setToolTip(firstToolTip);
   }
+}
+
+void setComboBoxPromptsToPatternExamples(ComparisonDialog& dialog)
+{
+  dialog.setComboBoxPrompts({"Example: C:\\TestSet\\input*.png",
+                             "Example: C:\\TestSet\\ground-truth*.png",
+                             "Example: C:\\TestSet\\prediction*.png"});
 }
