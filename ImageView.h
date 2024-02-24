@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ public:
   ~ImageView() override;
 
   void setPath(const QString& path);
+  void setInstanceKey(const QString& instanceKey);
   void setPixmap(const QPixmap& pixmap);
   void setMessage(const QString& msg);
   void clear();

@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,6 +43,8 @@ public:
   const std::vector<QString>& paths() const { return paths_; }
   void setPaths(std::vector<QString> paths);
   void clearPaths();
+
+  void setInstanceKey(const QString& instanceKey);
 
   void setCaptions(const std::vector<QString>& captions);
 

@@ -26,22 +26,9 @@
 
 namespace
 {
-QString join(const std::vector<QString>& strings, const QString& sep = QString())
+QString instanceKeyToFileName(const QString& key)
 {
-  QString result;
-  if (!strings.empty())
-    result = strings.front();
-  for (size_t i = 1; i < strings.size(); ++i)
-  {
-    result += sep;
-    result += strings[i];
-  }
-  return result;
-}
-
-QString instanceKeyToFileName(const std::vector<QString>& keys)
-{
-  QString fileName = join(keys, "...");
+  QString fileName = key;
   fileName.replace('/', "_");
   fileName.replace('\\', "_");
   return fileName;
@@ -368,8 +355,7 @@ void MainWindow::on_actionSaveScreenshot_triggered()
 {
   QSettings settings;
   QString lastDir = settings.value("lastSaveScreenshotDir", QString()).toString();
-  QString proposedFileName =
-    instanceKeyToFileName(doc_->instances()[instance_].magicExpressionMatches) + ".png";
+  QString proposedFileName = instanceKeyToFileName(doc_->instanceKey(instance_)) + ".png";
   QString path = QDir(lastDir).filePath(proposedFileName);
 
   path = QFileDialog::getSaveFileName(this, "Save Screenshot", path, "PNG images (*.png)");
@@ -403,9 +389,7 @@ void MainWindow::on_actionSaveAllScreenshots_triggered()
   qApp->processEvents();
   while (true)
   {
-    QString path = dir + "\\" +
-                   instanceKeyToFileName(doc_->instances()[instance_].magicExpressionMatches) +
-                   ".png";
+    QString path = dir + "\\" + instanceKeyToFileName(doc_->instanceKey(instance_)) + ".png";
 
     QPixmap pixmap = grab(toolBarAreaRect());
     QImage image = pixmap.toImage();
@@ -584,9 +568,10 @@ void MainWindow::populateInstanceComboBox()
   bool anyItemIsNonempty = false;
   if (doc_ != nullptr)
   {
-    for (const Instance& instance : doc_->instances())
+    const size_t numInstances = doc_->instances().size();
+    for (size_t instance = 0; instance < numInstances; ++instance)
     {
-      QString item = join(instance.magicExpressionMatches, "...");
+      QString item = doc_->instanceKey(instance);
       anyItemIsNonempty = anyItemIsNonempty || !item.isEmpty();
       instanceComboBox_->addItem(std::move(item));
     }
@@ -656,6 +641,7 @@ void MainWindow::onActiveInstanceChanged()
     {
       instanceComboBox_->setCurrentIndex(instance_);
       ui_.mainView->setPaths(doc_->instances()[instance_].paths);
+      ui_.mainView->setInstanceKey(doc_->instanceKey(instance_));
       ui_.mainView->setCaptions(doc_->captions(instance_));
     }
   }

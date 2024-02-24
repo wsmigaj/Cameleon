@@ -55,6 +55,14 @@ void MainView::setPaths(std::vector<QString> paths)
   reloadImages();
 }
 
+void MainView::setInstanceKey(const QString& instanceKey)
+{
+  for (size_t i = 0; i < imageViews_.size(); ++i)
+  {
+    imageViews_[i]->setInstanceKey(instanceKey);
+  }
+}
+
 void MainView::setCaptions(const std::vector<QString>& captions)
 {
   for (size_t i = 0; i < captions.size() && i < imageViews_.size(); ++i)

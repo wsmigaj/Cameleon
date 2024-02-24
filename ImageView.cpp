@@ -48,6 +48,11 @@ void ImageView::setPath(const QString& path)
   imageWidget_->setPath(path);
 }
 
+void ImageView::setInstanceKey(const QString& instanceKey)
+{
+  imageWidget_->setInstanceKey(instanceKey);
+}
+
 void ImageView::setPixmap(const QPixmap& pixmap)
 {
   if (pixmap.isNull())

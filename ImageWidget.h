@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ public:
   ~ImageWidget() override;
 
   void setPath(const QString& path);
+  void setInstanceKey(const QString& instanceKey);
   void setPixmap(const QPixmap& pixmap);
   void clear();
 
@@ -51,6 +52,7 @@ private slots:
   void onCopyImage();
   void onCopyFullPath();
   void onCopyFileName();
+  void onCopyInstanceKey();
   void onOpenInExplorer();
 
 private:
@@ -60,10 +62,12 @@ private:
   QAction* copyImageAction_;
   QAction* copyFullPathAction_;
   QAction* copyFileNameAction_;
+  QAction* copyInstanceKeyAction_;
   QAction* openInExplorerAction_;
 
   QGraphicsScene scene_;
   QGraphicsPixmapItem* item_ = nullptr;
   QString path_;
+  QString instanceKey_;
   QImage image_;
 };

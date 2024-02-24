@@ -19,6 +19,22 @@
 #include "PatternMatching.h"
 #include "RuntimeError.h"
 
+namespace
+{
+QString join(const std::vector<QString>& strings, const QString& sep = QString())
+{
+  QString result;
+  if (!strings.empty())
+    result = strings.front();
+  for (size_t i = 1; i < strings.size(); ++i)
+  {
+    result += sep;
+    result += strings[i];
+  }
+  return result;
+}
+} // namespace
+
 Document::Document()
 {
 }
@@ -103,6 +119,14 @@ std::vector<QString> Document::captions(size_t instanceIndex) const
       result[i].replace("%p", instance.paths[i]);
   }
   return result;
+}
+
+QString Document::instanceKey(size_t instanceIndex) const
+{
+  if (instanceIndex >= instances_.size())
+    throw RuntimeError("Invalid page index");
+  const Instance& instance = instances_[instanceIndex];
+  return join(instance.magicExpressionMatches, "...");
 }
 
 void Document::regenerateInstances(const std::function<void()>& onFilesystemTraversalProgress)

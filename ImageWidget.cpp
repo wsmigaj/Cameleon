@@ -42,6 +42,8 @@ void ImageWidget::createActions()
   connect(copyFullPathAction_, &QAction::triggered, this, &ImageWidget::onCopyFullPath);
   copyFileNameAction_ = new QAction(tr("&Copy File Name"), this);
   connect(copyFileNameAction_, &QAction::triggered, this, &ImageWidget::onCopyFileName);
+  copyInstanceKeyAction_ = new QAction(tr("&Copy Pattern Match"), this);
+  connect(copyInstanceKeyAction_, &QAction::triggered, this, &ImageWidget::onCopyInstanceKey);
   openInExplorerAction_ = new QAction(tr("&Open In Explorer"), this);
   connect(openInExplorerAction_, &QAction::triggered, this, &ImageWidget::onOpenInExplorer);
 }
@@ -49,6 +51,11 @@ void ImageWidget::createActions()
 void ImageWidget::setPath(const QString& path)
 {
   path_ = path;
+}
+
+void ImageWidget::setInstanceKey(const QString& instanceKey)
+{
+  instanceKey_ = instanceKey;
 }
 
 void ImageWidget::setPixmap(const QPixmap& pixmap)
@@ -136,6 +143,7 @@ void ImageWidget::contextMenuEvent(QContextMenuEvent* event)
     menu.addAction(copyImageAction_);
     menu.addAction(copyFullPathAction_);
     menu.addAction(copyFileNameAction_);
+    menu.addAction(copyInstanceKeyAction_);
     menu.addSeparator();
     menu.addAction(openInExplorerAction_);
     menu.exec(event->globalPos());
@@ -149,6 +157,12 @@ void ImageWidget::onCopyImage()
     QClipboard* clipboard = QGuiApplication::clipboard();
     clipboard->setImage(image_);
   }
+}
+
+void ImageWidget::onCopyInstanceKey()
+{
+  QClipboard* clipboard = QGuiApplication::clipboard();
+  clipboard->setText(instanceKey_);
 }
 
 void ImageWidget::onCopyFullPath()

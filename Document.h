@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -53,7 +53,9 @@ public:
   const std::vector<QString>& captionTemplates() const { return captionTemplates_; }
   void setCaptionTemplates(std::vector<QString> captionTemplates);
 
-  std::vector<QString> captions(size_t instance) const;
+  std::vector<QString> captions(size_t instanceIndex) const;
+
+  QString instanceKey(size_t instanceIndex) const;
 
   bool modified() const { return modified_; }
 
