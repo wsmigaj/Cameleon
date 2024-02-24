@@ -112,7 +112,7 @@ void MainWindow::populateLayoutSubmenu()
 
 void MainWindow::initialiseRecentComparisonsSubmenu()
 {
-  recentComparisonsMenu_ = new QMenu("&Recent Comparisons", ui_.menuFile);
+  recentComparisonsMenu_ = new QMenu("&Recent", ui_.menuFile);
   ui_.menuFile->insertMenu(ui_.actionQuit, recentComparisonsMenu_);
   ui_.menuFile->insertSeparator(ui_.actionQuit);
 
@@ -169,7 +169,7 @@ void MainWindow::on_actionNewComparison_triggered()
   }
 
   ComparisonDialog dialog(this, "recentPatterns");
-  dialog.setWindowTitle("New Comparison");
+  dialog.setWindowTitle("New Album");
   dialog.normalisePathSeparators(true);
   dialog.setValues({});
   setComboBoxPromptsToPatternExamples(dialog);
@@ -206,8 +206,8 @@ void MainWindow::on_actionOpenComparison_triggered()
 
   QSettings settings;
   QString lastDir = settings.value("lastOpenDir", QString()).toString();
-  QString path = QFileDialog::getOpenFileName(this, "Open Comparison", lastDir,
-                                              "Comparisons (*.cml);;All files (*.*)");
+  QString path =
+    QFileDialog::getOpenFileName(this, "Open Album", lastDir, "Albums (*.cml);;All files (*.*)");
   if (path.isEmpty())
   {
     return;
@@ -260,7 +260,7 @@ void MainWindow::onRecentComparisonActionTriggered()
 void MainWindow::on_actionEditComparison_triggered()
 {
   ComparisonDialog dialog(this, "recentPatterns");
-  dialog.setWindowTitle("Edit Comparison");
+  dialog.setWindowTitle("Edit Album");
   dialog.normalisePathSeparators(true);
   dialog.setValues(doc_->patterns());
   setComboBoxPromptsToPatternExamples(dialog);
@@ -687,11 +687,10 @@ bool MainWindow::maybeSaveDocument()
     return true;
   }
 
-  int ret =
-    QMessageBox::warning(this, qApp->applicationName(),
-                         "The comparison has been modified. Do you want to save your changes?",
-                         QMessageBox::Yes | QMessageBox::Default, QMessageBox::No,
-                         QMessageBox::Cancel | QMessageBox::Escape);
+  int ret = QMessageBox::warning(this, qApp->applicationName(),
+                                 "The album has been modified. Do you want to save your changes?",
+                                 QMessageBox::Yes | QMessageBox::Default, QMessageBox::No,
+                                 QMessageBox::Cancel | QMessageBox::Escape);
   switch (ret)
   {
   case QMessageBox::Yes:
@@ -724,7 +723,7 @@ bool MainWindow::saveDocumentAs()
   {
     path = settings.value("lastSaveDir", QString()).toString();
   }
-  path = QFileDialog::getSaveFileName(this, "Save Comparison", path, "Comparisons (*.cml)");
+  path = QFileDialog::getSaveFileName(this, "Save Album", path, "Albums (*.cml)");
   if (path.isEmpty())
   {
     return false;

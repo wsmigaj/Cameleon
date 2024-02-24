@@ -37,7 +37,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&amp;File</string>
+     <string>&amp;Album</string>
     </property>
     <addaction name="actionNewComparison"/>
     <addaction name="actionOpenComparison"/>
@@ -82,7 +82,7 @@
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuNavigation"/>
-   <addaction name="menu_Help"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -106,7 +106,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewComparison">
    <property name="text">
-    <string>&amp;New Comparison...</string>
+    <string>&amp;New...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -114,7 +114,7 @@
   </action>
   <action name="actionOpenComparison">
    <property name="text">
-    <string>&amp;Open Comparison...</string>
+    <string>&amp;Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -122,7 +122,7 @@
   </action>
   <action name="actionCloseComparison">
    <property name="text">
-    <string>&amp;Close Comparison</string>
+    <string>&amp;Close</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -138,7 +138,7 @@
   </action>
   <action name="actionSaveComparison">
    <property name="text">
-    <string>&amp;Save Comparison</string>
+    <string>&amp;Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -146,7 +146,7 @@
   </action>
   <action name="actionSaveComparisonAs">
    <property name="text">
-    <string>Save Comparison &amp;As...</string>
+    <string>Save &amp;As...</string>
    </property>
   </action>
   <action name="actionZoomIn">
@@ -172,7 +172,7 @@
   </action>
   <action name="actionEditComparison">
    <property name="text">
-    <string>&amp;Edit Comparison...</string>
+    <string>&amp;Edit...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -180,7 +180,7 @@
   </action>
   <action name="actionFirstInstance">
    <property name="text">
-    <string>&amp;First Instance</string>
+    <string>&amp;First Page</string>
    </property>
    <property name="shortcut">
     <string>Home</string>
@@ -188,7 +188,7 @@
   </action>
   <action name="actionPreviousInstance">
    <property name="text">
-    <string>&amp;Previous Instance</string>
+    <string>&amp;Previous Page</string>
    </property>
    <property name="shortcut">
     <string>PgUp</string>
@@ -196,7 +196,7 @@
   </action>
   <action name="actionNextInstance">
    <property name="text">
-    <string>&amp;Next Instance</string>
+    <string>&amp;Next Page</string>
    </property>
    <property name="shortcut">
     <string>PgDown</string>
@@ -204,7 +204,7 @@
   </action>
   <action name="actionLastInstance">
    <property name="text">
-    <string>&amp;Last Instance</string>
+    <string>&amp;Last Page</string>
    </property>
    <property name="shortcut">
     <string>End</string>
@@ -212,7 +212,7 @@
   </action>
   <action name="actionRefreshComparison">
    <property name="text">
-    <string>&amp;Refresh Comparison</string>
+    <string>&amp;Refresh</string>
    </property>
    <property name="shortcut">
     <string>F5</string>

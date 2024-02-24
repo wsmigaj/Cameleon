@@ -91,7 +91,7 @@ void Document::setCaptionTemplates(std::vector<QString> captionTemplates)
 std::vector<QString> Document::captions(size_t instanceIndex) const
 {
   if (instanceIndex >= instances_.size())
-    throw RuntimeError("Invalid instance index");
+    throw RuntimeError("Invalid page index");
   const Instance& instance = instances_[instanceIndex];
 
   std::vector<QString> result = captionTemplates_;
