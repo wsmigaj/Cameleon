@@ -66,14 +66,14 @@
    </widget>
    <widget class="QMenu" name="menuNavigation">
     <property name="title">
-     <string>Navigation</string>
+     <string>&amp;Navigation</string>
     </property>
     <addaction name="actionFirstInstance"/>
     <addaction name="actionPreviousInstance"/>
     <addaction name="actionNextInstance"/>
     <addaction name="actionLastInstance"/>
    </widget>
-   <widget class="QMenu" name="menu_Help">
+   <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>&amp;Help</string>
     </property>
