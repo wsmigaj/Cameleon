@@ -4,6 +4,13 @@ project(Cameleon VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if (NOT IS_MULTI_CONFIG AND NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+    endif()
+endif()
+
 # Set up the Qt dependency.
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Core Concurrent Widgets Tools)
