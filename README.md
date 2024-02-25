@@ -45,46 +45,11 @@ To save a screenshot of the current page, click *View | Save Screenshot...* and 
 Click *Album | Save* to save the current album and *Album | Open...* to open one saved previously.
 
 > [!NOTE]
-> In practice, images corresponding to each instance might be placed in a separate folder. For example, if the folder hierarchy looked like this:
->    
->     C:\ML\Model-1
->      |- 1
->      |  |- input.png
->      |  |- ground-truth.png
->      |  `- prediction.png
->      |- 2
->      |  |- input.png
->      |  |- ground-truth.png
->      |  `- prediction.png
->      ...
-> 
-> the following wildcard patterns could be used: `C:\ML\Model-1\*\input.png`, `C:\ML\Model-1\*\ground-truth.png`, and `C:\ML\Model-1\*\prediction.png`.
->
-> Images from the training set and the test set are often placed in separate folders, giving rise to nested folder hierarchies such as
->
->     C:\ML\Model-1
->      |- Train
->      |  |- 1
->      |  |  |- input.png
->      |  |  |- ground-truth.png
->      |  |  `- prediction.png
->      |  |- 2
->      |  |  |- input.png
->      |  |  |- ground-truth.png
->      |  |  `- prediction.png
->      |  ...
->      |- Test
->      |  |- 1
->      |  |  |- input.png
->      |  |  |- ground-truth.png
->      |  |  `- prediction.png
->      |  |- 2
->      |  |  |- input.png
->      |  |  |- ground-truth.png
->      |  |  `- prediction.png
->      |  ...
->
-> The `*` wildcard matches any number of characters in a single folder or file name, so this could be handled using two such wildcards, as in `C:\ML\Model-1\*\*\input.png`. Alternatively, you could use the special `**` wildcard matching any number of nested folders, as in `C:\ML\Model-1\**\input.png`. The `?` wildcard matching a single character is also supported.
+> The following wildcards are supported:
+> * `*`: matches any number of characters in a single file or folder name (in other words, it does not match directory separators `/` or `\`)
+  * `**` matches any number of complete file and folder names (e.g. `a/**/z` will match `a/z`, `a/b/z`, `a/b/c/z` etc.)
+  * `?` matches any single character.
+> All wildcard patterns must contain the same number of wildcards. Exception: a pattern may contain no wildcards even if other patterns do; in this case the panel corresponding to that pattern will display the same image on all pages.
 
 Installation
 ============
