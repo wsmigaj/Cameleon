@@ -20,7 +20,7 @@ Click OK. The first page of the album, corresponding to instance `1`, will be di
 
 ![First page of the album](/doc/images/album.png)
 
-You can zoom in and out using the *View | Zoom in/Zoom out* menu items or pressing the `Ctrl` button, placing the mouse pointer on one of the displayed images and scrolling the wheel up or down. All images will be zoomed and scrolled together:
+You can zoom in and out using the *View | Zoom In/Zoom Out* menu items or pressing the `Ctrl` button, placing the mouse pointer on one of the displayed images and scrolling the wheel up or down. All images will be zoomed and scrolled together:
 
 ![Zoom](/doc/images/zoom.png)
 
@@ -46,9 +46,9 @@ Click *Album | Save* to save the current album and *Album | Open...* to open one
 
 > [!NOTE]
 > The following wildcards are supported:
-> * `*`: matches any number of characters in a single file or folder name (in other words, it does not match directory separators `/` or `\`)
-  * `**` matches any number of complete file and folder names (e.g. `a/**/z` will match `a/z`, `a/b/z`, `a/b/c/z` etc.)
-  * `?` matches any single character.
+> * `*`: matches any number of characters in a single file or folder name (e.g. `a/*/z` will match `a/b/z` but not `a/b/c/z`)
+> * `**` matches any number of complete file and folder names (e.g. `a/**/z` will match `a/z`, `a/b/z`, `a/b/c/z` etc.)
+> * `?` matches any single character.
 > All wildcard patterns must contain the same number of wildcards. Exception: a pattern may contain no wildcards even if other patterns do; in this case the panel corresponding to that pattern will display the same image on all pages.
 
 Installation
