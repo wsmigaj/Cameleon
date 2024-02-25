@@ -46,9 +46,10 @@ Click *Album | Save* to save the current album and *Album | Open...* to open one
 
 > [!NOTE]
 > The following wildcards are supported:
-> * `*`: matches any number of characters in a single file or folder name (e.g. `a/*/z` will match `a/b/z` but not `a/b/c/z`)
-> * `**` matches any number of complete file and folder names (e.g. `a/**/z` will match `a/z`, `a/b/z`, `a/b/c/z` etc.)
+> * `*`: matches any number of characters in a single file or folder name (e.g. `C:\abc\*\xyz` will match `C:\abc\def\xyz` but not `C:\abc\def\ghi\xyz`)
+> * `**` matches any number of complete file and folder names (e.g. `C:\abc\**\xyz` will match `C:\abc\xyz`, `C:\abc\def\xyz`, `C:\abc\def\ghi\xyz` etc.)
 > * `?` matches any single character.
+>
 > All wildcard patterns must contain the same number of wildcards. Exception: a pattern may contain no wildcards even if other patterns do; in this case the panel corresponding to that pattern will display the same image on all pages.
 
 Installation
