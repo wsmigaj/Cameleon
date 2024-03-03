@@ -1,0 +1,105 @@
+name: Tagged release
+
+on:
+  push:
+    tags: 
+    - "v*"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      # Allow the workflow to create a release.
+      contents: write
+
+    strategy:
+      # fail-fast set to false to ensure that feedback is delivered for all matrix combinations.
+      fail-fast: false
+
+      matrix:
+        build_type: [RelWithDebInfo]
+        include:
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+            system_name: win64
+            cpack_generator: ZIP
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version:      6.2.*
+        setup-python: false
+        cache: true
+
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. 
+      # These step outputs can be used throughout the workflow file.
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: Configure CMake
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+    # - name: Test
+    #   working-directory: ${{ steps.strings.outputs.build-output-dir }}
+    #   run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Create package
+      run: >
+        cpack 
+        -G ${{ matrix.cpack_generator }}        
+        --config "${{ steps.strings.outputs.build-output-dir }}\CPackConfig.cmake"
+        -C ${{ matrix.build_type }} 
+        -B "${{ steps.strings.outputs.build-output-dir }}"         
+        -D CPACK_PACKAGE_FILE_NAME=Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
+
+    - name: Uncompress package
+      shell: cmake -P {0}
+      run: | 
+        set(input_path "${{ steps.strings.outputs.build-output-dir }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
+        set(destination_path "${{ steps.strings.outputs.build-output-dir }}/package-contents/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}")
+        file(GLOB input_paths LIST_DIRECTORIES false ${input_path_pattern})
+        file(ARCHIVE_EXTRACT INPUT "${input_path}" DESTINATION "${destination_path}" VERBOSE)
+      
+    - name: Upload package
+      uses: actions/upload-artifact@v4
+      with:
+        name: Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
+        path: "${{ steps.strings.outputs.build-output-dir }}/package-contents/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}"
+        if-no-files-found: error
+      
+    - name: Upload PDBs
+      uses: actions/upload-artifact@v4
+      with:
+        name: Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}
+        path: "${{ steps.strings.outputs.build-output-dir }}/${{ matrix.build_type }}/*.pdb"
+        if-no-files-found: error
+      
+    - name: Zip PDBs
+      shell: cmake -P {0}
+      run: | 
+        set(output_path "${{ steps.strings.outputs.build-output-dir }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
+        set(input_path_pattern "${{ steps.strings.outputs.build-output-dir }}/${{ matrix.build_type }}/*.pdb")
+        file(GLOB input_paths LIST_DIRECTORIES false ${input_path_pattern})
+        file(ARCHIVE_CREATE OUTPUT ${output_path} PATHS ${input_paths} FORMAT zip VERBOSE)
+
+    - name: Create release
+      uses: ncipollo/release-action@v1.14.0 
+      with:
+        artifacts: "${{ steps.strings.outputs.build-output-dir }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip,${{ steps.strings.outputs.build-output-dir }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip"
+        draft: true
