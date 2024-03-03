@@ -10,7 +10,7 @@ repos:
     exclude: '^3pty.*$'
     args:
       - --license-filepath
-      - LicenceHeader.txt
+      - etc/LicenceHeader.txt
       - --comment-style
       - //
       - --use-current-year
