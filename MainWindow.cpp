@@ -71,6 +71,13 @@ MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::processCommandLine()
+{
+  QStringList arguments = QCoreApplication::arguments();
+  if (arguments.size() > 1)
+    openDocument(arguments[1]);
+}
+
 void MainWindow::populateLayoutSubmenu()
 {
   layoutMenu_ = new QMenu("&Layout", ui_.menuView);
@@ -200,6 +207,12 @@ void MainWindow::on_actionOpenComparison_triggered()
     return;
   }
 
+  openDocument(path);
+}
+
+void MainWindow::openDocument(const QString &path)
+{
+  QSettings settings;
   settings.setValue("lastOpenDir", QFileInfo(path).dir().path());
 
   PatternMatchingProgressDialog progressDialog(this);

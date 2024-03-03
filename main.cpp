@@ -25,6 +25,9 @@ int main(int argc, char* argv[])
   QApplication::setApplicationName("Cameleon");
   a.setQuitOnLastWindowClosed(true);
   MainWindow* w = new MainWindow;
+
+  QTimer::singleShot(0, w, &MainWindow::processCommandLine);
+
   w->show();
   return a.exec();
 }

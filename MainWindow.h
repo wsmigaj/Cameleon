@@ -32,6 +32,9 @@ public:
   explicit MainWindow(QWidget* parent = nullptr);
   ~MainWindow() override;
 
+public slots:
+  void processCommandLine();
+
 protected:
   void closeEvent(QCloseEvent* event) override;
 
@@ -86,6 +89,7 @@ private:
   std::optional<std::vector<QString>> currentInstanceKey() const;
   void goToInstance(int instance);
 
+  void openDocument(const QString &path);
   bool maybeSaveDocument();
   bool saveDocument();
   bool saveDocumentAs();
