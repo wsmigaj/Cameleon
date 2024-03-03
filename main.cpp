@@ -24,10 +24,10 @@ int main(int argc, char* argv[])
   QApplication::setOrganizationName("Cameleon");
   QApplication::setApplicationName("Cameleon");
   a.setQuitOnLastWindowClosed(true);
-  MainWindow* w = new MainWindow;
+  MainWindow w;
 
-  QTimer::singleShot(0, w, &MainWindow::processCommandLine);
+  QTimer::singleShot(0, &w, &MainWindow::processCommandLine);
 
-  w->show();
+  w.show();
   return a.exec();
 }
