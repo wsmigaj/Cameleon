@@ -19,9 +19,34 @@
 
 #include <QTest>
 
-class TestQString : public QObject
+struct PatternMatchingResult;
+
+class TestPatternMatching : public QObject
 {
   Q_OBJECT
 private slots:
-  void toUpper();
+  //void noPatterns();
+  //void onePattern();
+  //void onePatternNoMatches();
+  //void twoPatternsSameMatches();
+  //void twoPatternsDifferentMatches();
+  //void threePatterns(); // partial overlap between 1 and 2, different partial overlap between 2 and 3
+  //void wildcardCountMismatch();
+  //void doubleAsterisk();
+  //void invalidPatternWithMissingClosingBracket();
+  void emptyPattern();
+  void noWildcards();
+  void twoAsterisks();
+  void threeQuestionMarks();
+  void noMatches();
+
+private:
+  void runTest(QString pattern, const std::vector<std::filesystem::path>& objects,
+               PatternMatchingResult expectedResult);
+  // for each wildcard we should have
+  // some files matching the wildcard
+  // some files not matching the wildcard
+  // some directories matching the wildcard
+  // some directories not matching the wildcard
+  // some leaf directories matching the wildcard (but which should not be returned)
 };

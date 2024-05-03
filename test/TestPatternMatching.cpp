@@ -16,13 +16,102 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "TestPatternMatching.h"
+#include "PatternMatching.h"
 
 #include <QString>
+#include <fstream>
+#include <vector>
 
-QTEST_MAIN(TestQString)
+QTEST_MAIN(TestPatternMatching)
 
-void TestQString::toUpper()
+void TestPatternMatching::emptyPattern()
 {
-  QString str = "Hello";
-  QCOMPARE(str.toUpper(), QString("HELLO"));
+  QString pattern = "";
+  std::vector<std::filesystem::path> objects{{"ab/cde.png", "cde.png", "ab/xyz.jpg"}};
+  PatternMatchingResult expectedResult{0, {}};
+  runTest(pattern, objects, expectedResult);
+}
+
+void TestPatternMatching::noWildcards()
+{
+  QString pattern = "ab/cde.png";
+  std::vector<std::filesystem::path> objects{{"ab/cde.png", "cde.png", "ab/xyz.jpg"}};
+  PatternMatchingResult expectedResult{0, {{"ab/cde.png", {}}}};
+  runTest(pattern, objects, expectedResult);
+}
+
+void TestPatternMatching::twoAsterisks()
+{
+  QString pattern = "a*b/foo/*.png";
+  std::vector<std::filesystem::path> objects{
+    {"a1b/foo/c1.png", "a1b/foo/c1.jpg", "a1b/foo/c2.png",
+     "a1b/foo/c3.png/", // directory -- shouldn't be matched
+     "ab/foo/d1.png", "ab/foo/d1.jpg", "ab/foo/d2.png", "a2b/bar/e1.png", "a3b"}};
+  PatternMatchingResult expectedResult{2,
+                                       {{"a1b/foo/c1.png", {L"1", L"c1"}},
+                                        {"a1b/foo/c2.png", {L"1", L"c2"}},
+                                        {"ab/foo/d1.png", {L"", L"d1"}},
+                                        {"ab/foo/d2.png", {L"", L"d2"}}}};
+  runTest(pattern, objects, expectedResult);
+}
+
+void TestPatternMatching::threeQuestionMarks()
+{
+  QString pattern = "a??b/foo/?.png";
+  std::vector<std::filesystem::path> objects{{
+    "a1b/foo/c.png", "a23b/foo/d.jpg", "a23b/foo/ef.png", "a23b/foo/g.png", "a23b/foo/.png",
+    "a23b/foo/g.jpg/" // directory -- shouldn't be matched
+  }};
+  PatternMatchingResult expectedResult{3, {{"a23b/foo/g.png", {L"2", L"3", L"g"}}}};
+  runTest(pattern, objects, expectedResult);
+}
+
+void TestPatternMatching::noMatches()
+{
+  QString pattern = "a*b/*.png";
+  std::vector<std::filesystem::path> objects{{"a1b/a.jpg"}};
+  PatternMatchingResult expectedResult{2, {}};
+  runTest(pattern, objects, expectedResult);
+}
+
+void TestPatternMatching::runTest(QString pattern,
+                                  const std::vector<std::filesystem::path>& objects,
+                                  PatternMatchingResult expectedResult)
+{
+  QTemporaryDir tempDir;
+  QVERIFY(tempDir.isValid());
+  const std::filesystem::path tempDirPath = tempDir.path().toStdWString();
+
+  pattern = tempDir.path() + "/" + pattern;
+
+  for (std::filesystem::path path : objects)
+  {
+    path = tempDirPath / path;
+    if (path.has_filename())
+    {
+      std::filesystem::create_directories(path.parent_path());
+      std::ofstream fileStream(path);
+    }
+    else
+    {
+      std::filesystem::create_directories(path);
+    }
+  }
+
+  PatternMatchingResult result = matchPattern(pattern);
+  // Matches are returned in an unspecified order; sort them before comparing.
+  std::sort(result.patternMatches.begin(), result.patternMatches.end(),
+            [](const PatternMatch& a, const PatternMatch& b) { return a.path < b.path; });
+  std::sort(expectedResult.patternMatches.begin(), expectedResult.patternMatches.end(),
+            [](const PatternMatch& a, const PatternMatch& b) { return a.path < b.path; });
+
+  {
+    const std::filesystem::path tempDirPath = tempDir.path().toStdWString();
+    for (PatternMatch& match : expectedResult.patternMatches)
+    {
+      match.path = tempDirPath / match.path;
+    }
+  }
+
+  QCOMPARE(result, expectedResult);
 }

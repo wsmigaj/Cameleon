@@ -4,6 +4,7 @@ enable_testing(true)
 
 qt_add_executable(TestPatternMatching TestPatternMatching.cpp TestPatternMatching.h)
 target_link_libraries(TestPatternMatching PRIVATE CameleonCore Qt::Test)
+target_include_directories(TestPatternMatching PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src)
 set_target_properties(TestPatternMatching PROPERTIES
     WIN32_EXECUTABLE ON
     MACOSX_BUNDLE ON
