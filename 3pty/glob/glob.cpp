@@ -125,6 +125,7 @@ std::wregex compile_pattern(const std::wstring &pattern) {
   return std::wregex(translate(pattern), std::wregex::ECMAScript);
 }
 
+/// Returns true if the input path matche the glob pattern
 bool fnmatch(const fs::path &name, const std::wstring &pattern) {
   return std::regex_match(name.wstring(), compile_pattern(pattern));
 }

@@ -61,7 +61,4 @@ std::vector<PathInfo> glob(const std::initializer_list<std::wstring> &pathnames,
 std::vector<PathInfo> rglob(const std::initializer_list<std::wstring> &pathnames, 
                             const std::function<void()> &onFilesystemTraversalProgress = [](){});
 
-/// Returns true if the input path matche the glob pattern
-bool fnmatch(const fs::path &name, const std::wstring &pattern);
-
 } // namespace glob
