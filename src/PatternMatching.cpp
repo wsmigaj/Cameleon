@@ -23,17 +23,38 @@
 
 #include <regex>
 
-namespace
+bool operator==(const PatternMatch& a, const PatternMatch& b)
 {
-PatternMatchingResult matchPattern(const std::wstring& pattern,
+  return a.magicExpressionMatches == b.magicExpressionMatches && a.path == b.path;
+}
+
+bool operator!=(const PatternMatch& a, const PatternMatch& b)
+{
+  return !(a == b);
+}
+
+bool operator==(const PatternMatchingResult& a, const PatternMatchingResult& b)
+{
+  return a.numMagicExpressions == b.numMagicExpressions && a.patternMatches == b.patternMatches;
+}
+
+bool operator!=(const PatternMatchingResult& a, const PatternMatchingResult& b)
+{
+  return !(a == b);
+}
+
+PatternMatchingResult matchPattern(const QString& pattern,
                                    const std::function<void()>& onFilesystemTraversalProgress)
 {
   PatternMatchingResult result;
 
-  const std::vector<glob::PathInfo> globResults =
-    glob::rglob(pattern, onFilesystemTraversalProgress);
+  const QString nativePattern = QDir::toNativeSeparators(pattern);
+  const std::wstring patternAsStdWString = nativePattern.toStdWString();
 
-  const std::wregex patternAsRegex(wildcardPatternToRegex(pattern));
+  const std::vector<glob::PathInfo> globResults =
+    glob::rglob(patternAsStdWString, onFilesystemTraversalProgress);
+
+  const std::wregex patternAsRegex(wildcardPatternToRegex(patternAsStdWString));
   result.numMagicExpressions = patternAsRegex.mark_count();
   for (const glob::PathInfo& info : globResults)
   {
@@ -66,7 +87,6 @@ PatternMatchingResult matchPattern(const std::wstring& pattern,
 
   return result;
 }
-} // namespace
 
 void checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector<QString>& patterns)
 {
@@ -99,7 +119,7 @@ matchPatterns(const std::vector<QString>& patterns,
                  [&onFilesystemTraversalProgress](const QString& pattern)
                  {
                    return std::make_shared<PatternMatchingResult>(
-                     matchPattern(pattern.toStdWString(), onFilesystemTraversalProgress));
+                     matchPattern(pattern, onFilesystemTraversalProgress));
                  });
   return results;
 }
@@ -123,7 +143,7 @@ std::vector<std::shared_ptr<PatternMatchingResult>> matchPatternsReusingPrevious
                    else
                    {
                      return std::make_shared<PatternMatchingResult>(
-                       matchPattern(pattern.toStdWString(), onFilesystemTraversalProgress));
+                       matchPattern(pattern, onFilesystemTraversalProgress));
                    }
                  });
   return results;

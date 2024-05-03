@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,14 +31,23 @@ struct PatternMatch
   std::vector<std::wstring> magicExpressionMatches;
 };
 
+bool operator==(const PatternMatch& a, const PatternMatch& b);
+bool operator!=(const PatternMatch& a, const PatternMatch& b);
+
 struct PatternMatchingResult
 {
   size_t numMagicExpressions = 0;
   std::vector<PatternMatch> patternMatches;
 };
 
+bool operator==(const PatternMatchingResult& a, const PatternMatchingResult& b);
+bool operator!=(const PatternMatchingResult& a, const PatternMatchingResult& b);
+
 void checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(
   const std::vector<QString>& patterns);
+
+PatternMatchingResult matchPattern(
+  const QString& pattern, const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
 std::vector<std::shared_ptr<PatternMatchingResult>> matchPatterns(
   const std::vector<QString>& patterns,
