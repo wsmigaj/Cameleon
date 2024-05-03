@@ -26,18 +26,25 @@ using StringsToIndexMap = std::map<std::vector<std::wstring>, std::size_t>;
 std::size_t numberOfMagicExpressions(
   const std::vector<std::shared_ptr<PatternMatchingResult>>& patternMatchingResults)
 {
-  if (patternMatchingResults.empty())
-    return 0;
+  std::size_t numMagicExpressions = 0;
 
-  if (std::any_of(patternMatchingResults.begin(), patternMatchingResults.end(),
-                  [&patternMatchingResults](const std::shared_ptr<PatternMatchingResult>& result) {
-                    return result->numMagicExpressions !=
-                           patternMatchingResults.front()->numMagicExpressions;
-                  }))
-    throw RuntimeError("The number of wildcard expressions must be the same in all patterns "
-                       "containing any such expressions.");
+  for (const std::shared_ptr<PatternMatchingResult>& result : patternMatchingResults)
+  {
+    if (result->numMagicExpressions > 0)
+    {
+      if (numMagicExpressions == 0)
+      {
+        numMagicExpressions = result->numMagicExpressions;
+      }
+      else if (result->numMagicExpressions != numMagicExpressions)
+      {
+        throw RuntimeError("The number of wildcard expressions must be the same in all patterns "
+                           "containing any such expressions.");
+      }
+    }
+  }
 
-  return patternMatchingResults.front()->numMagicExpressions;
+  return numMagicExpressions;
 }
 
 StringsToIndexMap enumerateUniqueMagicExpressionMatches(
@@ -85,7 +92,10 @@ createInstances(std::size_t numMagicExpressions,
         paths.push_back(QString::fromStdWString(result->patternMatches.front().path.wstring()));
       }
     }
-    instances.push_back(Instance{paths, {}});
+    if (!std::all_of(paths.begin(), paths.end(), [](const QString& s) { return s.isEmpty(); }))
+    {
+      instances.push_back(Instance{paths, {}});
+    }
   }
   else
   {
