@@ -13,7 +13,7 @@ endif()
 
 # Set up the Qt dependency.
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Core Concurrent Widgets Tools)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Core Concurrent Widgets Test Tools)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -58,9 +58,10 @@ set_property(GLOBAL PROPERTY QT_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_SOURCE_GROUP "Generated Files")
 
-# Define the Cameleon target
+# Include dependent CMakeLists.txt files.
 
 add_subdirectory(src)
+add_subdirectory(test)
 
 # Set up installation.
 

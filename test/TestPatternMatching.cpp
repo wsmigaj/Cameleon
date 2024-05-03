@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023-2024 Wojciech Śmigaj
+// Copyright (C) 2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,21 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "MainWindow.h"
+#include "TestPatternMatching.h"
 
-#include <QtWidgets/QApplication>
-#include <QTimer>
+#include <QString>
 
-int main(int argc, char* argv[])
+QTEST_MAIN(TestQString)
+
+void TestQString::toUpper()
 {
-  QApplication a(argc, argv);
-  QApplication::setOrganizationName("Cameleon");
-  QApplication::setApplicationName("Cameleon");
-  a.setQuitOnLastWindowClosed(true);
-  MainWindow w;
-
-  QTimer::singleShot(0, &w, &MainWindow::processCommandLine);
-
-  w.show();
-  return a.exec();
+  QString str = "Hello";
+  QCOMPARE(str.toUpper(), QString("HELLO"));
 }
