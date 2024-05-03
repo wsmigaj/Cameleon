@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,5 +30,10 @@ struct Instance
   std::vector<QString> magicExpressionMatches;
 };
 
+bool operator==(const Instance& a, const Instance& b);
+bool operator!=(const Instance& a, const Instance& b);
+
 std::vector<Instance>
 findInstances(const std::vector<std::shared_ptr<PatternMatchingResult>>& patternMatchingResults);
+
+void sortInstances(std::vector<Instance>& instances);

@@ -65,22 +65,6 @@ StringsToIndexMap enumerateUniqueMagicExpressionMatches(
   return uniqueMagicExpressionMatchesIndex;
 }
 
-void sortInstances(std::vector<Instance>& instances)
-{
-  const size_t numInstances = instances.size();
-
-  QCollator collator;
-  collator.setCaseSensitivity(Qt::CaseInsensitive);
-  collator.setNumericMode(true);
-  auto lessThan = [&collator](const Instance& va, const Instance& vb)
-  {
-    return std::lexicographical_compare(
-      va.magicExpressionMatches.begin(), va.magicExpressionMatches.end(),
-      vb.magicExpressionMatches.begin(), vb.magicExpressionMatches.end(), collator);
-  };
-  std::sort(instances.begin(), instances.end(), lessThan);
-}
-
 std::vector<Instance>
 createInstances(std::size_t numMagicExpressions,
                 const std::vector<std::shared_ptr<PatternMatchingResult>>& results,
@@ -145,6 +129,16 @@ createInstances(std::size_t numMagicExpressions,
 }
 } // namespace
 
+bool operator==(const Instance& a, const Instance& b)
+{
+  return a.paths == b.paths && a.magicExpressionMatches == b.magicExpressionMatches;
+}
+
+bool operator!=(const Instance& a, const Instance& b)
+{
+  return !(a == b);
+}
+
 std::vector<Instance>
 findInstances(const std::vector<std::shared_ptr<PatternMatchingResult>>& patternMatchingResults)
 {
@@ -156,4 +150,20 @@ findInstances(const std::vector<std::shared_ptr<PatternMatchingResult>>& pattern
 
   return createInstances(numMagicExpressions, patternMatchingResults,
                          uniqueMagicExpressionMatchesIndex);
+}
+
+void sortInstances(std::vector<Instance>& instances)
+{
+  const size_t numInstances = instances.size();
+
+  QCollator collator;
+  collator.setCaseSensitivity(Qt::CaseInsensitive);
+  collator.setNumericMode(true);
+  auto lessThan = [&collator](const Instance& va, const Instance& vb)
+  {
+    return std::lexicographical_compare(
+      va.magicExpressionMatches.begin(), va.magicExpressionMatches.end(),
+      vb.magicExpressionMatches.begin(), vb.magicExpressionMatches.end(), collator);
+  };
+  std::sort(instances.begin(), instances.end(), lessThan);
 }
