@@ -136,7 +136,7 @@ void Document::regenerateInstances(const std::function<void()>& onFilesystemTrav
   std::vector<std::shared_ptr<PatternMatchingResult>> patternMatchingResults =
     matchPatterns(patterns_, onFilesystemTraversalProgress);
   instances_ = findInstances(patternMatchingResults);
-  patternMatchingResults_ = std::move(patternMatchingResults_);
+  patternMatchingResults_ = std::move(patternMatchingResults);
 }
 
 QJsonObject Document::toJson() const
