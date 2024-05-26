@@ -122,7 +122,10 @@ bool ImageWidget::eventFilter(QObject* watched, QEvent* event)
       QGraphicsSceneMouseEvent* mouseSceneEvent = dynamic_cast<QGraphicsSceneMouseEvent*>(event);
       if (item_->boundingRect().contains(mouseSceneEvent->scenePos()))
       {
-        const QPoint point = mouseSceneEvent->scenePos().toPoint();
+        QPointF pointF = mouseSceneEvent->scenePos();
+        pointF.setX(std::floor(pointF.x()));
+        pointF.setY(std::floor(pointF.y()));
+        const QPoint point = pointF.toPoint();
         emit mouseMovedOverImage(point, image_.pixelColor(point));
       }
     }
