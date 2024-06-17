@@ -88,7 +88,7 @@ PatternMatchingResult matchPattern(const QString& pattern,
   return result;
 }
 
-void checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector<QString>& patterns)
+bool allPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector<QString>& patterns)
 {
   size_t numMagicExpressions = 0;
   for (const QString& pattern : patterns)
@@ -103,11 +103,18 @@ void checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector
       }
       else if (markCount != numMagicExpressions)
       {
-        throw RuntimeError("The number of wildcard expressions must be the same in all patterns "
-                           "containing any such expressions.");
+        return false;
       }
     }
   }
+  return true;
+}
+
+void checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector<QString>& patterns)
+{
+  if (!allPatternsContainSameNumberOfMagicExpressionsOrNone(patterns))
+    throw RuntimeError("The number of wildcard patterns must be the same in all paths "
+                       "containing any such patterns.");
 }
 
 std::vector<std::shared_ptr<PatternMatchingResult>>

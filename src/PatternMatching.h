@@ -43,6 +43,8 @@ struct PatternMatchingResult
 bool operator==(const PatternMatchingResult& a, const PatternMatchingResult& b);
 bool operator!=(const PatternMatchingResult& a, const PatternMatchingResult& b);
 
+bool allPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector<QString>& patterns);
+
 void checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(
   const std::vector<QString>& patterns);
 

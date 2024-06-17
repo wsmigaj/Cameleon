@@ -20,9 +20,10 @@
 #include "Constants.h"
 #include "Document.h"
 #include "MainWindow.h"
+#include "PatternMatching.h"
+#include "PatternMatchingProgressDialog.h"
 #include "RuntimeError.h"
 #include "Try.h"
-#include "PatternMatchingProgressDialog.h"
 
 namespace
 {
@@ -32,6 +33,17 @@ QString instanceKeyToFileName(const QString& key)
   fileName.replace('/', "_");
   fileName.replace('\\', "_");
   return fileName;
+}
+
+bool validatePatterns(ComparisonDialog& dialog)
+{
+  if (allPatternsContainSameNumberOfMagicExpressionsOrNone(dialog.values()))
+    return true;
+
+  QMessageBox::warning(&dialog, "Warning",
+                       "The number of wildcard patterns must be the same in all paths "
+                       "containing any such patterns.");
+  return false;
 }
 } // namespace
 
@@ -166,6 +178,7 @@ void MainWindow::on_actionNewComparison_triggered()
   dialog.setWindowTitle("New Album");
   dialog.normalisePathSeparators(true);
   dialog.setValues({});
+  dialog.setValidator(validatePatterns);
   setComboBoxPromptsToPatternExamples(dialog);
   if (dialog.exec() != QDialog::Accepted)
   {
@@ -210,7 +223,7 @@ void MainWindow::on_actionOpenComparison_triggered()
   openDocument(path);
 }
 
-void MainWindow::openDocument(const QString &path)
+void MainWindow::openDocument(const QString& path)
 {
   QSettings settings;
   settings.setValue("lastOpenDir", QFileInfo(path).dir().path());
@@ -263,6 +276,7 @@ void MainWindow::on_actionEditComparison_triggered()
   dialog.setWindowTitle("Edit Album");
   dialog.normalisePathSeparators(true);
   dialog.setValues(doc_->patterns());
+  dialog.setValidator(validatePatterns);
   setComboBoxPromptsToPatternExamples(dialog);
   if (dialog.exec() == QDialog::Accepted)
   {

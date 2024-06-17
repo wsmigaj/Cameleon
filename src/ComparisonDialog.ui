@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>301</height>
+    <height>349</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -464,30 +464,14 @@
  </resources>
  <connections>
   <connection>
-   <sender>okButton</sender>
-   <signal>clicked()</signal>
-   <receiver>ComparisonDialogClass</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>472</x>
-     <y>161</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>299</x>
-     <y>93</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>cancelButton</sender>
    <signal>clicked()</signal>
    <receiver>ComparisonDialogClass</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>161</y>
+     <x>589</x>
+     <y>334</y>
     </hint>
     <hint type="destinationlabel">
      <x>299</x>

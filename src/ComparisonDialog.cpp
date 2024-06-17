@@ -198,9 +198,19 @@ void ComparisonDialog::setSwapValuesButtonsVisibility(bool visible)
   }
 }
 
+void ComparisonDialog::setValidator(std::function<bool(ComparisonDialog&)> validator)
+{
+  validator_ = std::move(validator);
+}
+
 void ComparisonDialog::normalisePathSeparators(bool normalise)
 {
   normalisePathSeparators_ = normalise;
+}
+
+bool ComparisonDialog::defaultValidator(ComparisonDialog&)
+{
+  return true;
 }
 
 void ComparisonDialog::updateRowLabelsVisibility()
@@ -256,6 +266,12 @@ void ComparisonDialog::done(int r)
   QDialog::done(r);
 }
 
+void ComparisonDialog::onOk()
+{
+  if (validator_(*this))
+    accept();
+}
+
 std::vector<QLabel*> ComparisonDialog::rowLabels() const
 {
   return {ui_.labelA, ui_.labelB, ui_.labelC, ui_.labelD,
@@ -289,6 +305,7 @@ std::vector<QToolButton*> ComparisonDialog::swapValuesButtons() const
 
 void ComparisonDialog::connectSignals()
 {
+  connect(ui_.okButton, &QPushButton::clicked, this, &ComparisonDialog::onOk);
   for (QToolButton* button : fileDialogButtons())
     connect(button, &QToolButton::clicked, this, &ComparisonDialog::onFileDialogButtonClicked);
   for (QToolButton* button : swapValuesButtons())

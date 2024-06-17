@@ -22,6 +22,7 @@
 #include "Constants.h"
 
 #include <QDialog>
+#include <functional>
 #include <vector>
 
 class ComparisonDialog : public QDialog
@@ -44,12 +45,18 @@ public:
   void setInfoLabelsVisibility(bool visible);
   void setInfoLabels(const std::vector<QString>& labels);
   void setSwapValuesButtonsVisibility(bool visible);
+  void setValidator(std::function<bool(ComparisonDialog&)> validator);
   void normalisePathSeparators(bool normalise);
+
+  static bool defaultValidator(ComparisonDialog&);
 
 public slots:
   void done(int r) override;
   void onFileDialogButtonClicked();
   void onSwapValuesButtonClicked();
+
+private slots:
+  void onOk();
 
 private:
   std::vector<QLabel*> rowLabels() const;
@@ -77,6 +84,7 @@ private:
   bool infoLabelsVisible_ = false;
   bool swapValuesButtonsVisible_ = true;
   bool normalisePathSeparators_ = false;
+  std::function<bool(ComparisonDialog&)> validator_ = defaultValidator;
 };
 
 void setComboBoxPromptsToPatternExamples(ComparisonDialog& dialog);
