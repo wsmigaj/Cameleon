@@ -447,6 +447,16 @@ void MainWindow::on_actionEditCaptions_triggered()
   dialog.setSwapValuesButtonsVisibility(false);
   dialog.normalisePathSeparators(false);
   dialog.setValues(doc_->captionTemplates());
+  dialog.setValidator(
+    [numPatterns = doc_->patterns().size()](ComparisonDialog& dialog)
+    {
+      if (dialog.values().size() == numPatterns)
+        return true;
+      QMessageBox::warning(&dialog, "Warning",
+                           "The number of captions must be the same as the number of panels.");
+      return false;
+    });
+
   if (dialog.exec() == QDialog::Accepted)
   {
     if (!Try([&] { doc_->setCaptionTemplates(dialog.values()); }))

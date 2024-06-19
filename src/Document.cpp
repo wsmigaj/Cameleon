@@ -94,7 +94,7 @@ void Document::setPatterns(std::vector<QString> patterns,
 void Document::setCaptionTemplates(std::vector<QString> captionTemplates)
 {
   if (captionTemplates.size() != patterns_.size())
-    throw RuntimeError("The number of captions must match the number of patterns.");
+    throw RuntimeError("The number of captions must be the same as the number of panels.");
 
   if (captionTemplates != captionTemplates_)
   {
