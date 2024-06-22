@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,11 +18,22 @@
 #pragma once
 
 #include "ImageView.h"
-#include "ui_MainWindow.h"
 
 #include <QtWidgets/QMainWindow>
 
 class Document;
+class Layout;
+
+namespace Ui
+{
+class MainWindowClass;
+}
+
+class QAction;
+class QActionGroup;
+class QComboBox;
+class QGridLayout;
+class QMenu;
 
 class MainWindow : public QMainWindow
 {
@@ -89,7 +100,7 @@ private:
   std::optional<std::vector<QString>> currentInstanceKey() const;
   void goToInstance(int instance);
 
-  void openDocument(const QString &path);
+  void openDocument(const QString& path);
   bool maybeSaveDocument();
   bool saveDocument();
   bool saveDocumentAs();
@@ -101,7 +112,7 @@ private:
   static const size_t MAX_NUM_RECENT_COMPARISONS = 9;
 
 private:
-  Ui::MainWindowClass ui_;
+  std::unique_ptr<Ui::MainWindowClass> ui_;
   QComboBox* instanceComboBox_ = nullptr;
   QMenu* layoutMenu_ = nullptr;
   QActionGroup* layoutActionGroup_ = nullptr;

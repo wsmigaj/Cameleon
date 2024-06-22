@@ -24,6 +24,7 @@
 #include "PatternMatchingProgressDialog.h"
 #include "RuntimeError.h"
 #include "Try.h"
+#include "ui_MainWindow.h"
 
 namespace
 {
@@ -47,35 +48,36 @@ bool validatePatterns(ComparisonDialog& dialog)
 }
 } // namespace
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget* parent)
+  : QMainWindow(parent), ui_(std::make_unique<Ui::MainWindowClass>())
 {
-  ui_.setupUi(this);
+  ui_->setupUi(this);
 
   populateLayoutSubmenu();
   initialiseRecentComparisonsSubmenu();
 
   instanceComboBox_ = new QComboBox(this);
   instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
-  ui_.mainToolBar->addWidget(instanceComboBox_);
+  ui_->mainToolBar->addWidget(instanceComboBox_);
 
   connect(instanceComboBox_, &QComboBox::currentIndexChanged, this,
           &MainWindow::onInstanceComboBox);
 
   QIcon::setThemeName("crystalsvg");
 
-  ui_.actionNewComparison->setIcon(QIcon::fromTheme("document-new"));
-  ui_.actionOpenComparison->setIcon(QIcon::fromTheme("document-open"));
-  ui_.actionEditComparison->setIcon(QIcon::fromTheme("document-edit"));
-  ui_.actionRefreshComparison->setIcon(QIcon::fromTheme("view-refresh"));
-  ui_.actionSaveComparison->setIcon(QIcon::fromTheme("document-save"));
-  ui_.actionSaveComparisonAs->setIcon(QIcon::fromTheme("document-save-as"));
+  ui_->actionNewComparison->setIcon(QIcon::fromTheme("document-new"));
+  ui_->actionOpenComparison->setIcon(QIcon::fromTheme("document-open"));
+  ui_->actionEditComparison->setIcon(QIcon::fromTheme("document-edit"));
+  ui_->actionRefreshComparison->setIcon(QIcon::fromTheme("view-refresh"));
+  ui_->actionSaveComparison->setIcon(QIcon::fromTheme("document-save"));
+  ui_->actionSaveComparisonAs->setIcon(QIcon::fromTheme("document-save-as"));
 
-  ui_.actionFirstInstance->setIcon(QIcon::fromTheme("go-first"));
-  ui_.actionPreviousInstance->setIcon(QIcon::fromTheme("go-previous"));
-  ui_.actionNextInstance->setIcon(QIcon::fromTheme("go-next"));
-  ui_.actionLastInstance->setIcon(QIcon::fromTheme("go-last"));
+  ui_->actionFirstInstance->setIcon(QIcon::fromTheme("go-first"));
+  ui_->actionPreviousInstance->setIcon(QIcon::fromTheme("go-previous"));
+  ui_->actionNextInstance->setIcon(QIcon::fromTheme("go-next"));
+  ui_->actionLastInstance->setIcon(QIcon::fromTheme("go-last"));
 
-  mainLayout_ = new QGridLayout(ui_.mainView);
+  mainLayout_ = new QGridLayout(ui_->mainView);
   updateDocumentDependentActions();
 }
 
@@ -92,9 +94,9 @@ void MainWindow::processCommandLine()
 
 void MainWindow::populateLayoutSubmenu()
 {
-  layoutMenu_ = new QMenu("&Layout", ui_.menuView);
-  ui_.menuView->insertMenu(ui_.actionEditCaptions, layoutMenu_);
-  ui_.menuView->insertSeparator(ui_.actionEditCaptions);
+  layoutMenu_ = new QMenu("&Layout", ui_->menuView);
+  ui_->menuView->insertMenu(ui_->actionEditCaptions, layoutMenu_);
+  ui_->menuView->insertSeparator(ui_->actionEditCaptions);
   layoutActionGroup_ = new QActionGroup(this);
 
   const size_t threshold = static_cast<size_t>(std::ceil(std::sqrt(MAX_NUM_PATTERNS)));
@@ -118,9 +120,9 @@ void MainWindow::populateLayoutSubmenu()
 
 void MainWindow::initialiseRecentComparisonsSubmenu()
 {
-  recentComparisonsMenu_ = new QMenu("&Recent", ui_.menuFile);
-  ui_.menuFile->insertMenu(ui_.actionQuit, recentComparisonsMenu_);
-  ui_.menuFile->insertSeparator(ui_.actionQuit);
+  recentComparisonsMenu_ = new QMenu("&Recent", ui_->menuFile);
+  ui_->menuFile->insertMenu(ui_->actionQuit, recentComparisonsMenu_);
+  ui_->menuFile->insertSeparator(ui_->actionQuit);
 
   QSettings settings;
   QStringList recentComparisons = settings.value("recentComparisons", QStringList()).toStringList();
@@ -365,17 +367,17 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-  ui_.mainView->zoom(1.25);
+  ui_->mainView->zoom(1.25);
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-  ui_.mainView->zoom(1.0 / 1.25);
+  ui_->mainView->zoom(1.0 / 1.25);
 }
 
 void MainWindow::on_actionZoom1to1_triggered()
 {
-  ui_.mainView->resetScale();
+  ui_->mainView->resetScale();
 }
 
 void MainWindow::on_actionSaveScreenshot_triggered()
@@ -573,11 +575,11 @@ void MainWindow::updateMainViewLayout()
 {
   if (!doc_ || doc_->instances().empty())
   {
-    ui_.mainView->setLayout(Layout{0, 0});
+    ui_->mainView->setLayout(Layout{0, 0});
   }
   else
   {
-    ui_.mainView->setLayout(doc_->layout());
+    ui_->mainView->setLayout(doc_->layout());
   }
 }
 
@@ -622,16 +624,16 @@ void MainWindow::updateDocumentDependentActions()
   const bool hasInstances = isOpen && !doc_->instances().empty();
   const bool isModified = isOpen && doc_->modified();
   const bool hasPatterns = isOpen && !doc_->patterns().empty();
-  ui_.actionEditComparison->setEnabled(isOpen);
-  ui_.actionRefreshComparison->setEnabled(isOpen);
-  ui_.actionSaveComparison->setEnabled(isModified);
-  ui_.actionSaveComparisonAs->setEnabled(isOpen);
-  ui_.actionCloseComparison->setEnabled(isOpen);
-  ui_.actionZoomIn->setEnabled(hasInstances);
-  ui_.actionZoomOut->setEnabled(hasInstances);
-  ui_.actionZoom1to1->setEnabled(hasInstances);
-  ui_.actionEditCaptions->setEnabled(hasPatterns);
-  ui_.actionSaveScreenshot->setEnabled(hasInstances);
+  ui_->actionEditComparison->setEnabled(isOpen);
+  ui_->actionRefreshComparison->setEnabled(isOpen);
+  ui_->actionSaveComparison->setEnabled(isModified);
+  ui_->actionSaveComparisonAs->setEnabled(isOpen);
+  ui_->actionCloseComparison->setEnabled(isOpen);
+  ui_->actionZoomIn->setEnabled(hasInstances);
+  ui_->actionZoomOut->setEnabled(hasInstances);
+  ui_->actionZoom1to1->setEnabled(hasInstances);
+  ui_->actionEditCaptions->setEnabled(hasPatterns);
+  ui_->actionSaveScreenshot->setEnabled(hasInstances);
 
   layoutMenu_->setEnabled(hasInstances);
 
@@ -643,17 +645,17 @@ void MainWindow::updateDocumentModificationStatusDependentActions()
 {
   const bool isOpen = doc_ != nullptr;
   const bool isModified = isOpen && doc_->modified();
-  ui_.actionSaveComparison->setEnabled(isModified);
+  ui_->actionSaveComparison->setEnabled(isModified);
 }
 
 void MainWindow::updateInstanceDependentActions()
 {
   const bool isOpen = doc_ != nullptr;
   const int numInstances = isOpen ? doc_->instances().size() : 0;
-  ui_.actionFirstInstance->setEnabled(numInstances > 0 && instance_ > 0);
-  ui_.actionPreviousInstance->setEnabled(numInstances > 0 && instance_ > 0);
-  ui_.actionNextInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
-  ui_.actionLastInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
+  ui_->actionFirstInstance->setEnabled(numInstances > 0 && instance_ > 0);
+  ui_->actionPreviousInstance->setEnabled(numInstances > 0 && instance_ > 0);
+  ui_->actionNextInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
+  ui_->actionLastInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
 }
 
 void MainWindow::onInstancesChanged()
@@ -677,9 +679,9 @@ void MainWindow::onActiveInstanceChanged()
     if (instance_ < doc_->instances().size())
     {
       instanceComboBox_->setCurrentIndex(instance_);
-      ui_.mainView->setPaths(doc_->instances()[instance_].paths);
-      ui_.mainView->setInstanceKey(doc_->instanceKey(instance_));
-      ui_.mainView->setCaptions(doc_->captions(instance_));
+      ui_->mainView->setPaths(doc_->instances()[instance_].paths);
+      ui_->mainView->setInstanceKey(doc_->instanceKey(instance_));
+      ui_->mainView->setCaptions(doc_->captions(instance_));
     }
   }
   updateInstanceDependentActions();
@@ -692,7 +694,7 @@ void MainWindow::onCaptionTemplatesChanged()
     Q_ASSERT(instance_ < doc_->instances().size());
     if (instance_ < doc_->instances().size())
     {
-      ui_.mainView->setCaptions(doc_->captions(instance_));
+      ui_->mainView->setCaptions(doc_->captions(instance_));
     }
   }
 }
