@@ -79,9 +79,25 @@
     </property>
     <addaction name="actionAboutCameleon"/>
    </widget>
+   <widget class="QMenu" name="menuBookmarks">
+    <property name="title">
+     <string>&amp;Bookmarks</string>
+    </property>
+    <addaction name="actionBookmarkPage"/>
+    <addaction name="actionRemoveAllBookmarks"/>
+    <addaction name="separator"/>
+    <addaction name="actionFirstBookmark"/>
+    <addaction name="actionPreviousBookmark"/>
+    <addaction name="actionNextBookmark"/>
+    <addaction name="actionLastBookmark"/>
+    <addaction name="separator"/>
+    <addaction name="actionImportBookmarks"/>
+    <addaction name="actionExportBookmarks"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuNavigation"/>
+   <addaction name="menuBookmarks"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -102,6 +118,8 @@
    <addaction name="actionPreviousInstance"/>
    <addaction name="actionNextInstance"/>
    <addaction name="actionLastInstance"/>
+   <addaction name="separator"/>
+   <addaction name="actionBookmarkPage"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewComparison">
@@ -245,6 +263,64 @@
   <action name="actionAboutCameleon">
    <property name="text">
     <string>&amp;About Caméléon...</string>
+   </property>
+  </action>
+  <action name="actionBookmarkPage">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Bookmark Page</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionFirstBookmark">
+   <property name="text">
+    <string>&amp;First Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Home</string>
+   </property>
+  </action>
+  <action name="actionPreviousBookmark">
+   <property name="text">
+    <string>&amp;Previous Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+PgUp</string>
+   </property>
+  </action>
+  <action name="actionNextBookmark">
+   <property name="text">
+    <string>&amp;Next Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+PgDown</string>
+   </property>
+  </action>
+  <action name="actionLastBookmark">
+   <property name="text">
+    <string>&amp;Last Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+End</string>
+   </property>
+  </action>
+  <action name="actionImportBookmarks">
+   <property name="text">
+    <string>&amp;Import Bookmarks...</string>
+   </property>
+  </action>
+  <action name="actionExportBookmarks">
+   <property name="text">
+    <string>&amp;Export Bookmarks...</string>
+   </property>
+  </action>
+  <action name="actionRemoveAllBookmarks">
+   <property name="text">
+    <string>&amp;Remove All Bookmarks</string>
    </property>
   </action>
  </widget>

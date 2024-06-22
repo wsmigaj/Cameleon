@@ -16,6 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "Document.h"
+#include "ContainerUtils.h"
 #include "PatternMatching.h"
 #include "RuntimeError.h"
 
@@ -33,6 +34,21 @@ QString join(const std::vector<QString>& strings, const QString& sep = QString()
   }
   return result;
 }
+
+std::vector<QString> jsonStringArrayToStringVector(const QJsonArray& jsonArray)
+{
+  std::vector<QString> stringVector;
+  std::transform(jsonArray.begin(), jsonArray.end(), std::back_inserter(stringVector),
+                 [](const QJsonValue& x) { return x.toString(); });
+  return stringVector;
+}
+
+QJsonArray stringVectorToJsonStringArray(const std::vector<QString>& stringVector)
+{
+  QJsonArray jsonArray;
+  std::copy(stringVector.begin(), stringVector.end(), std::back_inserter(jsonArray));
+  return jsonArray;
+}
 } // namespace
 
 Document::Document()
@@ -47,7 +63,7 @@ Document::Document(const QString& path, const std::function<void()>& onFilesyste
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly))
   {
-    throw RuntimeError("Couldn't open file " + path + " for reading.");
+    throw RuntimeError("Could not open file " + path + " for reading.");
   }
 
   QByteArray saveData = file.readAll();
@@ -82,7 +98,13 @@ void Document::setPatterns(std::vector<QString> patterns,
     {
       patternMatchingResults = matchPatterns(patterns, onFilesystemTraversalProgress);
     }
-    instances_ = findInstances(patternMatchingResults);
+
+    const std::set<std::vector<QString>> oldBookmarkKeys = bookmarkKeys();
+    std::vector<Instance> newInstances = findInstances(patternMatchingResults);
+    std::set<size_t> newBookmarks = findInstanceIndices(newInstances, oldBookmarkKeys);
+
+    instances_ = std::move(newInstances);
+    bookmarks_ = std::move(newBookmarks);
     patternMatchingResults_ = std::move(patternMatchingResults);
     patterns_ = std::move(patterns);
     captionTemplates_.resize(patterns_.size(), "%p");
@@ -121,6 +143,66 @@ std::vector<QString> Document::captions(size_t instanceIndex) const
   return result;
 }
 
+std::set<std::vector<QString>> Document::bookmarkKeys() const
+{
+  std::set<std::vector<QString>> keys;
+  std::transform(bookmarks_.begin(), bookmarks_.end(), std::inserter(keys, keys.end()),
+                 [this](size_t index) { return instances_[index].magicExpressionMatches; });
+  return keys;
+}
+
+void Document::addBookmark(size_t instanceIndex)
+{
+  if (instanceIndex >= instances_.size())
+    throw RuntimeError("Invalid page index");
+
+  if (contains(bookmarks_, instanceIndex))
+    return; // Bookmark already exists
+
+  bookmarks_.insert(instanceIndex);
+  modified_ = true;
+  modificationStatusChanged();
+}
+
+void Document::removeBookmark(size_t instanceIndex)
+{
+  if (instanceIndex >= instances_.size())
+    throw RuntimeError("Invalid page index");
+
+  auto it = bookmarks_.find(instanceIndex);
+  if (it == bookmarks_.end())
+    return; // Bookmark does not exist.
+
+  bookmarks_.erase(it);
+  modified_ = true;
+  modificationStatusChanged();
+}
+
+void Document::toggleBookmark(size_t instanceIndex)
+{
+  if (instanceIndex >= instances_.size())
+    throw RuntimeError("Invalid page index");
+
+  auto it = bookmarks_.find(instanceIndex);
+  if (it != bookmarks_.end())
+    bookmarks_.erase(it);
+  else
+    bookmarks_.insert(instanceIndex);
+
+  modified_ = true;
+  modificationStatusChanged();
+}
+
+void Document::removeAllBookmarks()
+{
+  if (bookmarks_.empty())
+    return;
+
+  bookmarks_.clear();
+  modified_ = true;
+  modificationStatusChanged();
+}
+
 QString Document::instanceKey(size_t instanceIndex) const
 {
   if (instanceIndex >= instances_.size())
@@ -135,7 +217,13 @@ void Document::regenerateInstances(const std::function<void()>& onFilesystemTrav
   checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(patterns_);
   std::vector<std::shared_ptr<PatternMatchingResult>> patternMatchingResults =
     matchPatterns(patterns_, onFilesystemTraversalProgress);
-  instances_ = findInstances(patternMatchingResults);
+
+  const std::set<std::vector<QString>> oldBookmarkKeys = bookmarkKeys();
+  std::vector<Instance> newInstances = findInstances(patternMatchingResults);
+  std::set<size_t> newBookmarks = findInstanceIndices(newInstances, oldBookmarkKeys);
+
+  instances_ = std::move(newInstances);
+  bookmarks_ = std::move(newBookmarks);
   patternMatchingResults_ = std::move(patternMatchingResults);
 }
 
@@ -150,17 +238,14 @@ QJsonObject Document::toJson() const
     json["layout"] = jsonLayout;
   }
 
-  {
-    QJsonArray jsonPatterns;
-    std::copy(patterns_.begin(), patterns_.end(), std::back_inserter(jsonPatterns));
-    json["patterns"] = jsonPatterns;
-  }
+  json["patterns"] = stringVectorToJsonStringArray(patterns_);
+  json["captionTemplates"] = stringVectorToJsonStringArray(captionTemplates_);
 
   {
-    QJsonArray jsonCaptionTemplates;
-    std::copy(captionTemplates_.begin(), captionTemplates_.end(),
-              std::back_inserter(jsonCaptionTemplates));
-    json["captionTemplates"] = jsonCaptionTemplates;
+    QJsonArray jsonBookmarks;
+    for (size_t i : bookmarks_)
+      jsonBookmarks.push_back(stringVectorToJsonStringArray(instances_[i].magicExpressionMatches));
+    json["bookmarks"] = jsonBookmarks;
   }
 
   return json;
@@ -170,6 +255,7 @@ void Document::loadFromJson(const QJsonObject& json,
                             const std::function<void()>& onFilesystemTraversalProgress)
 {
   // TODO: (Graceful) error handling
+  bookmarks_.clear();
   {
     QJsonObject jsonLayout = json["layout"].toObject();
     setLayout(Layout{static_cast<size_t>(jsonLayout["rows"].toInt()),
@@ -196,6 +282,16 @@ void Document::loadFromJson(const QJsonObject& json,
   {
     setCaptionTemplates(std::vector<QString>(patterns().size(), "%p"));
   }
+  if (json.contains("bookmarks"))
+  {
+    QJsonArray jsonBookmarks = json["bookmarks"].toArray();
+    std::set<std::vector<QString>> bookmarkKeys;
+    std::transform(jsonBookmarks.begin(), jsonBookmarks.end(),
+                   std::inserter(bookmarkKeys, bookmarkKeys.end()),
+                   [](const QJsonValue& jsonBookmark)
+                   { return jsonStringArrayToStringVector(jsonBookmark.toArray()); });
+    bookmarks_ = findInstanceIndices(instances_, bookmarkKeys);
+  }
 
   modified_ = false;
   modificationStatusChanged();
@@ -207,7 +303,7 @@ void Document::save(const QString& path)
 
   if (!file.open(QIODevice::WriteOnly))
   {
-    throw RuntimeError("Couldn't open file " + path + " for writing.");
+    throw RuntimeError("Could not open file " + path + " for writing.");
   }
 
   if (file.write(QJsonDocument(toJson()).toJson()) < 0)
@@ -230,6 +326,17 @@ std::optional<int> findInstance(const Document& doc, const std::vector<QString>&
     return std::nullopt;
   else
     return matchingInstanceIt - doc.instances().begin();
+}
+
+std::set<size_t> findInstanceIndices(const std::vector<Instance>& instances,
+                                     const std::set<std::vector<QString>>& keys)
+{
+  std::set<size_t> result;
+  if (!keys.empty())
+    for (size_t i = 0; i < instances.size(); ++i)
+      if (contains(keys, instances[i].magicExpressionMatches))
+        result.insert(i);
+  return result;
 }
 
 std::vector<QString> updateCaptionTemplates(const std::vector<QString>& previousCaptionTemplates,

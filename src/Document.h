@@ -22,6 +22,7 @@
 
 #include <QString>
 
+#include <set>
 #include <vector>
 
 class PatternMatchingResult;
@@ -55,6 +56,13 @@ public:
 
   std::vector<QString> captions(size_t instanceIndex) const;
 
+  const std::set<size_t>& bookmarks() const { return bookmarks_; }
+  std::set<std::vector<QString>> bookmarkKeys() const;
+  void addBookmark(size_t instanceIndex);
+  void removeBookmark(size_t instanceIndex);
+  void toggleBookmark(size_t instanceIndex);
+  void removeAllBookmarks();
+
   QString instanceKey(size_t instanceIndex) const;
 
   bool modified() const { return modified_; }
@@ -81,9 +89,13 @@ private:
   bool modified_ = false;
   std::vector<std::shared_ptr<PatternMatchingResult>> patternMatchingResults_;
   std::vector<Instance> instances_;
+  std::set<size_t> bookmarks_;
 };
 
 std::optional<int> findInstance(const Document& doc, const std::vector<QString>& key);
+
+std::set<size_t> findInstanceIndices(const std::vector<Instance>& instances,
+                                     const std::set<std::vector<QString>>& keys);
 
 std::vector<QString> updateCaptionTemplates(const std::vector<QString>& previousCaptionTemplates,
                                             const std::vector<QString>& previousPatterns,

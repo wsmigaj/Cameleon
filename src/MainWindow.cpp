@@ -18,6 +18,7 @@
 #include "CancellationException.h"
 #include "ComparisonDialog.h"
 #include "Constants.h"
+#include "ContainerUtils.h"
 #include "Document.h"
 #include "MainWindow.h"
 #include "PatternMatching.h"
@@ -25,6 +26,8 @@
 #include "RuntimeError.h"
 #include "Try.h"
 #include "ui_MainWindow.h"
+
+#include <Qt>
 
 namespace
 {
@@ -58,6 +61,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   instanceComboBox_ = new QComboBox(this);
   instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
+  ui_->mainToolBar->addSeparator();
   ui_->mainToolBar->addWidget(instanceComboBox_);
 
   connect(instanceComboBox_, &QComboBox::currentIndexChanged, this,
@@ -77,7 +81,10 @@ MainWindow::MainWindow(QWidget* parent)
   ui_->actionNextInstance->setIcon(QIcon::fromTheme("go-next"));
   ui_->actionLastInstance->setIcon(QIcon::fromTheme("go-last"));
 
+  ui_->actionBookmarkPage->setIcon(QIcon::fromTheme("bookmarks"));
+
   mainLayout_ = new QGridLayout(ui_->mainView);
+  bookmarkIcon_ = QIcon::fromTheme("bookmarks");
   updateDocumentDependentActions();
 }
 
@@ -500,6 +507,144 @@ void MainWindow::on_actionLastInstance_triggered()
   goToInstance(doc_->instances().size() - 1);
 }
 
+void MainWindow::on_actionBookmarkPage_triggered(bool checked)
+{
+  if (!doc_ || doc_->instances().empty())
+    return;
+  if (checked)
+    doc_->addBookmark(instance_);
+  else
+    doc_->removeBookmark(instance_);
+  const QBrush brush = checked ? QBrush(BOOKMARK_COLOUR) : QBrush();
+  instanceComboBox_->setItemData(instance_, brush, Qt::ForegroundRole);
+
+  onBookmarksChanged();
+}
+
+void MainWindow::on_actionRemoveAllBookmarks_triggered()
+{
+  if (!doc_)
+    return;
+
+  doc_->removeAllBookmarks();
+  QBrush defaultBrush;
+  for (size_t instance = 0; instance < doc_->instances().size(); ++instance)
+    instanceComboBox_->setItemData(instance, defaultBrush, Qt::ForegroundRole);
+
+  onBookmarksChanged();
+}
+
+void MainWindow::on_actionFirstBookmark_triggered()
+{
+  if (!doc_ || doc_->instances().empty() || doc_->bookmarks().empty())
+    return;
+  goToInstance(*doc_->bookmarks().begin());
+}
+
+void MainWindow::on_actionPreviousBookmark_triggered()
+{
+  if (!doc_ || doc_->instances().empty())
+    return;
+
+  auto it = std::upper_bound(doc_->bookmarks().rbegin(), doc_->bookmarks().rend(), instance_,
+                             std::greater<size_t>());
+  if (it != doc_->bookmarks().rend())
+    goToInstance(*it);
+}
+
+void MainWindow::on_actionNextBookmark_triggered()
+{
+  if (!doc_ || doc_->instances().empty())
+    return;
+
+  auto it = std::upper_bound(doc_->bookmarks().begin(), doc_->bookmarks().end(), instance_);
+  if (it != doc_->bookmarks().end())
+    goToInstance(*it);
+}
+
+void MainWindow::on_actionLastBookmark_triggered()
+{
+  if (!doc_ || doc_->instances().empty() || doc_->bookmarks().empty())
+    return;
+  goToInstance(*doc_->bookmarks().rbegin());
+}
+
+void MainWindow::on_actionImportBookmarks_triggered()
+{
+  if (!doc_)
+    return;
+
+  QSettings settings;
+  QString lastDir = settings.value("lastImportOrExportBookmarksDir", QString()).toString();
+
+  QString fileName =
+    QFileDialog::getOpenFileName(this, "Import Bookmarks", lastDir, "Text files (*.txt)");
+  if (fileName.isEmpty())
+    return;
+
+  settings.setValue("lastImportOrExportBookmarksDir", QFileInfo(fileName).dir().path());
+  QFile file(fileName);
+  QString bookmarkKey;
+  std::set<QString> bookmarkKeys;
+  if (file.open(QFile::ReadOnly))
+  {
+    QTextStream stream(&file);
+    while (stream.readLineInto(&bookmarkKey))
+      bookmarkKeys.insert(bookmarkKey);
+    size_t numImportedBookmarks = 0;
+    const QBrush bookmarkBrush = QBrush(BOOKMARK_COLOUR);
+    for (size_t i = 0; i < doc_->instances().size(); ++i)
+    {
+      if (contains(bookmarkKeys, doc_->instanceKey(i)) && !contains(doc_->bookmarks(), i))
+      {
+        doc_->addBookmark(i);
+        instanceComboBox_->setItemData(i, bookmarkBrush, Qt::ForegroundRole);
+        ++numImportedBookmarks;
+      }
+    }
+    QMessageBox::information(this, "Import Bookmarks",
+                             QString("%1 bookmarks have been imported.").arg(numImportedBookmarks),
+                             QMessageBox::Ok);
+    onBookmarksChanged();
+  }
+  else
+  {
+    QMessageBox::warning(this, "Warning",
+                         QString("Could not open file '%1' for reading.").arg(fileName));
+  }
+}
+
+void MainWindow::on_actionExportBookmarks_triggered()
+{
+  if (!doc_)
+    return;
+
+  QSettings settings;
+  QString lastDir = settings.value("lastImportOrExportBookmarksDir", QString()).toString();
+
+  QString fileName =
+    QFileDialog::getSaveFileName(this, "Export Bookmarks", lastDir, "Text files (*.txt)");
+  if (fileName.isEmpty())
+    return;
+
+  settings.setValue("lastImportOrExportBookmarksDir", QFileInfo(fileName).dir().path());
+  QFile file(fileName);
+  if (file.open(QFile::WriteOnly | QFile::Truncate))
+  {
+    QTextStream stream(&file);
+    for (size_t i : doc_->bookmarks())
+      stream << doc_->instanceKey(i) << "\n";
+    QMessageBox::information(
+      this, "Export Bookmarks",
+      QString("%1 bookmarks have been exported.").arg(doc_->bookmarks().size()), QMessageBox::Ok);
+  }
+  else
+  {
+    QMessageBox::warning(this, "Warning",
+                         QString("Could not open file '%1' for writing.").arg(fileName));
+  }
+}
+
 void MainWindow::on_actionAboutCameleon_triggered()
 {
   QMessageBox::about(
@@ -612,7 +757,10 @@ void MainWindow::populateInstanceComboBox()
     {
       QString item = doc_->instanceKey(instance);
       anyItemIsNonempty = anyItemIsNonempty || !item.isEmpty();
-      instanceComboBox_->addItem(std::move(item));
+      const bool isBookmarked = contains(doc_->bookmarks(), instance);
+      const QBrush brush = isBookmarked ? QBrush(BOOKMARK_COLOUR) : QBrush();
+      instanceComboBox_->addItem(item);
+      instanceComboBox_->setItemData(instanceComboBox_->count() - 1, brush, Qt::ForegroundRole);
     }
   }
   instanceComboBox_->setEnabled(anyItemIsNonempty);
@@ -656,6 +804,23 @@ void MainWindow::updateInstanceDependentActions()
   ui_->actionPreviousInstance->setEnabled(numInstances > 0 && instance_ > 0);
   ui_->actionNextInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
   ui_->actionLastInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
+  updateBookmarkDependentActions();
+}
+
+void MainWindow::updateBookmarkDependentActions()
+{
+  const bool isOpen = doc_ != nullptr;
+  const bool hasInstances = isOpen && !doc_->instances().empty();
+  const bool hasBookmarks = isOpen && !doc_->bookmarks().empty();
+  ui_->actionBookmarkPage->setEnabled(hasInstances);
+  ui_->actionBookmarkPage->setChecked(isOpen && contains(doc_->bookmarks(), instance_));
+  ui_->actionRemoveAllBookmarks->setEnabled(hasBookmarks);
+  ui_->actionFirstBookmark->setEnabled(hasBookmarks && instance_ != *doc_->bookmarks().begin());
+  ui_->actionPreviousBookmark->setEnabled(hasBookmarks && instance_ > *doc_->bookmarks().begin());
+  ui_->actionNextBookmark->setEnabled(hasBookmarks && instance_ < *doc_->bookmarks().rbegin());
+  ui_->actionLastBookmark->setEnabled(hasBookmarks && instance_ != *doc_->bookmarks().rbegin());
+  ui_->actionImportBookmarks->setEnabled(isOpen && hasInstances);
+  ui_->actionExportBookmarks->setEnabled(hasBookmarks);
 }
 
 void MainWindow::onInstancesChanged()
@@ -699,8 +864,19 @@ void MainWindow::onCaptionTemplatesChanged()
   }
 }
 
+void MainWindow::onBookmarksChanged()
+{
+  updateBookmarkDependentActions();
+}
+
 void MainWindow::goToInstance(int instance)
 {
+  if (!doc_ || instance < 0 || instance >= doc_->instances().size())
+  {
+    Q_ASSERT(false);
+    return;
+  }
+
   instance_ = instance;
   onActiveInstanceChanged();
 }

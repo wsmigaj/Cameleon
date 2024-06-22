@@ -2,6 +2,10 @@
 <qresource prefix="icons/crystalsvg">
     <file alias="index.theme">../icons/crystalsvg/index.theme</file>
  
+    <file alias="16x16/bookmarks.png">../icons/crystalsvg/16x16/actions/bookmarks.png</file>
+    <file alias="22x22/bookmarks.png">../icons/crystalsvg/22x22/actions/bookmarks.png</file>
+    <file alias="32x32/bookmarks.png">../icons/crystalsvg/32x32/actions/bookmarks.png</file>
+ 
     <file alias="16x16/dialog-information.png">../icons/crystalsvg/16x16/actions/dialog-information.png</file>
     <file alias="22x22/dialog-information.png">../icons/crystalsvg/22x22/actions/dialog-information.png</file>
     <file alias="32x32/dialog-information.png">../icons/crystalsvg/32x32/actions/dialog-information.png</file>

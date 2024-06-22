@@ -58,17 +58,30 @@ private slots:
   void on_actionSaveComparisonAs_triggered();
   void on_actionCloseComparison_triggered();
   void on_actionQuit_triggered();
+
   void on_actionZoomIn_triggered();
   void on_actionZoomOut_triggered();
   void on_actionZoom1to1_triggered();
   void on_actionSaveScreenshot_triggered();
   void on_actionSaveAllScreenshots_triggered();
   void on_actionEditCaptions_triggered();
+
   void on_actionFirstInstance_triggered();
   void on_actionPreviousInstance_triggered();
   void on_actionNextInstance_triggered();
   void on_actionLastInstance_triggered();
+
+  void on_actionBookmarkPage_triggered(bool checked);
+  void on_actionRemoveAllBookmarks_triggered();
+  void on_actionFirstBookmark_triggered();
+  void on_actionPreviousBookmark_triggered();
+  void on_actionNextBookmark_triggered();
+  void on_actionLastBookmark_triggered();
+  void on_actionImportBookmarks_triggered();
+  void on_actionExportBookmarks_triggered();
+
   void on_actionAboutCameleon_triggered();
+
   void onLayoutActionTriggered();
   void onRecentComparisonActionTriggered();
 
@@ -91,11 +104,13 @@ private:
   void updateDocumentDependentActions();
   void updateDocumentModificationStatusDependentActions();
   void updateInstanceDependentActions();
+  void updateBookmarkDependentActions();
 
   void onDocumentPathChanged();
   void onInstancesChanged();
   void onActiveInstanceChanged();
   void onCaptionTemplatesChanged();
+  void onBookmarksChanged();
 
   std::optional<std::vector<QString>> currentInstanceKey() const;
   void goToInstance(int instance);
@@ -110,6 +125,7 @@ private:
 
 private:
   static const size_t MAX_NUM_RECENT_COMPARISONS = 9;
+  static const auto BOOKMARK_COLOUR = Qt::blue;
 
 private:
   std::unique_ptr<Ui::MainWindowClass> ui_;
@@ -119,6 +135,7 @@ private:
   std::map<QAction*, Layout> layoutActions_;
   QMenu* recentComparisonsMenu_ = nullptr;
   QGridLayout* mainLayout_ = nullptr;
+  QIcon bookmarkIcon_;
   std::unique_ptr<Document> doc_;
   int instance_ = 0;
 };
