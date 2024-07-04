@@ -526,6 +526,12 @@ void MainWindow::on_actionRemoveAllBookmarks_triggered()
   if (!doc_)
     return;
 
+  if (QMessageBox::question(
+        this, "Remove All Bookmarks",
+        "Do you wish to remove all bookmarks? This operation cannot be undone.") !=
+      QMessageBox::Yes)
+    return;
+
   doc_->removeAllBookmarks();
   QBrush defaultBrush;
   for (size_t instance = 0; instance < doc_->instances().size(); ++instance)
