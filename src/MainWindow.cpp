@@ -1,4 +1,4 @@
-﻿// This file is part of Caméléon.
+// This file is part of Caméléon.
 //
 // Copyright (C) 2023-2024 Wojciech Śmigaj
 //
@@ -25,6 +25,7 @@
 #include "PatternMatchingProgressDialog.h"
 #include "RuntimeError.h"
 #include "Try.h"
+#include "Version.h"
 #include "ui_MainWindow.h"
 
 #include <Qt>
@@ -655,7 +656,12 @@ void MainWindow::on_actionAboutCameleon_triggered()
 {
   QMessageBox::about(
     this, "About Cam\u00E9l\u00E9on",
+    "Cam\u00E9l\u00E9on " CAMELEON_VERSION ".<b></b><br><br>\n\n"
     "Copyright (C) 2023-2024 Wojciech \u015Amigaj.<br><br>\n\n"
+    "This program is free software: you can redistribute it and/or modify "
+    "it under the terms of the GNU General Public License as published by "
+    "the Free Software Foundation, either version 3 of the License, or "
+    "(at your option) any later version.<br><br>\n\n"
     "Application icon by <a href=\"http://icons8.com/\">Icons8</a>.<br><br>\n\n"
     "This software uses the following open-source libraries:\n\n"
     "<ul>"
