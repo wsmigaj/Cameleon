@@ -42,7 +42,10 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        build_output_dir='${{ github.workspace }}/build'
+        build_output_dir_with_fwd_slashes=${build_output_dir//\\//}
+        echo "build-output-dir=${build_output_dir}" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir-with-fwd-slashes=${build_output_dir_with_fwd_slashes}" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
       run: >
@@ -93,8 +96,8 @@ jobs:
     - name: Zip PDBs
       shell: cmake -P {0}
       run: | 
-        set(output_path "${{ steps.strings.outputs.build-output-dir }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
-        set(input_path_pattern "${{ steps.strings.outputs.build-output-dir }}/${{ matrix.build_type }}/*.pdb")
+        set(output_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
+        set(input_path_pattern "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/${{ matrix.build_type }}/*.pdb")
         file(GLOB input_paths LIST_DIRECTORIES false ${input_path_pattern})
         file(ARCHIVE_CREATE OUTPUT ${output_path} PATHS ${input_paths} FORMAT zip VERBOSE)
 
