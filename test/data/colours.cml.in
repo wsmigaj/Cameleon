@@ -1,0 +1,17 @@
+{
+    "bookmarks": [
+    ],
+    "captionTemplates": [
+        "%p",
+        "%p"
+    ],
+    "layout": {
+        "columns": 2,
+        "rows": 1
+    },
+    "patterns": [
+        "@TEST_DATA_DIR@/*/checkerboard.png",
+        "@TEST_DATA_DIR@/*/inverted_checkerboard.png"
+    ],
+    "version": 1
+}

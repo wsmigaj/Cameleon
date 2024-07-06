@@ -1,0 +1,15 @@
+{
+    "bookmarks": [
+    ],
+    "captionTemplates": [
+        "%p"
+    ],
+    "layout": {
+        "columns": 1,
+        "rows": 1
+    },
+    "patterns": [
+        "@TEST_DATA_DIR@/no_colour/checkerboard.png"
+    ],
+    "version": 1
+}

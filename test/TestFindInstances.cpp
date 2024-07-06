@@ -27,7 +27,6 @@
 
 QTEST_MAIN(TestFindInstances)
 
-// TODO: Move to a standalone file
 void createFilesystemObjects(const std::filesystem::path& topPath,
                              const std::vector<std::filesystem::path>& relativePaths)
 {

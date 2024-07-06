@@ -1,0 +1,15 @@
+{
+    "bookmarks": [
+    ],
+    "captionTemplates": [
+        "%p"
+    ],
+    "layout": {
+        "columns": 1,
+        "rows": 1
+    },
+    "patterns": [
+        "@TEST_DATA_DIR@/green/*.png"
+    ],
+    "version": 1
+}

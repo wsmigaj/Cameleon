@@ -58,6 +58,10 @@ set_property(GLOBAL PROPERTY QT_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_SOURCE_GROUP "Generated Files")
 
+# Enable testing.
+
+enable_testing(true)
+
 # Include dependent CMakeLists.txt files.
 
 add_subdirectory(src)
