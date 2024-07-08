@@ -101,9 +101,13 @@ private:
   void populateLayoutSubmenu();
   void updateLayoutSubmenu();
 
+  void updateDocumentDependentUiElements();
   void updateDocumentDependentActions();
+  void updateDocumentDependentWidgets();
   void updateDocumentModificationStatusDependentActions();
+  void updateInstanceDependentUiElements();
   void updateInstanceDependentActions();
+  void updateInstanceDependentWidgets();
   void updateBookmarkDependentActions();
 
   void onDocumentPathChanged();
@@ -123,6 +127,8 @@ private:
 
   QRect toolBarAreaRect() const;
 
+  static QString statusBarInstanceLabelText(int currentInstance, int numInstances);
+
 private:
   static const size_t MAX_NUM_RECENT_COMPARISONS = 9;
   static const auto BOOKMARK_COLOUR = Qt::blue;
@@ -135,7 +141,12 @@ private:
   std::map<QAction*, Layout> layoutActions_;
   QMenu* recentComparisonsMenu_ = nullptr;
   QGridLayout* mainLayout_ = nullptr;
+
+  QLabel* statusBarMessageLabel_ = nullptr;
+  QLabel* statusBarInstanceLabel_ = nullptr;
+
   QIcon bookmarkIcon_;
+
   std::unique_ptr<Document> doc_;
   int instance_ = 0;
 };

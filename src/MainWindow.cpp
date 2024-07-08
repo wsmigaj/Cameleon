@@ -86,6 +86,17 @@ MainWindow::MainWindow(QWidget* parent)
 
   mainLayout_ = new QGridLayout(ui_->mainView);
   bookmarkIcon_ = QIcon::fromTheme("bookmarks");
+
+  // Add a wide empty label to the status bar to force other labels to be right-aligned.
+  statusBarMessageLabel_ = new QLabel(this);
+  statusBar()->addWidget(statusBarMessageLabel_, 1 /*stretch*/);
+
+  statusBarInstanceLabel_ = new QLabel(this);
+  statusBarInstanceLabel_->setText(statusBarInstanceLabelText(99999, 99999));
+  statusBarInstanceLabel_->setMinimumWidth(statusBarInstanceLabel_->width());
+  statusBarInstanceLabel_->setText(QString());
+  statusBarInstanceLabel_->hide();
+
   updateDocumentDependentActions();
 }
 
@@ -782,6 +793,12 @@ void MainWindow::populateInstanceComboBox()
   instanceComboBox_->setEnabled(anyItemIsNonempty);
 }
 
+void MainWindow::updateDocumentDependentUiElements()
+{
+  updateDocumentDependentActions();
+  updateDocumentDependentWidgets();
+}
+
 void MainWindow::updateDocumentDependentActions()
 {
   const bool isOpen = doc_ != nullptr;
@@ -805,11 +822,34 @@ void MainWindow::updateDocumentDependentActions()
   updateInstanceDependentActions();
 }
 
+void MainWindow::updateDocumentDependentWidgets()
+{
+  const bool isOpen = doc_ != nullptr;
+  if (isOpen && !statusBarInstanceLabel_->isVisible())
+  {
+    statusBarInstanceLabel_->show();
+    statusBar()->addWidget(statusBarInstanceLabel_);
+  }
+  else if (!isOpen && statusBarInstanceLabel_->isVisible())
+  {
+    statusBarInstanceLabel_->hide();
+    statusBar()->removeWidget(statusBarInstanceLabel_);
+  }
+
+  updateInstanceDependentWidgets();
+}
+
 void MainWindow::updateDocumentModificationStatusDependentActions()
 {
   const bool isOpen = doc_ != nullptr;
   const bool isModified = isOpen && doc_->modified();
   ui_->actionSaveComparison->setEnabled(isModified);
+}
+
+void MainWindow::updateInstanceDependentUiElements()
+{
+  updateInstanceDependentActions();
+  updateInstanceDependentWidgets();
 }
 
 void MainWindow::updateInstanceDependentActions()
@@ -821,6 +861,23 @@ void MainWindow::updateInstanceDependentActions()
   ui_->actionNextInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
   ui_->actionLastInstance->setEnabled(numInstances > 0 && instance_ < numInstances - 1);
   updateBookmarkDependentActions();
+}
+
+void MainWindow::updateInstanceDependentWidgets()
+{
+  const bool isOpen = doc_ != nullptr;
+  const int numInstances = isOpen ? doc_->instances().size() : 0;
+  if (isOpen)
+  {
+    statusBarInstanceLabel_->setText(statusBarInstanceLabelText(instance_, numInstances));
+  }
+}
+
+QString MainWindow::statusBarInstanceLabelText(int currentInstance, int numInstances)
+{
+  return QString("Page %1 of %2")
+    .arg(std::min(currentInstance + 1, numInstances))
+    .arg(numInstances);
 }
 
 void MainWindow::updateBookmarkDependentActions()
@@ -844,7 +901,7 @@ void MainWindow::onInstancesChanged()
   updateMainViewLayout();
   updateLayoutSubmenu();
   populateInstanceComboBox();
-  updateDocumentDependentActions();
+  updateDocumentDependentUiElements();
 
   if (doc_ && doc_->instances().empty())
   {
@@ -865,7 +922,7 @@ void MainWindow::onActiveInstanceChanged()
       ui_->mainView->setCaptions(doc_->captions(instance_));
     }
   }
-  updateInstanceDependentActions();
+  updateInstanceDependentUiElements();
 }
 
 void MainWindow::onCaptionTemplatesChanged()
