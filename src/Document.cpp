@@ -16,12 +16,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "Document.h"
+#include "Constants.h"
 #include "ContainerUtils.h"
 #include "PatternMatching.h"
 #include "RuntimeError.h"
 
 namespace
 {
+const char* DEFAULT_CAPTION_TEMPLATE = "%p";
+
 QString join(const std::vector<QString>& strings, const QString& sep = QString())
 {
   QString result;
@@ -68,8 +71,13 @@ Document::Document(const QString& path, const std::function<void()>& onFilesyste
 
   QByteArray saveData = file.readAll();
 
-  QJsonDocument jsonDoc(QJsonDocument::fromJson(saveData));
-  loadFromJson(jsonDoc.object(), onFilesystemTraversalProgress);
+  QJsonParseError error;
+  QJsonDocument jsonDoc(QJsonDocument::fromJson(saveData, &error));
+  if (jsonDoc.isNull())
+  {
+    throw RuntimeError("Could not parse file " + path + ": " + error.errorString() + ".");
+  }
+  initialiseFromJson(jsonDoc.object(), onFilesystemTraversalProgress);
 }
 
 void Document::setLayout(const Layout& layout)
@@ -107,7 +115,7 @@ void Document::setPatterns(std::vector<QString> patterns,
     bookmarks_ = std::move(newBookmarks);
     patternMatchingResults_ = std::move(patternMatchingResults);
     patterns_ = std::move(patterns);
-    captionTemplates_.resize(patterns_.size(), "%p");
+    captionTemplates_.resize(patterns_.size(), DEFAULT_CAPTION_TEMPLATE);
     modified_ = true;
     modificationStatusChanged();
   }
@@ -138,7 +146,7 @@ std::vector<QString> Document::captions(size_t instanceIndex) const
     if (instance.paths[i].isEmpty())
       result[i] = QString();
     else
-      result[i].replace("%p", instance.paths[i]);
+      result[i].replace(DEFAULT_CAPTION_TEMPLATE, instance.paths[i]);
   }
   return result;
 }
@@ -251,22 +259,25 @@ QJsonObject Document::toJson() const
   return json;
 }
 
-void Document::loadFromJson(const QJsonObject& json,
-                            const std::function<void()>& onFilesystemTraversalProgress)
+void Document::initialiseFromJson(const QJsonObject& json,
+                                  const std::function<void()>& onFilesystemTraversalProgress)
 {
-  // TODO: (Graceful) error handling
-  bookmarks_.clear();
-  {
-    QJsonObject jsonLayout = json["layout"].toObject();
-    setLayout(Layout{static_cast<size_t>(jsonLayout["rows"].toInt()),
-                     static_cast<size_t>(jsonLayout["columns"].toInt())});
-  }
   {
     QJsonArray jsonPatterns = json["patterns"].toArray();
     std::vector<QString> patterns;
     std::transform(jsonPatterns.begin(), jsonPatterns.end(), std::back_inserter(patterns),
                    [](const QJsonValue& jsonPattern) { return jsonPattern.toString(); });
+    if (patterns.size() > MAX_NUM_PATTERNS)
+      patterns.resize(MAX_NUM_PATTERNS);
     setPatterns(std::move(patterns), onFilesystemTraversalProgress);
+  }
+  {
+    QJsonObject jsonLayout = json["layout"].toObject();
+    Layout layout{static_cast<size_t>(jsonLayout["rows"].toInt()),
+                  static_cast<size_t>(jsonLayout["columns"].toInt())};
+    if (layout.panels() < patterns_.size())
+      layout = defaultLayout(patterns_.size());
+    setLayout(layout);
   }
   if (json.contains("captionTemplates"))
   {
@@ -276,11 +287,12 @@ void Document::loadFromJson(const QJsonObject& json,
                    std::back_inserter(captionTemplates),
                    [](const QJsonValue& jsonCaptionTemplate)
                    { return jsonCaptionTemplate.toString(); });
+    captionTemplates.resize(patterns_.size(), DEFAULT_CAPTION_TEMPLATE);
     setCaptionTemplates(std::move(captionTemplates));
   }
   else
   {
-    setCaptionTemplates(std::vector<QString>(patterns().size(), "%p"));
+    setCaptionTemplates(std::vector<QString>(patterns().size(), DEFAULT_CAPTION_TEMPLATE));
   }
   if (json.contains("bookmarks"))
   {
@@ -292,9 +304,6 @@ void Document::loadFromJson(const QJsonObject& json,
                    { return jsonStringArrayToStringVector(jsonBookmark.toArray()); });
     bookmarks_ = findInstanceIndices(instances_, bookmarkKeys);
   }
-
-  modified_ = false;
-  modificationStatusChanged();
 }
 
 void Document::save(const QString& path)
@@ -351,7 +360,6 @@ std::vector<QString> updateCaptionTemplates(const std::vector<QString>& previous
                        "caption templates");
   }
 
-  const QString defaultCaptionTemplate = "%p";
   std::vector<QString> newCaptionTemplates(newNumPatterns);
   std::vector<bool> isPreviousCaptionTemplateReused(previousNumPatterns, false);
   std::vector<bool> isNewCaptionTemplateReady(newNumPatterns, false);
@@ -394,7 +402,7 @@ std::vector<QString> updateCaptionTemplates(const std::vector<QString>& previous
     if (patternIndex < previousNumPatterns && !isPreviousCaptionTemplateReused[patternIndex])
       newCaptionTemplates[patternIndex] = previousCaptionTemplates[patternIndex];
     else
-      newCaptionTemplates[patternIndex] = defaultCaptionTemplate;
+      newCaptionTemplates[patternIndex] = DEFAULT_CAPTION_TEMPLATE;
   }
 
   return newCaptionTemplates;

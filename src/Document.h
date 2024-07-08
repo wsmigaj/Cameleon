@@ -72,10 +72,12 @@ public:
   const std::vector<Instance>& instances() const { return instances_; }
 
   QJsonObject toJson() const;
-  void loadFromJson(
-    const QJsonObject& json, const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
   void save(const QString& path);
+
+private:
+  void initialiseFromJson(
+    const QJsonObject& json, const std::function<void()>& onFilesystemTraversalProgress = []() {});
 
 signals:
   void modificationStatusChanged();
