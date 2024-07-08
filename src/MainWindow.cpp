@@ -250,7 +250,8 @@ void MainWindow::openDocument(const QString& path)
   connectDocumentSignals();
   onDocumentPathChanged();
   onInstancesChanged();
-  goToInstance(0);
+  if (!doc_->instances().empty())
+    goToInstance(0);
 }
 
 void MainWindow::onRecentComparisonActionTriggered()
@@ -277,7 +278,8 @@ void MainWindow::onRecentComparisonActionTriggered()
   connectDocumentSignals();
   onDocumentPathChanged();
   onInstancesChanged();
-  goToInstance(0);
+  if (!doc_->instances().empty())
+    goToInstance(0);
 }
 
 void MainWindow::on_actionEditComparison_triggered()
@@ -315,7 +317,8 @@ void MainWindow::on_actionEditComparison_triggered()
 
     const int newInstance =
       previousInstanceKey ? findInstance(*doc_, *previousInstanceKey).value_or(0) : 0;
-    goToInstance(newInstance);
+    if (!doc_->instances().empty())
+      goToInstance(newInstance);
   }
 }
 
@@ -343,7 +346,8 @@ void MainWindow::on_actionRefreshComparison_triggered()
 
   const int newInstance =
     previousInstanceKey ? findInstance(*doc_, *previousInstanceKey).value_or(0) : 0;
-  goToInstance(newInstance);
+  if (!doc_->instances().empty())
+    goToInstance(newInstance);
 }
 
 void MainWindow::on_actionSaveComparison_triggered()
@@ -844,7 +848,7 @@ void MainWindow::onInstancesChanged()
 
   if (doc_ && doc_->instances().empty())
   {
-    QMessageBox::information(this, "Information", "No pattern matches found");
+    QMessageBox::information(this, "Information", "No pattern matches found.");
   }
 }
 
