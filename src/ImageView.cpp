@@ -35,8 +35,8 @@ ImageView::ImageView(QWidget* parent) : QWidget(parent)
   layout->addWidget(imageWidget_, 1);
   layout->addWidget(placeholderLabel_, 1);
 
-  connect(imageWidget_, &ImageWidget::mouseMovedOverImage, this, &ImageView::onMouseMovedOverImage);
-  connect(imageWidget_, &ImageWidget::mouseLeftImage, this, &ImageView::onMouseLeftImage);
+  connect(imageWidget_, &ImageWidget::mouseMovedOverImage, this, &ImageView::mouseMovedOverImage);
+  connect(imageWidget_, &ImageWidget::mouseLeftImage, this, &ImageView::mouseLeftImage);
 }
 
 ImageView::~ImageView()
@@ -58,20 +58,20 @@ void ImageView::setPixmap(const QPixmap& pixmap)
   if (pixmap.isNull())
     throw std::invalid_argument("Pixmap must not be null.");
 
-  headerBar_->clearPixelProperties();
   imageWidget_->setPixmap(pixmap);
   imageWidget_->setVisible(true);
   placeholderLabel_->setText(QString());
   placeholderLabel_->setVisible(false);
+  emit mouseLeftImage();
 }
 
 void ImageView::setMessage(const QString& message)
 {
-  headerBar_->clearPixelProperties();
   imageWidget_->setPixmap(QPixmap());
   imageWidget_->setVisible(false);
   placeholderLabel_->setText(message);
   placeholderLabel_->setVisible(true);
+  emit mouseLeftImage();
 }
 
 void ImageView::setCaption(const QString& caption)
@@ -83,19 +83,9 @@ void ImageView::clear()
 {
   headerBar_->clearId();
   headerBar_->clearCaption();
-  headerBar_->clearPixelProperties();
   imageWidget_->clear();
   imageWidget_->hide();
   placeholderLabel_->setText(QString("No matching file."));
   placeholderLabel_->show();
-}
-
-void ImageView::onMouseMovedOverImage(QPoint pixelCoords, QColor pixelColour)
-{
-  headerBar_->setPixelProperties(pixelCoords, pixelColour);
-}
-
-void ImageView::onMouseLeftImage()
-{
-  headerBar_->clearPixelProperties();
+  emit mouseLeftImage();
 }

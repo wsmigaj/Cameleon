@@ -128,6 +128,10 @@ bool ImageWidget::eventFilter(QObject* watched, QEvent* event)
         const QPoint point = pointF.toPoint();
         emit mouseMovedOverImage(point, image_.pixelColor(point));
       }
+      else
+      {
+        emit mouseLeftImage();
+      }
     }
     else if (event->type() == QEvent::GraphicsSceneLeave)
     {

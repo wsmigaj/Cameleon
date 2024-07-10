@@ -195,6 +195,8 @@ void MainView::setLayout(const Layout& layout)
             &MainView::onImageWidgetTransformChanging);
     connect(newImageWidget, &ImageWidget::transformChanged, this,
             &MainView::onImageWidgetTransformChanged);
+    connect(newView, &ImageView::mouseLeftImage, this, &MainView::mouseLeftImage);
+    connect(newView, &ImageView::mouseMovedOverImage, this, &MainView::mouseMovedOverImage);
     newImageWidget->setDragMode(QGraphicsView::ScrollHandDrag);
     newImageWidget->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     newView->headerBar()->setId(QString(char('A' + i)));

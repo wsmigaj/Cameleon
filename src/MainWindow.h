@@ -88,6 +88,9 @@ private slots:
   void onDocumentModificationStatusChanged();
   void onInstanceComboBox(int currentIndex);
 
+  void onMouseLeftImage();
+  void onMouseMovedOverImage(QPoint pixelCoords, QColor pixelColour);
+
 private:
   void connectDocumentSignals();
 
@@ -128,6 +131,7 @@ private:
   QRect toolBarAreaRect() const;
 
   static QString statusBarInstanceLabelText(int currentInstance, int numInstances);
+  static QString statusBarPixelLabelText(const QPoint& pt, const QColor& colour);
 
 private:
   static const size_t MAX_NUM_RECENT_COMPARISONS = 9;
@@ -144,6 +148,7 @@ private:
 
   QLabel* statusBarMessageLabel_ = nullptr;
   QLabel* statusBarInstanceLabel_ = nullptr;
+  QLabel* statusBarPixelLabel_ = nullptr;
 
   QIcon bookmarkIcon_;
 

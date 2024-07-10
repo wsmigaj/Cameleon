@@ -46,9 +46,9 @@ public:
   ImageWidget* imageWidget() { return imageWidget_; }
   const ImageWidget* imageWidget() const { return imageWidget_; }
 
-private slots:
-  void onMouseMovedOverImage(QPoint pixelCoords, QColor pixelColour);
-  void onMouseLeftImage();
+signals:
+  void mouseLeftImage();
+  void mouseMovedOverImage(QPoint pixelCoords, QColor pixelColour);
 
 private:
   HeaderBar* headerBar_ = nullptr;

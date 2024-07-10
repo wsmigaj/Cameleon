@@ -67,6 +67,8 @@ MainWindow::MainWindow(QWidget* parent)
 
   connect(instanceComboBox_, &QComboBox::currentIndexChanged, this,
           &MainWindow::onInstanceComboBox);
+  connect(ui_->mainView, &MainView::mouseMovedOverImage, this, &MainWindow::onMouseMovedOverImage);
+  connect(ui_->mainView, &MainView::mouseLeftImage, this, &MainWindow::onMouseLeftImage);
 
   QIcon::setThemeName("crystalsvg");
 
@@ -91,9 +93,20 @@ MainWindow::MainWindow(QWidget* parent)
   statusBarMessageLabel_ = new QLabel(this);
   statusBar()->addWidget(statusBarMessageLabel_, 1 /*stretch*/);
 
+  statusBarPixelLabel_ = new QLabel(this);
+  const int minPixelLabelWidth =
+    QFontMetrics(statusBarPixelLabel_->font())
+      .boundingRect(statusBarPixelLabelText(QPoint(9999, 9999), QColor(255, 255, 255, 255)))
+      .width();
+  statusBarPixelLabel_->setMinimumWidth(minPixelLabelWidth);
+  statusBarPixelLabel_->setText(QString());
+  statusBarPixelLabel_->hide();
+
   statusBarInstanceLabel_ = new QLabel(this);
-  statusBarInstanceLabel_->setText(statusBarInstanceLabelText(99999, 99999));
-  statusBarInstanceLabel_->setMinimumWidth(statusBarInstanceLabel_->width());
+  const int minInstanceLabelWidth = QFontMetrics(statusBarInstanceLabel_->font())
+                                      .boundingRect(statusBarInstanceLabelText(9999, 9999))
+                                      .width();
+  statusBarInstanceLabel_->setMinimumWidth(minInstanceLabelWidth);
   statusBarInstanceLabel_->setText(QString());
   statusBarInstanceLabel_->hide();
 
@@ -737,6 +750,16 @@ void MainWindow::onInstanceComboBox(int currentIndex)
     goToInstance(currentIndex);
 }
 
+void MainWindow::onMouseLeftImage()
+{
+  statusBarPixelLabel_->setText(QString());
+}
+
+void MainWindow::onMouseMovedOverImage(QPoint pixelCoords, QColor pixelColour)
+{
+  statusBarPixelLabel_->setText(statusBarPixelLabelText(pixelCoords, pixelColour));
+}
+
 void MainWindow::connectDocumentSignals()
 {
   connect(doc_.get(), &Document::modificationStatusChanged, this,
@@ -825,6 +848,17 @@ void MainWindow::updateDocumentDependentActions()
 void MainWindow::updateDocumentDependentWidgets()
 {
   const bool isOpen = doc_ != nullptr;
+  if (isOpen && !statusBarPixelLabel_->isVisible())
+  {
+    statusBarPixelLabel_->show();
+    statusBar()->addWidget(statusBarPixelLabel_);
+  }
+  else if (!isOpen && statusBarPixelLabel_->isVisible())
+  {
+    statusBarPixelLabel_->hide();
+    statusBar()->removeWidget(statusBarPixelLabel_);
+  }
+
   if (isOpen && !statusBarInstanceLabel_->isVisible())
   {
     statusBarInstanceLabel_->show();
@@ -878,6 +912,17 @@ QString MainWindow::statusBarInstanceLabelText(int currentInstance, int numInsta
   return QString("Page %1 of %2")
     .arg(std::min(currentInstance + 1, numInstances))
     .arg(numInstances);
+}
+
+QString MainWindow::statusBarPixelLabelText(const QPoint& pt, const QColor& colour)
+{
+  return QString("(X: %1, Y: %2)   (R: %3, G: %4, B: %5, A: %6)")
+    .arg(pt.x())
+    .arg(pt.y())
+    .arg(colour.red())
+    .arg(colour.green())
+    .arg(colour.blue())
+    .arg(colour.alpha());
 }
 
 void MainWindow::updateBookmarkDependentActions()

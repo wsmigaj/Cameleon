@@ -53,6 +53,10 @@ public:
   void zoom(double relativeScale);
   void resetScale();
 
+signals:
+  void mouseLeftImage();
+  void mouseMovedOverImage(QPoint pixelCoords, QColor pixelColour);
+
 private slots:
   void onImageWidgetHorizontalScrollBarValueChanged(int value);
   void onImageWidgetVerticalScrollBarValueChanged(int value);
