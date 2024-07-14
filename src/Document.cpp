@@ -239,6 +239,7 @@ QJsonObject Document::toJson() const
 {
   QJsonObject json;
 
+  json["version"] = 1;
   {
     QJsonObject jsonLayout;
     jsonLayout["rows"] = static_cast<int>(layout_.rows);
