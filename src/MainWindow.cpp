@@ -64,6 +64,7 @@ MainWindow::MainWindow(QWidget* parent)
   instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
   ui_->mainToolBar->addSeparator();
   ui_->mainToolBar->addWidget(instanceComboBox_);
+  instanceComboBox_->installEventFilter(this);
 
   connect(instanceComboBox_, &QComboBox::currentIndexChanged, this,
           &MainWindow::onInstanceComboBox);
@@ -115,6 +116,27 @@ MainWindow::MainWindow(QWidget* parent)
 
 MainWindow::~MainWindow()
 {
+}
+
+bool MainWindow::eventFilter(QObject* obj, QEvent* event)
+{
+  if (obj == instanceComboBox_ && event->type() == QEvent::KeyPress)
+  {
+    // The key combinations Shift+Home, Shift+PgUp, Shift+PgDown and Shift+End trigger actions
+    // navigating between bookmarked instances when these actions are enabled. When they are
+    // disabled, we don't want these key combinations to be handled by the Instance combo box, as
+    // this could confuse the user by activating a non-bookmarked instance.
+    QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+    auto key = keyEvent->key();
+    if ((key == Qt::Key_Home || key == Qt::Key_PageUp || key == Qt::Key_PageDown ||
+         key == Qt::Key_End) &&
+        keyEvent->modifiers() & Qt::ShiftModifier)
+    {
+      return true;
+    }
+  }
+
+  return QMainWindow::eventFilter(obj, event);
 }
 
 void MainWindow::processCommandLine()

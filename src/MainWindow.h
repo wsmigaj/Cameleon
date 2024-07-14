@@ -43,6 +43,8 @@ public:
   explicit MainWindow(QWidget* parent = nullptr);
   ~MainWindow() override;
 
+  bool eventFilter(QObject* obj, QEvent* event) override;
+
 public slots:
   void processCommandLine();
 
