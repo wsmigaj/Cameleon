@@ -78,6 +78,7 @@ Document::Document(const QString& path, const std::function<void()>& onFilesyste
     throw RuntimeError("Could not parse file " + path + ": " + error.errorString() + ".");
   }
   initialiseFromJson(jsonDoc.object(), onFilesystemTraversalProgress);
+  modified_ = false;
 }
 
 void Document::setLayout(const Layout& layout)
