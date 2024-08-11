@@ -1,7 +1,6 @@
 # Set up a target for the Cameleon application.
 
 configure_file(Version.h.in Version.h)
-message(PROJECT_VERSION ${PROJECT_VERSION})
 file(GLOB CAMELEON_HEADERS CONFIGURE_DEPENDS *.h ../3pty/glob/*.h)
 file(GLOB CAMELEON_SOURCES CONFIGURE_DEPENDS *.cpp ../3pty/glob/*.cpp)
 file(GLOB CAMELEON_RESOURCES CONFIGURE_DEPENDS *.qrc *.rc)

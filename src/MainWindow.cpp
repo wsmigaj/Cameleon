@@ -87,7 +87,6 @@ MainWindow::MainWindow(QWidget* parent)
 
   ui_->actionBookmarkPage->setIcon(QIcon::fromTheme("bookmarks"));
 
-  mainLayout_ = new QGridLayout(ui_->mainView);
   bookmarkIcon_ = QIcon::fromTheme("bookmarks");
 
   // Add a wide empty label to the status bar to force other labels to be right-aligned.

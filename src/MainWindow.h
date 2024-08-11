@@ -146,7 +146,6 @@ private:
   QActionGroup* layoutActionGroup_ = nullptr;
   std::map<QAction*, Layout> layoutActions_;
   QMenu* recentComparisonsMenu_ = nullptr;
-  QGridLayout* mainLayout_ = nullptr;
 
   QLabel* statusBarMessageLabel_ = nullptr;
   QLabel* statusBarInstanceLabel_ = nullptr;
