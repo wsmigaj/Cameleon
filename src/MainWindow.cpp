@@ -220,6 +220,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
   if (maybeSaveDocument())
   {
+    doc_ = nullptr;
     event->accept();
   }
   else
