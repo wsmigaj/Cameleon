@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023 Wojciech Śmigaj
+// Copyright (C) 2023-2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,11 @@
 #pragma once
 
 #include <QWidget>
-#include "ui_HeaderBar.h"
+
+namespace Ui
+{
+class HeaderBarClass;
+}
 
 class HeaderBar : public QWidget
 {
@@ -27,6 +31,8 @@ class HeaderBar : public QWidget
 public:
   HeaderBar(QWidget* parent = nullptr);
   ~HeaderBar() override;
+
+  QString caption() const;
 
   void setId(const QString& id);
   void setCaption(const QString& caption);
@@ -37,5 +43,5 @@ public:
   void clearPixelProperties();
 
 private:
-  Ui::HeaderBarClass ui;
+  std::unique_ptr<Ui::HeaderBarClass> ui_;
 };

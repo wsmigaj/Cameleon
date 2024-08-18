@@ -52,8 +52,9 @@ bool validatePatterns(ComparisonDialog& dialog)
 }
 } // namespace
 
-MainWindow::MainWindow(QWidget* parent)
-  : QMainWindow(parent), ui_(std::make_unique<Ui::MainWindowClass>())
+MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
+  : QMainWindow(parent), ui_(std::make_unique<Ui::MainWindowClass>()),
+    dontUseNativeDialogs_(dontUseNativeDialogs)
 {
   ui_->setupUi(this);
 
@@ -136,6 +137,11 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
   }
 
   return QMainWindow::eventFilter(obj, event);
+}
+
+const MainView* MainWindow::mainView() const
+{
+  return ui_->mainView;
 }
 
 void MainWindow::processCommandLine()
@@ -268,8 +274,9 @@ void MainWindow::on_actionOpenComparison_triggered()
 
   QSettings settings;
   QString lastDir = settings.value("lastOpenDir", QString()).toString();
-  QString path =
-    QFileDialog::getOpenFileName(this, "Open Album", lastDir, "Albums (*.cml);;All files (*.*)");
+  QString path = QFileDialog::getOpenFileName(
+    this, "Open Album", lastDir, "Albums (*.cml);;All files (*.*)", nullptr /*selectedFilter*/,
+    dontUseNativeDialogs_ ? QFileDialog::DontUseNativeDialog : QFileDialog::Options());
   if (path.isEmpty())
   {
     return;
@@ -444,7 +451,9 @@ void MainWindow::on_actionSaveScreenshot_triggered()
   QString proposedFileName = instanceKeyToFileName(doc_->instanceKey(instance_)) + ".png";
   QString path = QDir(lastDir).filePath(proposedFileName);
 
-  path = QFileDialog::getSaveFileName(this, "Save Screenshot", path, "PNG images (*.png)");
+  path = QFileDialog::getSaveFileName(
+    this, "Save Screenshot", path, "PNG images (*.png)", nullptr /*selectedFilter*/,
+    dontUseNativeDialogs_ ? QFileDialog::DontUseNativeDialog : QFileDialog::Options());
   if (path.isEmpty())
     return;
 
@@ -465,7 +474,10 @@ void MainWindow::on_actionSaveAllScreenshots_triggered()
   QString lastDir = settings.value("lastSaveScreenshotDir", QString()).toString();
   QString dir = lastDir;
 
-  dir = QFileDialog::getExistingDirectory(this, "Save All Screenshots", dir);
+  dir = QFileDialog::getExistingDirectory(
+    this, "Save All Screenshots", dir,
+    QFileDialog::ShowDirsOnly |
+      (dontUseNativeDialogs_ ? QFileDialog::DontUseNativeDialog : QFileDialog::Options()));
   if (dir.isEmpty())
     return;
 
@@ -633,8 +645,9 @@ void MainWindow::on_actionImportBookmarks_triggered()
   QSettings settings;
   QString lastDir = settings.value("lastImportOrExportBookmarksDir", QString()).toString();
 
-  QString fileName =
-    QFileDialog::getOpenFileName(this, "Import Bookmarks", lastDir, "Text files (*.txt)");
+  QString fileName = QFileDialog::getOpenFileName(
+    this, "Import Bookmarks", lastDir, "Text files (*.txt)", nullptr /*selectedFilter*/,
+    dontUseNativeDialogs_ ? QFileDialog::DontUseNativeDialog : QFileDialog::Options());
   if (fileName.isEmpty())
     return;
 
@@ -678,8 +691,9 @@ void MainWindow::on_actionExportBookmarks_triggered()
   QSettings settings;
   QString lastDir = settings.value("lastImportOrExportBookmarksDir", QString()).toString();
 
-  QString fileName =
-    QFileDialog::getSaveFileName(this, "Export Bookmarks", lastDir, "Text files (*.txt)");
+  QString fileName = QFileDialog::getSaveFileName(
+    this, "Export Bookmarks", lastDir, "Text files (*.txt)", nullptr /*selectedFilter*/,
+    dontUseNativeDialogs_ ? QFileDialog::DontUseNativeDialog : QFileDialog::Options());
   if (fileName.isEmpty())
     return;
 
@@ -1063,7 +1077,9 @@ bool MainWindow::saveDocumentAs()
   {
     path = settings.value("lastSaveDir", QString()).toString();
   }
-  path = QFileDialog::getSaveFileName(this, "Save Album", path, "Albums (*.cml)");
+  path = QFileDialog::getSaveFileName(
+    this, "Save Album", path, "Albums (*.cml)", nullptr /*selectedFilter*/,
+    dontUseNativeDialogs_ ? QFileDialog::DontUseNativeDialog : QFileDialog::Options());
   if (path.isEmpty())
   {
     return false;

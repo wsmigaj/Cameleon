@@ -16,48 +16,54 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "HeaderBar.h"
+#include "ui_HeaderBar.h"
 
-HeaderBar::HeaderBar(QWidget* parent) : QWidget(parent)
+HeaderBar::HeaderBar(QWidget* parent) : QWidget(parent), ui_(std::make_unique<Ui::HeaderBarClass>())
 {
-  ui.setupUi(this);
+  ui_->setupUi(this);
 }
 
 HeaderBar::~HeaderBar()
 {
 }
 
+QString HeaderBar::caption() const
+{
+  return ui_->captionLabel->text();
+}
+
 void HeaderBar::setId(const QString& id)
 {
-  ui.idLabel->setText(id);
+  ui_->idLabel->setText(id);
 }
 
 void HeaderBar::setCaption(const QString& caption)
 {
-  ui.captionLabel->setText(caption);
+  ui_->captionLabel->setText(caption);
 }
 
 void HeaderBar::setPixelProperties(const QPoint& pt, const QColor& colour)
 {
-  ui.pixelLabel->setText(QString("(X: %1, Y: %2)   (R: %3, G: %4, B: %5, A: %6)")
-                           .arg(pt.x())
-                           .arg(pt.y())
-                           .arg(colour.red())
-                           .arg(colour.green())
-                           .arg(colour.blue())
-                           .arg(colour.alpha()));
+  ui_->pixelLabel->setText(QString("(X: %1, Y: %2)   (R: %3, G: %4, B: %5, A: %6)")
+                             .arg(pt.x())
+                             .arg(pt.y())
+                             .arg(colour.red())
+                             .arg(colour.green())
+                             .arg(colour.blue())
+                             .arg(colour.alpha()));
 }
 
 void HeaderBar::clearId()
 {
-  ui.idLabel->setText(QString());
+  ui_->idLabel->setText(QString());
 }
 
 void HeaderBar::clearCaption()
 {
-  ui.captionLabel->setText(QString());
+  ui_->captionLabel->setText(QString());
 }
 
 void HeaderBar::clearPixelProperties()
 {
-  ui.pixelLabel->setText(QString());
+  ui_->pixelLabel->setText(QString());
 }

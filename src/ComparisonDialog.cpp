@@ -17,6 +17,7 @@
 
 #include "ComparisonDialog.h"
 #include "Constants.h"
+#include "ui_ComparisonDialog.h"
 
 namespace
 {
@@ -32,14 +33,15 @@ QString getDirPrefix(const QString& pattern)
 } // namespace
 
 ComparisonDialog::ComparisonDialog(QWidget* parent, const QString& recentValuesSettingsKey)
-  : QDialog(parent), recentValuesSettingsKey_(recentValuesSettingsKey)
+  : QDialog(parent), ui_(std::make_unique<Ui::ComparisonDialogClass>()),
+    recentValuesSettingsKey_(recentValuesSettingsKey)
 {
-  ui_.setupUi(this);
+  ui_->setupUi(this);
 
-  ui_.fileDialogButtonA->adjustSize();
-  ui_.swapABButton->adjustSize();
+  ui_->fileDialogButtonA->adjustSize();
+  ui_->swapABButton->adjustSize();
   const int maxToolButtonWidth =
-    std::max(ui_.fileDialogButtonA->width(), ui_.swapABButton->width());
+    std::max(ui_->fileDialogButtonA->width(), ui_->swapABButton->width());
   for (QToolButton* button : fileDialogButtons())
     button->setMinimumWidth(maxToolButtonWidth);
   for (QToolButton* button : swapValuesButtons())
@@ -48,6 +50,10 @@ ComparisonDialog::ComparisonDialog(QWidget* parent, const QString& recentValuesS
 
   connectSignals();
   loadRecentValues();
+}
+
+ComparisonDialog::~ComparisonDialog()
+{
 }
 
 std::vector<QString> ComparisonDialog::values() const
@@ -126,7 +132,7 @@ void ComparisonDialog::saveRecentValues()
 
 void ComparisonDialog::setPrompt(const QString& prompt)
 {
-  ui_.promptLabel->setText(prompt);
+  ui_->promptLabel->setText(prompt);
 }
 
 void ComparisonDialog::setNumberOfRows(size_t n)
@@ -274,38 +280,39 @@ void ComparisonDialog::onOk()
 
 std::vector<QLabel*> ComparisonDialog::rowLabels() const
 {
-  return {ui_.labelA, ui_.labelB, ui_.labelC, ui_.labelD,
-          ui_.labelE, ui_.labelF, ui_.labelG, ui_.labelH};
+  return {ui_->labelA, ui_->labelB, ui_->labelC, ui_->labelD,
+          ui_->labelE, ui_->labelF, ui_->labelG, ui_->labelH};
 }
 
 std::vector<QComboBox*> ComparisonDialog::valueComboBoxes() const
 {
-  return {ui_.patternAComboBox, ui_.patternBComboBox, ui_.patternCComboBox, ui_.patternDComboBox,
-          ui_.patternEComboBox, ui_.patternFComboBox, ui_.patternGComboBox, ui_.patternHComboBox};
+  return {ui_->patternAComboBox, ui_->patternBComboBox, ui_->patternCComboBox,
+          ui_->patternDComboBox, ui_->patternEComboBox, ui_->patternFComboBox,
+          ui_->patternGComboBox, ui_->patternHComboBox};
 }
 
 std::vector<QToolButton*> ComparisonDialog::fileDialogButtons() const
 {
-  return {ui_.fileDialogButtonA, ui_.fileDialogButtonB, ui_.fileDialogButtonC,
-          ui_.fileDialogButtonD, ui_.fileDialogButtonE, ui_.fileDialogButtonF,
-          ui_.fileDialogButtonG, ui_.fileDialogButtonH};
+  return {ui_->fileDialogButtonA, ui_->fileDialogButtonB, ui_->fileDialogButtonC,
+          ui_->fileDialogButtonD, ui_->fileDialogButtonE, ui_->fileDialogButtonF,
+          ui_->fileDialogButtonG, ui_->fileDialogButtonH};
 }
 
 std::vector<QLabel*> ComparisonDialog::infoLabels() const
 {
-  return {ui_.infoLabelA, ui_.infoLabelB, ui_.infoLabelC, ui_.infoLabelD,
-          ui_.infoLabelE, ui_.infoLabelF, ui_.infoLabelG, ui_.infoLabelH};
+  return {ui_->infoLabelA, ui_->infoLabelB, ui_->infoLabelC, ui_->infoLabelD,
+          ui_->infoLabelE, ui_->infoLabelF, ui_->infoLabelG, ui_->infoLabelH};
 }
 
 std::vector<QToolButton*> ComparisonDialog::swapValuesButtons() const
 {
-  return {ui_.swapABButton, ui_.swapBCButton, ui_.swapCDButton, ui_.swapDEButton,
-          ui_.swapEFButton, ui_.swapFGButton, ui_.swapGHButton};
+  return {ui_->swapABButton, ui_->swapBCButton, ui_->swapCDButton, ui_->swapDEButton,
+          ui_->swapEFButton, ui_->swapFGButton, ui_->swapGHButton};
 }
 
 void ComparisonDialog::connectSignals()
 {
-  connect(ui_.okButton, &QPushButton::clicked, this, &ComparisonDialog::onOk);
+  connect(ui_->okButton, &QPushButton::clicked, this, &ComparisonDialog::onOk);
   for (QToolButton* button : fileDialogButtons())
     connect(button, &QToolButton::clicked, this, &ComparisonDialog::onFileDialogButtonClicked);
   for (QToolButton* button : swapValuesButtons())

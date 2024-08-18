@@ -25,8 +25,6 @@
 class Document;
 class ImageView;
 
-// enum class ForceReload {NO, YES};
-
 class MainView : public QWidget
 {
   Q_OBJECT
@@ -43,6 +41,8 @@ public:
   const std::vector<QString>& paths() const { return paths_; }
   void setPaths(std::vector<QString> paths);
   void clearPaths();
+
+  const std::vector<ImageView*>& imageViews() const { return imageViews_; }
 
   void setInstanceKey(const QString& instanceKey);
 

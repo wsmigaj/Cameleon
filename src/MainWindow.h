@@ -17,12 +17,11 @@
 
 #pragma once
 
-#include "ImageView.h"
-
 #include <QtWidgets/QMainWindow>
 
 class Document;
 class Layout;
+class MainView;
 
 namespace Ui
 {
@@ -33,6 +32,7 @@ class QAction;
 class QActionGroup;
 class QComboBox;
 class QGridLayout;
+class QLabel;
 class QMenu;
 
 class MainWindow : public QMainWindow
@@ -40,10 +40,15 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget* parent = nullptr);
+  explicit MainWindow(QWidget* parent = nullptr, bool dontUseNativeDialogs = false);
   ~MainWindow() override;
 
   bool eventFilter(QObject* obj, QEvent* event) override;
+
+  const Document* document() const { return doc_.get(); }
+  int instance() const { return instance_; }
+
+  const MainView* mainView() const;
 
 public slots:
   void processCommandLine();
@@ -141,6 +146,7 @@ private:
 
 private:
   std::unique_ptr<Ui::MainWindowClass> ui_;
+  bool dontUseNativeDialogs_;
   QComboBox* instanceComboBox_ = nullptr;
   QMenu* layoutMenu_ = nullptr;
   QActionGroup* layoutActionGroup_ = nullptr;

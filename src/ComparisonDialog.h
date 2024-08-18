@@ -17,13 +17,21 @@
 
 #pragma once
 
-#include "ui_ComparisonDialog.h"
-
 #include "Constants.h"
 
 #include <QDialog>
 #include <functional>
+#include <memory>
 #include <vector>
+
+class QComboBox;
+class QLabel;
+class QToolButton;
+
+namespace Ui
+{
+class ComparisonDialogClass;
+}
 
 class ComparisonDialog : public QDialog
 {
@@ -31,6 +39,7 @@ class ComparisonDialog : public QDialog
 
 public:
   ComparisonDialog(QWidget* parent, const QString& recentValuesSettingsKey);
+  ~ComparisonDialog();
 
   std::vector<QString> values() const;
   void setValues(const std::vector<QString>& patterns);
@@ -77,7 +86,7 @@ private:
   static const size_t MAX_NUM_RECENT_VALUES = 20;
 
 private:
-  Ui::ComparisonDialogClass ui_;
+  std::unique_ptr<Ui::ComparisonDialogClass> ui_;
   QString recentValuesSettingsKey_;
   size_t numRows_ = MAX_NUM_PATTERNS;
   bool fileDialogButtonsVisible_ = true;
