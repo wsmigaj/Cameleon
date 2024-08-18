@@ -157,8 +157,6 @@ private:
   QLabel* statusBarInstanceLabel_ = nullptr;
   QLabel* statusBarPixelLabel_ = nullptr;
 
-  QIcon bookmarkIcon_;
-
   std::unique_ptr<Document> doc_;
   int instance_ = 0;
 };

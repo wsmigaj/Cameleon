@@ -88,8 +88,6 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
 
   ui_->actionBookmarkPage->setIcon(QIcon::fromTheme("bookmarks"));
 
-  bookmarkIcon_ = QIcon::fromTheme("bookmarks");
-
   // Add a wide empty label to the status bar to force other labels to be right-aligned.
   statusBarMessageLabel_ = new QLabel(this);
   statusBar()->addWidget(statusBarMessageLabel_, 1 /*stretch*/);
