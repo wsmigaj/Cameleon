@@ -30,16 +30,16 @@ class QToolButton;
 
 namespace Ui
 {
-class ComparisonDialogClass;
+class AlbumEditorDialogClass;
 }
 
-class ComparisonDialog : public QDialog
+class AlbumEditorDialog : public QDialog
 {
   Q_OBJECT
 
 public:
-  ComparisonDialog(QWidget* parent, const QString& recentValuesSettingsKey);
-  ~ComparisonDialog();
+  AlbumEditorDialog(QWidget* parent, const QString& recentValuesSettingsKey);
+  ~AlbumEditorDialog();
 
   std::vector<QString> values() const;
   void setValues(const std::vector<QString>& patterns);
@@ -54,10 +54,10 @@ public:
   void setInfoLabelsVisibility(bool visible);
   void setInfoLabels(const std::vector<QString>& labels);
   void setSwapValuesButtonsVisibility(bool visible);
-  void setValidator(std::function<bool(ComparisonDialog&)> validator);
+  void setValidator(std::function<bool(AlbumEditorDialog&)> validator);
   void normalisePathSeparators(bool normalise);
 
-  static bool defaultValidator(ComparisonDialog&);
+  static bool defaultValidator(AlbumEditorDialog&);
 
 public slots:
   void done(int r) override;
@@ -86,14 +86,14 @@ private:
   static const size_t MAX_NUM_RECENT_VALUES = 20;
 
 private:
-  std::unique_ptr<Ui::ComparisonDialogClass> ui_;
+  std::unique_ptr<Ui::AlbumEditorDialogClass> ui_;
   QString recentValuesSettingsKey_;
   size_t numRows_ = MAX_NUM_PATTERNS;
   bool fileDialogButtonsVisible_ = true;
   bool infoLabelsVisible_ = false;
   bool swapValuesButtonsVisible_ = true;
   bool normalisePathSeparators_ = false;
-  std::function<bool(ComparisonDialog&)> validator_ = defaultValidator;
+  std::function<bool(AlbumEditorDialog&)> validator_ = defaultValidator;
 };
 
-void setComboBoxPromptsToPatternExamples(ComparisonDialog& dialog);
+void setComboBoxPromptsToPatternExamples(AlbumEditorDialog& dialog);

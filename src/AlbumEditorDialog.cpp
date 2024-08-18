@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "ComparisonDialog.h"
+#include "AlbumEditorDialog.h"
 #include "Constants.h"
-#include "ui_ComparisonDialog.h"
+#include "ui_AlbumEditorDialog.h"
 
 namespace
 {
@@ -32,8 +32,8 @@ QString getDirPrefix(const QString& pattern)
 }
 } // namespace
 
-ComparisonDialog::ComparisonDialog(QWidget* parent, const QString& recentValuesSettingsKey)
-  : QDialog(parent), ui_(std::make_unique<Ui::ComparisonDialogClass>()),
+AlbumEditorDialog::AlbumEditorDialog(QWidget* parent, const QString& recentValuesSettingsKey)
+  : QDialog(parent), ui_(std::make_unique<Ui::AlbumEditorDialogClass>()),
     recentValuesSettingsKey_(recentValuesSettingsKey)
 {
   ui_->setupUi(this);
@@ -52,11 +52,11 @@ ComparisonDialog::ComparisonDialog(QWidget* parent, const QString& recentValuesS
   loadRecentValues();
 }
 
-ComparisonDialog::~ComparisonDialog()
+AlbumEditorDialog::~AlbumEditorDialog()
 {
 }
 
-std::vector<QString> ComparisonDialog::values() const
+std::vector<QString> AlbumEditorDialog::values() const
 {
   std::vector<QString> result;
   for (QComboBox* comboBox : valueComboBoxes())
@@ -74,7 +74,7 @@ std::vector<QString> ComparisonDialog::values() const
   return result;
 }
 
-void ComparisonDialog::setValues(const std::vector<QString>& values)
+void AlbumEditorDialog::setValues(const std::vector<QString>& values)
 {
   const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
 
@@ -94,7 +94,7 @@ void ComparisonDialog::setValues(const std::vector<QString>& values)
   }
 }
 
-void ComparisonDialog::loadRecentValues()
+void AlbumEditorDialog::loadRecentValues()
 {
   QSettings settings;
   const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
@@ -110,7 +110,7 @@ void ComparisonDialog::loadRecentValues()
   }
 }
 
-void ComparisonDialog::saveRecentValues()
+void AlbumEditorDialog::saveRecentValues()
 {
   QSettings settings;
   const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
@@ -130,12 +130,12 @@ void ComparisonDialog::saveRecentValues()
   }
 }
 
-void ComparisonDialog::setPrompt(const QString& prompt)
+void AlbumEditorDialog::setPrompt(const QString& prompt)
 {
   ui_->promptLabel->setText(prompt);
 }
 
-void ComparisonDialog::setNumberOfRows(size_t n)
+void AlbumEditorDialog::setNumberOfRows(size_t n)
 {
   if (n != numRows_)
   {
@@ -148,7 +148,7 @@ void ComparisonDialog::setNumberOfRows(size_t n)
   }
 }
 
-void ComparisonDialog::setComboBoxPrompts(const std::vector<QString>& prompts)
+void AlbumEditorDialog::setComboBoxPrompts(const std::vector<QString>& prompts)
 {
   const std::vector<QComboBox*> comboBoxes = valueComboBoxes();
   for (size_t i = 0; i < prompts.size() && i < numRows_; ++i)
@@ -157,7 +157,7 @@ void ComparisonDialog::setComboBoxPrompts(const std::vector<QString>& prompts)
     comboBoxes[i]->lineEdit()->setPlaceholderText(QString());
 }
 
-void ComparisonDialog::setInfoLabelsVisibility(bool visible)
+void AlbumEditorDialog::setInfoLabelsVisibility(bool visible)
 {
   if (visible != infoLabelsVisible_)
   {
@@ -167,7 +167,7 @@ void ComparisonDialog::setInfoLabelsVisibility(bool visible)
   }
 }
 
-void ComparisonDialog::setInfoLabels(const std::vector<QString>& labels)
+void AlbumEditorDialog::setInfoLabels(const std::vector<QString>& labels)
 {
   const std::vector<QLabel*> widgets = infoLabels();
 
@@ -184,7 +184,7 @@ void ComparisonDialog::setInfoLabels(const std::vector<QString>& labels)
   }
 }
 
-void ComparisonDialog::setFileDialogButtonsVisibility(bool visible)
+void AlbumEditorDialog::setFileDialogButtonsVisibility(bool visible)
 {
   if (visible != fileDialogButtonsVisible_)
   {
@@ -194,7 +194,7 @@ void ComparisonDialog::setFileDialogButtonsVisibility(bool visible)
   }
 }
 
-void ComparisonDialog::setSwapValuesButtonsVisibility(bool visible)
+void AlbumEditorDialog::setSwapValuesButtonsVisibility(bool visible)
 {
   if (visible != swapValuesButtonsVisible_)
   {
@@ -204,22 +204,22 @@ void ComparisonDialog::setSwapValuesButtonsVisibility(bool visible)
   }
 }
 
-void ComparisonDialog::setValidator(std::function<bool(ComparisonDialog&)> validator)
+void AlbumEditorDialog::setValidator(std::function<bool(AlbumEditorDialog&)> validator)
 {
   validator_ = std::move(validator);
 }
 
-void ComparisonDialog::normalisePathSeparators(bool normalise)
+void AlbumEditorDialog::normalisePathSeparators(bool normalise)
 {
   normalisePathSeparators_ = normalise;
 }
 
-bool ComparisonDialog::defaultValidator(ComparisonDialog&)
+bool AlbumEditorDialog::defaultValidator(AlbumEditorDialog&)
 {
   return true;
 }
 
-void ComparisonDialog::updateRowLabelsVisibility()
+void AlbumEditorDialog::updateRowLabelsVisibility()
 {
   const std::vector<QLabel*> v = rowLabels();
   for (size_t i = 0; i < numRows_; ++i)
@@ -228,7 +228,7 @@ void ComparisonDialog::updateRowLabelsVisibility()
     v[i]->setVisible(false);
 }
 
-void ComparisonDialog::updateComboBoxesVisibility()
+void AlbumEditorDialog::updateComboBoxesVisibility()
 {
   const std::vector<QComboBox*> v = valueComboBoxes();
   for (size_t i = 0; i < numRows_; ++i)
@@ -237,7 +237,7 @@ void ComparisonDialog::updateComboBoxesVisibility()
     v[i]->setVisible(false);
 }
 
-void ComparisonDialog::updateFileDialogButtonsVisibility()
+void AlbumEditorDialog::updateFileDialogButtonsVisibility()
 {
   const std::vector<QToolButton*> v = fileDialogButtons();
   for (size_t i = 0; i < numRows_; ++i)
@@ -246,7 +246,7 @@ void ComparisonDialog::updateFileDialogButtonsVisibility()
     v[i]->setVisible(false);
 }
 
-void ComparisonDialog::updateInfoLabelsVisibility()
+void AlbumEditorDialog::updateInfoLabelsVisibility()
 {
   const std::vector<QLabel*> v = infoLabels();
   for (size_t i = 0; i < numRows_; ++i)
@@ -255,7 +255,7 @@ void ComparisonDialog::updateInfoLabelsVisibility()
     v[i]->setVisible(false);
 }
 
-void ComparisonDialog::updateSwapValuesButtonsVisibility()
+void AlbumEditorDialog::updateSwapValuesButtonsVisibility()
 {
   const std::vector<QToolButton*> v = swapValuesButtons();
   for (size_t i = 0; i + 1 < numRows_; ++i)
@@ -264,7 +264,7 @@ void ComparisonDialog::updateSwapValuesButtonsVisibility()
     v[i]->setVisible(false);
 }
 
-void ComparisonDialog::done(int r)
+void AlbumEditorDialog::done(int r)
 {
   if (r == QDialog::Accepted)
     saveRecentValues();
@@ -272,54 +272,54 @@ void ComparisonDialog::done(int r)
   QDialog::done(r);
 }
 
-void ComparisonDialog::onOk()
+void AlbumEditorDialog::onOk()
 {
   if (validator_(*this))
     accept();
 }
 
-std::vector<QLabel*> ComparisonDialog::rowLabels() const
+std::vector<QLabel*> AlbumEditorDialog::rowLabels() const
 {
   return {ui_->labelA, ui_->labelB, ui_->labelC, ui_->labelD,
           ui_->labelE, ui_->labelF, ui_->labelG, ui_->labelH};
 }
 
-std::vector<QComboBox*> ComparisonDialog::valueComboBoxes() const
+std::vector<QComboBox*> AlbumEditorDialog::valueComboBoxes() const
 {
   return {ui_->patternAComboBox, ui_->patternBComboBox, ui_->patternCComboBox,
           ui_->patternDComboBox, ui_->patternEComboBox, ui_->patternFComboBox,
           ui_->patternGComboBox, ui_->patternHComboBox};
 }
 
-std::vector<QToolButton*> ComparisonDialog::fileDialogButtons() const
+std::vector<QToolButton*> AlbumEditorDialog::fileDialogButtons() const
 {
   return {ui_->fileDialogButtonA, ui_->fileDialogButtonB, ui_->fileDialogButtonC,
           ui_->fileDialogButtonD, ui_->fileDialogButtonE, ui_->fileDialogButtonF,
           ui_->fileDialogButtonG, ui_->fileDialogButtonH};
 }
 
-std::vector<QLabel*> ComparisonDialog::infoLabels() const
+std::vector<QLabel*> AlbumEditorDialog::infoLabels() const
 {
   return {ui_->infoLabelA, ui_->infoLabelB, ui_->infoLabelC, ui_->infoLabelD,
           ui_->infoLabelE, ui_->infoLabelF, ui_->infoLabelG, ui_->infoLabelH};
 }
 
-std::vector<QToolButton*> ComparisonDialog::swapValuesButtons() const
+std::vector<QToolButton*> AlbumEditorDialog::swapValuesButtons() const
 {
   return {ui_->swapABButton, ui_->swapBCButton, ui_->swapCDButton, ui_->swapDEButton,
           ui_->swapEFButton, ui_->swapFGButton, ui_->swapGHButton};
 }
 
-void ComparisonDialog::connectSignals()
+void AlbumEditorDialog::connectSignals()
 {
-  connect(ui_->okButton, &QPushButton::clicked, this, &ComparisonDialog::onOk);
+  connect(ui_->okButton, &QPushButton::clicked, this, &AlbumEditorDialog::onOk);
   for (QToolButton* button : fileDialogButtons())
-    connect(button, &QToolButton::clicked, this, &ComparisonDialog::onFileDialogButtonClicked);
+    connect(button, &QToolButton::clicked, this, &AlbumEditorDialog::onFileDialogButtonClicked);
   for (QToolButton* button : swapValuesButtons())
-    connect(button, &QToolButton::clicked, this, &ComparisonDialog::onSwapValuesButtonClicked);
+    connect(button, &QToolButton::clicked, this, &AlbumEditorDialog::onSwapValuesButtonClicked);
 }
 
-void ComparisonDialog::onFileDialogButtonClicked()
+void AlbumEditorDialog::onFileDialogButtonClicked()
 {
   const std::vector<QToolButton*> buttons = fileDialogButtons();
   const int index = std::find(buttons.begin(), buttons.end(), sender()) - buttons.begin();
@@ -334,7 +334,7 @@ void ComparisonDialog::onFileDialogButtonClicked()
     comboBox->setCurrentText(file);
 }
 
-void ComparisonDialog::onSwapValuesButtonClicked()
+void AlbumEditorDialog::onSwapValuesButtonClicked()
 {
   const std::vector<QToolButton*> buttons = swapValuesButtons();
   const int index = std::find(buttons.begin(), buttons.end(), sender()) - buttons.begin();
@@ -360,7 +360,7 @@ void ComparisonDialog::onSwapValuesButtonClicked()
   }
 }
 
-void setComboBoxPromptsToPatternExamples(ComparisonDialog& dialog)
+void setComboBoxPromptsToPatternExamples(AlbumEditorDialog& dialog)
 {
   dialog.setComboBoxPrompts({"Example: C:\\TestSet\\input*.png",
                              "Example: C:\\TestSet\\ground-truth*.png",

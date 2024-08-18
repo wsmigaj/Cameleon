@@ -16,7 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "TestNewDocument.h"
-#include "ComparisonDialog.h"
+#include "AlbumEditorDialog.h"
 #include "Document.h"
 #include "MainWindow.h"
 #include "TestDataDir.h"
@@ -47,9 +47,9 @@ void TestNewDocument::newDocument_cancelNew()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        QTest::keyClick(dlg, Qt::Key_Escape);
                      });
   action->trigger();
@@ -72,9 +72,9 @@ void TestNewDocument::newDocument_okNew()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
@@ -102,8 +102,8 @@ void TestNewDocument::newDocumentWithoutPatterns()
     0,
     [asyncSuccess]
     {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-      ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+      AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
       QTest::keyClick(dlg, Qt::Key_Enter);
 
       QTimer::singleShot(0,
@@ -139,8 +139,8 @@ void TestNewDocument::newDocumentWithoutMatches()
     0,
     [asyncSuccess]
     {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-      ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+      AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
       dlg->setValues({TEST_DATA_DIR "/purple/*"});
       QTest::keyClick(dlg, Qt::Key_Enter);
 
@@ -177,8 +177,8 @@ void TestNewDocument::newDocumentWithInconsistentNumberOfWildcardsPerPattern()
     0,
     [asyncSuccess]
     {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-      ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+      AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
       dlg->setValues({TEST_DATA_DIR "/purple/*", TEST_DATA_DIR "/*/*"});
 
       QTimer::singleShot(
@@ -196,8 +196,8 @@ void TestNewDocument::newDocumentWithInconsistentNumberOfWildcardsPerPattern()
             0,
             [asyncSuccess]
             {
-              QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-              ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+              QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+              AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
               QTest::keyClick(dlg, Qt::Key_Escape);
             });
         });
@@ -237,9 +237,9 @@ void TestNewDocument::openDocument_newDocument_cancelNew()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        QTest::keyClick(dlg, Qt::Key_Escape);
                      });
   newAction->trigger();
@@ -278,9 +278,9 @@ void TestNewDocument::openDocument_newDocument_okNew()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
@@ -385,8 +385,8 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_cancelNew()
         0,
         [asyncSuccess, tempDir]
         {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-          ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
           QTest::keyClick(dlg, Qt::Key_Escape);
         });
     });
@@ -510,8 +510,8 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_okNew()
         0,
         [asyncSuccess, tempDir]
         {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-          ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
           dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
           QTest::keyClick(dlg, Qt::Key_Enter);
         });
@@ -574,8 +574,8 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_cancelNe
         0,
         [asyncSuccess, tempDir]
         {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-          ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
           QTest::keyClick(dlg, Qt::Key_Escape);
         });
     });
@@ -635,8 +635,8 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_okNew()
         0,
         [asyncSuccess, tempDir]
         {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-          ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
           dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
           QTest::keyClick(dlg, Qt::Key_Enter);
         });

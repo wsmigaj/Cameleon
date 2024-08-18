@@ -16,7 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "TestViewMenu.h"
-#include "ComparisonDialog.h"
+#include "AlbumEditorDialog.h"
 #include "Document.h"
 #include "HeaderBar.h"
 #include "ImageView.h"
@@ -227,9 +227,9 @@ void TestViewMenu::editCaptions_cancelEdit()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({"Checkerboard", "%p"});
                        QTest::keyClick(dlg, Qt::Key_Escape);
                      });
@@ -296,9 +296,9 @@ void TestViewMenu::editCaptions_okEdit()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({"Checkerboard", "%p"});
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
@@ -318,9 +318,9 @@ void TestViewMenu::editCaptions_okEdit()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({"%p", "Inverted checkerboard"});
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });

@@ -16,7 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "TestMiscAlbumMenuItems.h"
-#include "ComparisonDialog.h"
+#include "AlbumEditorDialog.h"
 #include "Document.h"
 #include "MainWindow.h"
 #include "TestDataDir.h"
@@ -294,9 +294,9 @@ void TestMiscAlbumMenuItems::edit_cancelEdit()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        QTest::keyClick(dlg, Qt::Key_Escape);
                      });
   editAction->trigger();
@@ -338,9 +338,9 @@ void TestMiscAlbumMenuItems::edit_okEdit()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({TEST_DATA_DIR "/black/*", TEST_DATA_DIR "/blue/*"});
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
@@ -385,8 +385,8 @@ void TestMiscAlbumMenuItems::editWithInconsistentNumberOfWildcardsPerPattern()
     0,
     [asyncSuccess]
     {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-      ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+      AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
       dlg->setValues({TEST_DATA_DIR "/black/*", TEST_DATA_DIR "/*/*"});
 
       QTimer::singleShot(
@@ -404,8 +404,8 @@ void TestMiscAlbumMenuItems::editWithInconsistentNumberOfWildcardsPerPattern()
             0,
             [asyncSuccess]
             {
-              QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-              ComparisonDialog* dlg = dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+              QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+              AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
               QTest::keyClick(dlg, Qt::Key_Escape);
             });
         });
@@ -450,9 +450,9 @@ void TestMiscAlbumMenuItems::refresh()
   QTimer::singleShot(0,
                      [asyncSuccess, tempDir]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({tempDir->filePath("*/checkerboard.png"),
                                        tempDir->filePath("*/inverted_checkerboard.png")});
                        QTest::keyClick(dlg, Qt::Key_Enter);
@@ -515,9 +515,9 @@ void TestMiscAlbumMenuItems::refreshAfterDeletingAllInstances()
   QTimer::singleShot(0,
                      [asyncSuccess, tempDir]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<ComparisonDialog>());
-                       ComparisonDialog* dlg =
-                         dynamic_cast<ComparisonDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
                        dlg->setValues({tempDir->filePath("*/checkerboard.png"),
                                        tempDir->filePath("*/inverted_checkerboard.png")});
                        QTest::keyClick(dlg, Qt::Key_Enter);

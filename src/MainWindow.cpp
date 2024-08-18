@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include "AlbumEditorDialog.h"
 #include "CancellationException.h"
-#include "ComparisonDialog.h"
 #include "Constants.h"
 #include "ContainerUtils.h"
 #include "Document.h"
@@ -40,7 +40,7 @@ QString instanceKeyToFileName(const QString& key)
   return fileName;
 }
 
-bool validatePatterns(ComparisonDialog& dialog)
+bool validatePatterns(AlbumEditorDialog& dialog)
 {
   if (allPatternsContainSameNumberOfMagicExpressionsOrNone(dialog.values()))
     return true;
@@ -233,7 +233,7 @@ void MainWindow::on_actionNewAlbum_triggered()
     return;
   }
 
-  ComparisonDialog dialog(this, "recentPatterns");
+  AlbumEditorDialog dialog(this, "recentPatterns");
   dialog.setWindowTitle("New Album");
   dialog.normalisePathSeparators(true);
   dialog.setValues({});
@@ -334,7 +334,7 @@ void MainWindow::onRecentDocumentActionTriggered()
 
 void MainWindow::on_actionEditAlbum_triggered()
 {
-  ComparisonDialog dialog(this, "recentPatterns");
+  AlbumEditorDialog dialog(this, "recentPatterns");
   dialog.setWindowTitle("Edit Album");
   dialog.normalisePathSeparators(true);
   dialog.setValues(doc_->patterns());
@@ -506,7 +506,7 @@ void MainWindow::on_actionSaveAllScreenshots_triggered()
 
 void MainWindow::on_actionEditCaptions_triggered()
 {
-  ComparisonDialog dialog(this, "recentCaptions");
+  AlbumEditorDialog dialog(this, "recentCaptions");
   dialog.setWindowTitle("Edit Captions");
   dialog.setPrompt("Panel captions:");
   dialog.setNumberOfRows(doc_->captionTemplates().size());
@@ -517,7 +517,7 @@ void MainWindow::on_actionEditCaptions_triggered()
   dialog.normalisePathSeparators(false);
   dialog.setValues(doc_->captionTemplates());
   dialog.setValidator(
-    [numPatterns = doc_->patterns().size()](ComparisonDialog& dialog)
+    [numPatterns = doc_->patterns().size()](AlbumEditorDialog& dialog)
     {
       if (dialog.values().size() == numPatterns)
         return true;

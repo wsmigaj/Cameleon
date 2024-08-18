@@ -16,7 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "TestBookmarksMenu.h"
-#include "ComparisonDialog.h"
+#include "AlbumEditorDialog.h"
 #include "Document.h"
 #include "MainWindow.h"
 #include "TestDataDir.h"
