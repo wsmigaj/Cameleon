@@ -21,8 +21,6 @@ function(add_cameleon_test)
     add_test(NAME ${ARG_NAME} COMMAND ${ARG_NAME})
     if (WIN32)
         set_property(TEST ${ARG_NAME} APPEND PROPERTY ENVIRONMENT "PATH=%PATH%\;$<TARGET_FILE_DIR:Qt6::Widgets>")
-    else()
-        set_property(TEST ${ARG_NAME} APPEND PROPERTY ENVIRONMENT "PATH=$ENV{PATH}:$<TARGET_FILE_DIR:Qt6::Widgets>")
     endif()
 endfunction()
 

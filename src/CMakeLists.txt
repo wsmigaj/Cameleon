@@ -11,7 +11,7 @@ list(APPEND CAMELEON_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/Version.h.in)
 
 add_library(CameleonCore OBJECT ${CAMELEON_SOURCES} ${CAMELEON_HEADERS} ${CAMELEON_RESOURCES} ${CAMELEON_UIS})
 target_link_libraries(CameleonCore PRIVATE Qt6::Core Qt6::Concurrent Qt6::Widgets)
-target_include_directories(CameleonCore PRIVATE ../3pty ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(CameleonCore PRIVATE ../3pty ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 target_precompile_headers(CameleonCore PRIVATE <QtWidgets>)
 
 qt_add_executable(Cameleon main.cpp)
@@ -20,6 +20,7 @@ target_link_libraries(Cameleon PRIVATE Qt6::Core Qt6::Widgets)
 set_target_properties(Cameleon PROPERTIES
     WIN32_EXECUTABLE ON
     MACOSX_BUNDLE ON
+    INSTALL_RPATH_USE_LINK_PATH ON
     VS_DEBUGGER_ENVIRONMENT "PATH=%PATH%;$<TARGET_FILE_DIR:Qt6::Widgets>"
 )
 

@@ -74,17 +74,19 @@ install(TARGETS Cameleon
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-set(deployScript ${CMAKE_CURRENT_BINARY_DIR}/deployscript-$<CONFIG>.cmake)
-file(GENERATE OUTPUT "${deployScript}" CONTENT [[
-execute_process(
-    WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
-    COMMAND "$<TARGET_FILE:Qt6::windeployqt>"
-        bin/Cameleon.exe
-        --no-translations
-        COMMAND_ERROR_IS_FATAL LAST
-)
-]])
-install(SCRIPT "${deployScript}")
+if (WIN32)
+    set(deployScript ${CMAKE_CURRENT_BINARY_DIR}/deployscript-$<CONFIG>.cmake)
+    file(GENERATE OUTPUT "${deployScript}" CONTENT [[
+    execute_process(
+        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
+        COMMAND "$<TARGET_FILE:Qt6::windeployqt>"
+            bin/Cameleon.exe
+            --no-translations
+            COMMAND_ERROR_IS_FATAL LAST
+    )
+    ]])
+    install(SCRIPT "${deployScript}")
+endif()
 
 # Set up packaging.
 
