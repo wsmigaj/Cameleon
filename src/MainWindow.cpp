@@ -57,6 +57,7 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
     dontUseNativeDialogs_(dontUseNativeDialogs)
 {
   ui_->setupUi(this);
+  setWindowIcon(QIcon(":/icons/cameleon/Cameleon.ico"));
 
   populateLayoutSubmenu();
   initialiseRecentDocumentsSubmenu();
