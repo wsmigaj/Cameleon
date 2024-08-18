@@ -19,18 +19,18 @@
 
 #include <QObject>
 
-class TestOpenDocument : public QObject
+class TestOpenAlbum : public QObject
 {
   Q_OBJECT
 private slots:
-  void openDocument_cancelOpen();
-  void openDocument_okOpen();
-  void openDocument_openDocument_cancelOpen();
-  void openDocument_openDocument_okOpen();
-  void openDocument_modifyDocument_openDocument_cancelSave();
-  void openDocument_modifyDocument_openDocument_okSave_cancelOpen();
-  void openDocument_modifyDocument_openDocument_okSave_errorOnSave();
-  void openDocument_modifyDocument_openDocument_okSave_okOpen();
-  void openDocument_modifyDocument_openDocument_doNotSave_cancelOpen();
-  void openDocument_modifyDocument_openDocument_doNotSave_okOpen();
+  void open_cancelOpen();
+  void open_okOpen();
+  void open_open_cancelOpen();
+  void open_open_okOpen();
+  void open_modify_open_cancelSave();
+  void open_modify_open_okSave_cancelOpen();
+  void open_modify_open_okSave_errorOnSave();
+  void open_modify_open_okSave_okOpen();
+  void open_modify_open_doNotSave_cancelOpen();
+  void open_modify_open_doNotSave_okOpen();
 };

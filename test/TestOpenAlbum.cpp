@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "TestNewDocument.h"
-#include "AlbumEditorDialog.h"
+#include "TestOpenAlbum.h"
 #include "Document.h"
 #include "MainWindow.h"
 #include "TestDataDir.h"
@@ -29,16 +28,16 @@
 #include <QTest>
 #include <QTimer>
 
-QTEST_MAIN(TestNewDocument)
+QTEST_MAIN(TestOpenAlbum)
 
-void TestNewDocument::newDocument_cancelNew()
+void TestOpenAlbum::open_cancelOpen()
 {
   MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewAlbum");
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(action != nullptr);
 
   // All variables passed to timer callback functions (executed asynchronously) are wrapped with
@@ -47,9 +46,8 @@ void TestNewDocument::newDocument_cancelNew()
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-                       AlbumEditorDialog* dlg =
-                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
                        QTest::keyClick(dlg, Qt::Key_Escape);
                      });
   action->trigger();
@@ -58,168 +56,42 @@ void TestNewDocument::newDocument_cancelNew()
   QVERIFY(w.document() == nullptr);
 }
 
-void TestNewDocument::newDocument_okNew()
+void TestOpenAlbum::open_okOpen()
 {
   MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewAlbum");
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-                       AlbumEditorDialog* dlg =
-                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-                       dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   action->trigger();
 
   QVERIFY(*asyncSuccess);
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path().isEmpty());
-  QVERIFY(!w.document()->instances().empty());
-  QVERIFY(w.document()->modified());
-}
-
-void TestNewDocument::newDocumentWithoutPatterns()
-{
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
-
-  w.show();
-  QVERIFY(QTest::qWaitForWindowActive(&w));
-
-  QAction* action = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(action != nullptr);
-
-  std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
-  QTimer::singleShot(
-    0,
-    [asyncSuccess]
-    {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-      AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-      QTest::keyClick(dlg, Qt::Key_Enter);
-
-      QTimer::singleShot(0,
-                         [asyncSuccess]
-                         {
-                           QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
-                           QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-                           QVERIFY(*asyncSuccess = (box->text() == "No pattern matches found."));
-                           QTest::keyClick(box, Qt::Key_Enter);
-                         });
-    });
-  action->trigger();
-
-  QVERIFY(*asyncSuccess);
-  QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path().isEmpty());
-  QVERIFY(w.document()->instances().empty());
+  QVERIFY(w.document()->path() == TEST_DATA_DIR "/colours.cml");
   QVERIFY(!w.document()->modified());
 }
 
-void TestNewDocument::newDocumentWithoutMatches()
+void TestOpenAlbum::open_open_cancelOpen()
 {
   MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewAlbum");
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(action != nullptr);
-
-  std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
-  QTimer::singleShot(
-    0,
-    [asyncSuccess]
-    {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-      AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-      dlg->setValues({TEST_DATA_DIR "/purple/*"});
-      QTest::keyClick(dlg, Qt::Key_Enter);
-
-      QTimer::singleShot(0,
-                         [asyncSuccess]
-                         {
-                           QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
-                           QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-                           QVERIFY(*asyncSuccess = (box->text() == "No pattern matches found."));
-                           QTest::keyClick(box, Qt::Key_Enter);
-                         });
-    });
-  action->trigger();
-
-  QVERIFY(*asyncSuccess);
-  QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path().isEmpty());
-  QVERIFY(w.document()->instances().empty());
-  QVERIFY(w.document()->modified());
-}
-
-void TestNewDocument::newDocumentWithInconsistentNumberOfWildcardsPerPattern()
-{
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
-
-  w.show();
-  QVERIFY(QTest::qWaitForWindowActive(&w));
-
-  QAction* action = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(action != nullptr);
-
-  std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
-  QTimer::singleShot(
-    0,
-    [asyncSuccess]
-    {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-      AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-      dlg->setValues({TEST_DATA_DIR "/purple/*", TEST_DATA_DIR "/*/*"});
-
-      QTimer::singleShot(
-        0,
-        [asyncSuccess]
-        {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
-          QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-          QVERIFY(*asyncSuccess =
-                    (box->text() == "The number of wildcard patterns must be the same in all paths "
-                                    "containing any such patterns."));
-          QTest::keyClick(box, Qt::Key_Enter);
-
-          QTimer::singleShot(
-            0,
-            [asyncSuccess]
-            {
-              QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-              AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-              QTest::keyClick(dlg, Qt::Key_Escape);
-            });
-        });
-      QTest::keyClick(dlg, Qt::Key_Enter);
-    });
-  action->trigger();
-
-  QVERIFY(*asyncSuccess);
-  QVERIFY(w.document() == nullptr);
-}
-
-void TestNewDocument::openDocument_newDocument_cancelNew()
-{
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
-
-  w.show();
-  QVERIFY(QTest::qWaitForWindowActive(&w));
-
-  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
-  QVERIFY(openAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -231,18 +103,17 @@ void TestNewDocument::openDocument_newDocument_cancelNew()
                        dlg->selectFile(TEST_DATA_DIR "/colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
-  openAction->trigger();
+  action->trigger();
   QVERIFY(*asyncSuccess);
 
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-                       AlbumEditorDialog* dlg =
-                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
                        QTest::keyClick(dlg, Qt::Key_Escape);
                      });
-  newAction->trigger();
+  action->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
@@ -250,17 +121,15 @@ void TestNewDocument::openDocument_newDocument_cancelNew()
   QVERIFY(!w.document()->modified());
 }
 
-void TestNewDocument::openDocument_newDocument_okNew()
+void TestOpenAlbum::open_open_okOpen()
 {
   MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
-  QVERIFY(openAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
+  QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -272,27 +141,26 @@ void TestNewDocument::openDocument_newDocument_okNew()
                        dlg->selectFile(TEST_DATA_DIR "/colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
-  openAction->trigger();
+  action->trigger();
   QVERIFY(*asyncSuccess);
 
   QTimer::singleShot(0,
                      [asyncSuccess]
                      {
-                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-                       AlbumEditorDialog* dlg =
-                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-                       dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       dlg->selectFile(TEST_DATA_DIR "/green-checkerboards.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
-  newAction->trigger();
+  action->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path().isEmpty());
-  QVERIFY(w.document()->modified());
+  QVERIFY(w.document()->path() == TEST_DATA_DIR "/green-checkerboards.cml");
+  QVERIFY(!w.document()->modified());
 }
 
-void TestNewDocument::openDocument_modifyDocument_newDocument_cancelSave()
+void TestOpenAlbum::open_modify_open_cancelSave()
 {
   MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
 
@@ -303,8 +171,6 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_cancelSave()
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -329,7 +195,7 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_cancelSave()
                        QAbstractButton* btn = box->button(QMessageBox::Cancel);
                        btn->click();
                      });
-  newAction->trigger();
+  openAction->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
@@ -337,7 +203,7 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_cancelSave()
   QVERIFY(w.document()->modified());
 }
 
-void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_cancelNew()
+void TestOpenAlbum::open_modify_open_okSave_cancelOpen()
 {
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
@@ -354,8 +220,6 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_cancelNew()
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -372,25 +236,24 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_cancelNew()
   bookmarkAction->trigger();
   QVERIFY(w.document()->modified());
 
-  QTimer::singleShot(
-    0,
-    [asyncSuccess, tempDir]
-    {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
-      QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-      QAbstractButton* btn = box->button(QMessageBox::Yes);
-      btn->click();
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
+                       QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
+                       QAbstractButton* btn = box->button(QMessageBox::Yes);
+                       btn->click();
 
-      QTimer::singleShot(
-        0,
-        [asyncSuccess, tempDir]
-        {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-          QTest::keyClick(dlg, Qt::Key_Escape);
-        });
-    });
-  newAction->trigger();
+                       QTimer::singleShot(
+                         0,
+                         [asyncSuccess, tempDir]
+                         {
+                           QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                           QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                           QTest::keyClick(dlg, Qt::Key_Escape);
+                         });
+                     });
+  openAction->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
@@ -401,7 +264,7 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_cancelNew()
   QVERIFY(docCurrentContents != docOriginalContents);
 }
 
-void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_errorOnSave()
+void TestOpenAlbum::open_modify_open_okSave_errorOnSave()
 {
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
@@ -418,8 +281,6 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_errorOnSave
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -454,7 +315,7 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_errorOnSave
                            QTest::keyClick(box, Qt::Key_Enter);
                          });
                      });
-  newAction->trigger();
+  openAction->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
@@ -462,7 +323,7 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_errorOnSave
   QVERIFY(w.document()->modified());
 }
 
-void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_okNew()
+void TestOpenAlbum::open_modify_open_okSave_okOpen()
 {
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
@@ -479,8 +340,6 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_okNew()
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -497,37 +356,36 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_okNew()
   bookmarkAction->trigger();
   QVERIFY(w.document()->modified());
 
-  QTimer::singleShot(
-    0,
-    [asyncSuccess, tempDir]
-    {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
-      QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-      QAbstractButton* btn = box->button(QMessageBox::Yes);
-      btn->click();
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
+                       QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
+                       QAbstractButton* btn = box->button(QMessageBox::Yes);
+                       btn->click();
 
-      QTimer::singleShot(
-        0,
-        [asyncSuccess, tempDir]
-        {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-          dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
-          QTest::keyClick(dlg, Qt::Key_Enter);
-        });
-    });
-  newAction->trigger();
+                       QTimer::singleShot(
+                         0,
+                         [asyncSuccess, tempDir]
+                         {
+                           QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                           QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                           dlg->selectFile(TEST_DATA_DIR "/green-checkerboards.cml");
+                           QTest::keyClick(dlg, Qt::Key_Enter);
+                         });
+                     });
+  openAction->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path().isEmpty());
-  QVERIFY(w.document()->modified());
+  QVERIFY(w.document()->path() == TEST_DATA_DIR "/green-checkerboards.cml");
+  QVERIFY(!w.document()->modified());
 
   const QByteArray firstDocCurrentContents = readFile(firstDocPath);
   QVERIFY(firstDocCurrentContents != firstDocOriginalContents);
 }
 
-void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_cancelNew()
+void TestOpenAlbum::open_modify_open_doNotSave_cancelOpen()
 {
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
@@ -543,8 +401,6 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_cancelNe
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -561,25 +417,24 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_cancelNe
   bookmarkAction->trigger();
   QVERIFY(w.document()->modified());
 
-  QTimer::singleShot(
-    0,
-    [asyncSuccess, tempDir]
-    {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
-      QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-      QAbstractButton* btn = box->button(QMessageBox::No);
-      btn->click();
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
+                       QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
+                       QAbstractButton* btn = box->button(QMessageBox::No);
+                       btn->click();
 
-      QTimer::singleShot(
-        0,
-        [asyncSuccess, tempDir]
-        {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-          QTest::keyClick(dlg, Qt::Key_Escape);
-        });
-    });
-  newAction->trigger();
+                       QTimer::singleShot(
+                         0,
+                         [asyncSuccess, tempDir]
+                         {
+                           QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                           QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                           QTest::keyClick(dlg, Qt::Key_Escape);
+                         });
+                     });
+  openAction->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
@@ -587,7 +442,7 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_cancelNe
   QVERIFY(w.document()->modified());
 }
 
-void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_okNew()
+void TestOpenAlbum::open_modify_open_doNotSave_okOpen()
 {
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
@@ -604,8 +459,6 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_okNew()
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
-  QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
@@ -622,31 +475,30 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_okNew()
   bookmarkAction->trigger();
   QVERIFY(w.document()->modified());
 
-  QTimer::singleShot(
-    0,
-    [asyncSuccess, tempDir]
-    {
-      QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
-      QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-      QAbstractButton* btn = box->button(QMessageBox::No);
-      btn->click();
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
+                       QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
+                       QAbstractButton* btn = box->button(QMessageBox::No);
+                       btn->click();
 
-      QTimer::singleShot(
-        0,
-        [asyncSuccess, tempDir]
-        {
-          QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
-          AlbumEditorDialog* dlg = dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
-          dlg->setValues({TEST_DATA_DIR "/red/*", TEST_DATA_DIR "/blue/*"});
-          QTest::keyClick(dlg, Qt::Key_Enter);
-        });
-    });
-  newAction->trigger();
+                       QTimer::singleShot(
+                         0,
+                         [asyncSuccess, tempDir]
+                         {
+                           QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                           QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                           dlg->selectFile(TEST_DATA_DIR "/green-checkerboards.cml");
+                           QTest::keyClick(dlg, Qt::Key_Enter);
+                         });
+                     });
+  openAction->trigger();
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path().isEmpty());
-  QVERIFY(w.document()->modified());
+  QVERIFY(w.document()->path() == TEST_DATA_DIR "/green-checkerboards.cml");
+  QVERIFY(!w.document()->modified());
 
   const QByteArray firstDocCurrentContents = readFile(firstDocPath);
   QVERIFY(firstDocCurrentContents == firstDocOriginalContents);

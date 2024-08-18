@@ -19,21 +19,21 @@
 
 #include <QObject>
 
-class TestNewDocument : public QObject
+class TestNewAlbum : public QObject
 {
   Q_OBJECT
 private slots:
-  void newDocument_cancelNew();
-  void newDocument_okNew();
-  void newDocumentWithoutPatterns();
-  void newDocumentWithoutMatches();
-  void newDocumentWithInconsistentNumberOfWildcardsPerPattern();
-  void openDocument_newDocument_cancelNew();
-  void openDocument_newDocument_okNew();
-  void openDocument_modifyDocument_newDocument_cancelSave();
-  void openDocument_modifyDocument_newDocument_okSave_cancelNew();
-  void openDocument_modifyDocument_newDocument_okSave_errorOnSave();
-  void openDocument_modifyDocument_newDocument_okSave_okNew();
-  void openDocument_modifyDocument_newDocument_doNotSave_cancelNew();
-  void openDocument_modifyDocument_newDocument_doNotSave_okNew();
+  void new_cancelNew();
+  void new_okNew();
+  void newAlbumWithoutPatterns();
+  void newAlbumWithoutMatches();
+  void newAlbumWithInconsistentNumberOfWildcardsPerPattern();
+  void open_new_cancelNew();
+  void open_new_okNew();
+  void open_modify_new_cancelSave();
+  void open_modify_new_okSave_cancelNew();
+  void open_modify_new_okSave_errorOnSave();
+  void open_modify_new_okSave_okNew();
+  void open_modify_new_doNotSave_cancelNew();
+  void open_modify_new_doNotSave_okNew();
 };
