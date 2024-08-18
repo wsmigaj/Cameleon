@@ -39,15 +39,15 @@
     <property name="title">
      <string>&amp;Album</string>
     </property>
-    <addaction name="actionNewComparison"/>
-    <addaction name="actionOpenComparison"/>
-    <addaction name="actionSaveComparison"/>
-    <addaction name="actionSaveComparisonAs"/>
+    <addaction name="actionNewAlbum"/>
+    <addaction name="actionOpenAlbum"/>
+    <addaction name="actionSaveAlbum"/>
+    <addaction name="actionSaveAlbumAs"/>
     <addaction name="separator"/>
-    <addaction name="actionEditComparison"/>
-    <addaction name="actionRefreshComparison"/>
+    <addaction name="actionEditAlbum"/>
+    <addaction name="actionRefreshAlbum"/>
     <addaction name="separator"/>
-    <addaction name="actionCloseComparison"/>
+    <addaction name="actionCloseAlbum"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -107,12 +107,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionNewComparison"/>
-   <addaction name="actionOpenComparison"/>
-   <addaction name="actionSaveComparison"/>
+   <addaction name="actionNewAlbum"/>
+   <addaction name="actionOpenAlbum"/>
+   <addaction name="actionSaveAlbum"/>
    <addaction name="separator"/>
-   <addaction name="actionEditComparison"/>
-   <addaction name="actionRefreshComparison"/>
+   <addaction name="actionEditAlbum"/>
+   <addaction name="actionRefreshAlbum"/>
    <addaction name="separator"/>
    <addaction name="actionFirstInstance"/>
    <addaction name="actionPreviousInstance"/>
@@ -122,7 +122,7 @@
    <addaction name="actionBookmarkPage"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionNewComparison">
+  <action name="actionNewAlbum">
    <property name="text">
     <string>&amp;New...</string>
    </property>
@@ -130,7 +130,7 @@
     <string>Ctrl+N</string>
    </property>
   </action>
-  <action name="actionOpenComparison">
+  <action name="actionOpenAlbum">
    <property name="text">
     <string>&amp;Open...</string>
    </property>
@@ -138,7 +138,7 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="actionCloseComparison">
+  <action name="actionCloseAlbum">
    <property name="text">
     <string>&amp;Close</string>
    </property>
@@ -154,7 +154,7 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionSaveComparison">
+  <action name="actionSaveAlbum">
    <property name="text">
     <string>&amp;Save</string>
    </property>
@@ -162,7 +162,7 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionSaveComparisonAs">
+  <action name="actionSaveAlbumAs">
    <property name="text">
     <string>Save &amp;As...</string>
    </property>
@@ -191,7 +191,7 @@
     <string>Ctrl+1</string>
    </property>
   </action>
-  <action name="actionEditComparison">
+  <action name="actionEditAlbum">
    <property name="text">
     <string>&amp;Edit...</string>
    </property>
@@ -231,7 +231,7 @@
     <string>End</string>
    </property>
   </action>
-  <action name="actionRefreshComparison">
+  <action name="actionRefreshAlbum">
    <property name="text">
     <string>&amp;Refresh</string>
    </property>

@@ -57,13 +57,13 @@ protected:
   void closeEvent(QCloseEvent* event) override;
 
 private slots:
-  void on_actionNewComparison_triggered();
-  void on_actionOpenComparison_triggered();
-  void on_actionEditComparison_triggered();
-  void on_actionRefreshComparison_triggered();
-  void on_actionSaveComparison_triggered();
-  void on_actionSaveComparisonAs_triggered();
-  void on_actionCloseComparison_triggered();
+  void on_actionNewAlbum_triggered();
+  void on_actionOpenAlbum_triggered();
+  void on_actionEditAlbum_triggered();
+  void on_actionRefreshAlbum_triggered();
+  void on_actionSaveAlbum_triggered();
+  void on_actionSaveAlbumAs_triggered();
+  void on_actionCloseAlbum_triggered();
   void on_actionQuit_triggered();
 
   void on_actionZoomIn_triggered();
@@ -90,7 +90,7 @@ private slots:
   void on_actionAboutCameleon_triggered();
 
   void onLayoutActionTriggered();
-  void onRecentComparisonActionTriggered();
+  void onRecentDocumentActionTriggered();
 
   void onDocumentModificationStatusChanged();
   void onInstanceComboBox(int currentIndex);
@@ -103,9 +103,9 @@ private:
 
   void populateInstanceComboBox();
 
-  void initialiseRecentComparisonsSubmenu();
-  void prependToRecentComparisons(const QString& path);
-  void populateRecentComparisonsSubmenu(const QStringList& recentComparisons);
+  void initialiseRecentDocumentsSubmenu();
+  void prependToRecentDocuments(const QString& path);
+  void populateRecentDocumentsSubmenu(const QStringList& recentAlbums);
 
   void updateMainViewLayout();
   void populateLayoutSubmenu();
@@ -151,7 +151,7 @@ private:
   QMenu* layoutMenu_ = nullptr;
   QActionGroup* layoutActionGroup_ = nullptr;
   std::map<QAction*, Layout> layoutActions_;
-  QMenu* recentComparisonsMenu_ = nullptr;
+  QMenu* recentDocumentsMenu_ = nullptr;
 
   QLabel* statusBarMessageLabel_ = nullptr;
   QLabel* statusBarInstanceLabel_ = nullptr;

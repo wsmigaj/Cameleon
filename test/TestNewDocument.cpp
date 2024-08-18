@@ -38,7 +38,7 @@ void TestNewDocument::newDocument_cancelNew()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewComparison");
+  QAction* action = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(action != nullptr);
 
   // All variables passed to timer callback functions (executed asynchronously) are wrapped with
@@ -65,7 +65,7 @@ void TestNewDocument::newDocument_okNew()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewComparison");
+  QAction* action = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -94,7 +94,7 @@ void TestNewDocument::newDocumentWithoutPatterns()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewComparison");
+  QAction* action = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -131,7 +131,7 @@ void TestNewDocument::newDocumentWithoutMatches()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewComparison");
+  QAction* action = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -169,7 +169,7 @@ void TestNewDocument::newDocumentWithInconsistentNumberOfWildcardsPerPattern()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionNewComparison");
+  QAction* action = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -216,9 +216,9 @@ void TestNewDocument::openDocument_newDocument_cancelNew()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -257,9 +257,9 @@ void TestNewDocument::openDocument_newDocument_okNew()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -299,11 +299,11 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_cancelSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -350,11 +350,11 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_cancelNew()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -414,11 +414,11 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_errorOnSave
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -475,11 +475,11 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_okSave_okNew()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -539,11 +539,11 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_cancelNe
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -600,11 +600,11 @@ void TestNewDocument::openDocument_modifyDocument_newDocument_doNotSave_okNew()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);

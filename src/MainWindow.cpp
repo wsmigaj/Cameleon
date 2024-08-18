@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
   ui_->setupUi(this);
 
   populateLayoutSubmenu();
-  initialiseRecentComparisonsSubmenu();
+  initialiseRecentDocumentsSubmenu();
 
   instanceComboBox_ = new QComboBox(this);
   instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -74,12 +74,12 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
 
   QIcon::setThemeName("crystalsvg");
 
-  ui_->actionNewComparison->setIcon(QIcon::fromTheme("document-new"));
-  ui_->actionOpenComparison->setIcon(QIcon::fromTheme("document-open"));
-  ui_->actionEditComparison->setIcon(QIcon::fromTheme("document-edit"));
-  ui_->actionRefreshComparison->setIcon(QIcon::fromTheme("view-refresh"));
-  ui_->actionSaveComparison->setIcon(QIcon::fromTheme("document-save"));
-  ui_->actionSaveComparisonAs->setIcon(QIcon::fromTheme("document-save-as"));
+  ui_->actionNewAlbum->setIcon(QIcon::fromTheme("document-new"));
+  ui_->actionOpenAlbum->setIcon(QIcon::fromTheme("document-open"));
+  ui_->actionEditAlbum->setIcon(QIcon::fromTheme("document-edit"));
+  ui_->actionRefreshAlbum->setIcon(QIcon::fromTheme("view-refresh"));
+  ui_->actionSaveAlbum->setIcon(QIcon::fromTheme("document-save"));
+  ui_->actionSaveAlbumAs->setIcon(QIcon::fromTheme("document-save-as"));
 
   ui_->actionFirstInstance->setIcon(QIcon::fromTheme("go-first"));
   ui_->actionPreviousInstance->setIcon(QIcon::fromTheme("go-previous"));
@@ -177,43 +177,40 @@ void MainWindow::populateLayoutSubmenu()
   }
 }
 
-void MainWindow::initialiseRecentComparisonsSubmenu()
+void MainWindow::initialiseRecentDocumentsSubmenu()
 {
-  recentComparisonsMenu_ = new QMenu("&Recent", ui_->menuFile);
-  ui_->menuFile->insertMenu(ui_->actionQuit, recentComparisonsMenu_);
+  recentDocumentsMenu_ = new QMenu("&Recent", ui_->menuFile);
+  ui_->menuFile->insertMenu(ui_->actionQuit, recentDocumentsMenu_);
   ui_->menuFile->insertSeparator(ui_->actionQuit);
 
   QSettings settings;
-  QStringList recentComparisons = settings.value("recentComparisons", QStringList()).toStringList();
-  recentComparisons.resize(
-    std::min<qsizetype>(recentComparisons.size(), MAX_NUM_RECENT_COMPARISONS));
-  populateRecentComparisonsSubmenu(recentComparisons);
+  QStringList recentDocuments = settings.value("recentComparisons", QStringList()).toStringList();
+  recentDocuments.resize(std::min<qsizetype>(recentDocuments.size(), MAX_NUM_RECENT_COMPARISONS));
+  populateRecentDocumentsSubmenu(recentDocuments);
 }
 
-void MainWindow::prependToRecentComparisons(const QString& path)
+void MainWindow::prependToRecentDocuments(const QString& path)
 {
   QSettings settings;
-  QStringList recentComparisons = settings.value("recentComparisons", QStringList()).toStringList();
-  recentComparisons.removeAll(path);
-  recentComparisons.prepend(path);
-  recentComparisons.resize(
-    std::min<qsizetype>(recentComparisons.size(), MAX_NUM_RECENT_COMPARISONS));
-  settings.setValue("recentComparisons", recentComparisons);
-  populateRecentComparisonsSubmenu(recentComparisons);
+  QStringList recentDocuments = settings.value("recentComparisons", QStringList()).toStringList();
+  recentDocuments.removeAll(path);
+  recentDocuments.prepend(path);
+  recentDocuments.resize(std::min<qsizetype>(recentDocuments.size(), MAX_NUM_RECENT_COMPARISONS));
+  settings.setValue("recentComparisons", recentDocuments);
+  populateRecentDocumentsSubmenu(recentDocuments);
 }
 
-void MainWindow::populateRecentComparisonsSubmenu(const QStringList& recentComparisons)
+void MainWindow::populateRecentDocumentsSubmenu(const QStringList& recentDocuments)
 {
-  recentComparisonsMenu_->clear();
+  recentDocumentsMenu_->clear();
   int i = 1;
-  for (const QString& recentComparison : recentComparisons)
+  for (const QString& recentDocument : recentDocuments)
   {
-    QAction* action =
-      recentComparisonsMenu_->addAction(QString("&%1 %2").arg(i).arg(recentComparison));
-    connect(action, &QAction::triggered, this, &MainWindow::onRecentComparisonActionTriggered);
+    QAction* action = recentDocumentsMenu_->addAction(QString("&%1 %2").arg(i).arg(recentDocument));
+    connect(action, &QAction::triggered, this, &MainWindow::onRecentDocumentActionTriggered);
     ++i;
   }
-  recentComparisonsMenu_->setEnabled(!recentComparisonsMenu_->isEmpty());
+  recentDocumentsMenu_->setEnabled(!recentDocumentsMenu_->isEmpty());
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -229,7 +226,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
   }
 }
 
-void MainWindow::on_actionNewComparison_triggered()
+void MainWindow::on_actionNewAlbum_triggered()
 {
   if (!maybeSaveDocument())
   {
@@ -266,7 +263,7 @@ void MainWindow::on_actionNewComparison_triggered()
   onInstancesChanged();
 }
 
-void MainWindow::on_actionOpenComparison_triggered()
+void MainWindow::on_actionOpenAlbum_triggered()
 {
   if (!maybeSaveDocument())
   {
@@ -307,7 +304,7 @@ void MainWindow::openDocument(const QString& path)
     goToInstance(0);
 }
 
-void MainWindow::onRecentComparisonActionTriggered()
+void MainWindow::onRecentDocumentActionTriggered()
 {
   if (!maybeSaveDocument())
     return;
@@ -335,7 +332,7 @@ void MainWindow::onRecentComparisonActionTriggered()
     goToInstance(0);
 }
 
-void MainWindow::on_actionEditComparison_triggered()
+void MainWindow::on_actionEditAlbum_triggered()
 {
   ComparisonDialog dialog(this, "recentPatterns");
   dialog.setWindowTitle("Edit Album");
@@ -382,7 +379,7 @@ std::optional<std::vector<QString>> MainWindow::currentInstanceKey() const
   return std::nullopt;
 }
 
-void MainWindow::on_actionRefreshComparison_triggered()
+void MainWindow::on_actionRefreshAlbum_triggered()
 {
   const std::optional<std::vector<QString>> previousInstanceKey = currentInstanceKey();
 
@@ -403,17 +400,17 @@ void MainWindow::on_actionRefreshComparison_triggered()
     goToInstance(newInstance);
 }
 
-void MainWindow::on_actionSaveComparison_triggered()
+void MainWindow::on_actionSaveAlbum_triggered()
 {
   saveDocument();
 }
 
-void MainWindow::on_actionSaveComparisonAs_triggered()
+void MainWindow::on_actionSaveAlbumAs_triggered()
 {
   saveDocumentAs();
 }
 
-void MainWindow::on_actionCloseComparison_triggered()
+void MainWindow::on_actionCloseAlbum_triggered()
 {
   if (!maybeSaveDocument())
   {
@@ -777,7 +774,7 @@ void MainWindow::onDocumentPathChanged()
   setWindowModified(doc_ && doc_->modified());
 
   if (doc_ && !doc_->path().isEmpty())
-    prependToRecentComparisons(doc_->path());
+    prependToRecentDocuments(doc_->path());
 }
 
 void MainWindow::onInstanceComboBox(int currentIndex)
@@ -864,11 +861,11 @@ void MainWindow::updateDocumentDependentActions()
   const bool hasInstances = isOpen && !doc_->instances().empty();
   const bool isModified = isOpen && doc_->modified();
   const bool hasPatterns = isOpen && !doc_->patterns().empty();
-  ui_->actionEditComparison->setEnabled(isOpen);
-  ui_->actionRefreshComparison->setEnabled(isOpen);
-  ui_->actionSaveComparison->setEnabled(isModified);
-  ui_->actionSaveComparisonAs->setEnabled(isOpen);
-  ui_->actionCloseComparison->setEnabled(isOpen);
+  ui_->actionEditAlbum->setEnabled(isOpen);
+  ui_->actionRefreshAlbum->setEnabled(isOpen);
+  ui_->actionSaveAlbum->setEnabled(isModified);
+  ui_->actionSaveAlbumAs->setEnabled(isOpen);
+  ui_->actionCloseAlbum->setEnabled(isOpen);
   ui_->actionZoomIn->setEnabled(hasInstances);
   ui_->actionZoomOut->setEnabled(hasInstances);
   ui_->actionZoom1to1->setEnabled(hasInstances);
@@ -913,7 +910,7 @@ void MainWindow::updateDocumentModificationStatusDependentActions()
 {
   const bool isOpen = doc_ != nullptr;
   const bool isModified = isOpen && doc_->modified();
-  ui_->actionSaveComparison->setEnabled(isModified);
+  ui_->actionSaveAlbum->setEnabled(isModified);
 }
 
 void MainWindow::updateInstanceDependentUiElements()

@@ -38,17 +38,17 @@ void TestMiscAlbumMenuItems::stateBeforeAlbumOpening()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* saveAction = w.findChild<QAction*>("actionSaveComparison");
+  QAction* saveAction = w.findChild<QAction*>("actionSaveAlbum");
   QVERIFY(saveAction != nullptr);
-  QAction* saveAsAction = w.findChild<QAction*>("actionSaveComparisonAs");
+  QAction* saveAsAction = w.findChild<QAction*>("actionSaveAlbumAs");
   QVERIFY(saveAsAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(closeAction != nullptr);
-  QAction* editAction = w.findChild<QAction*>("actionEditComparison");
+  QAction* editAction = w.findChild<QAction*>("actionEditAlbum");
   QVERIFY(editAction != nullptr);
   QAction* quitAction = w.findChild<QAction*>("actionQuit");
   QVERIFY(quitAction != nullptr);
@@ -69,17 +69,17 @@ void TestMiscAlbumMenuItems::stateAfterAlbumClosing()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* saveAction = w.findChild<QAction*>("actionSaveComparison");
+  QAction* saveAction = w.findChild<QAction*>("actionSaveAlbum");
   QVERIFY(saveAction != nullptr);
-  QAction* saveAsAction = w.findChild<QAction*>("actionSaveComparisonAs");
+  QAction* saveAsAction = w.findChild<QAction*>("actionSaveAlbumAs");
   QVERIFY(saveAsAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(closeAction != nullptr);
-  QAction* editAction = w.findChild<QAction*>("actionEditComparison");
+  QAction* editAction = w.findChild<QAction*>("actionEditAlbum");
   QVERIFY(editAction != nullptr);
   QAction* quitAction = w.findChild<QAction*>("actionQuit");
   QVERIFY(quitAction != nullptr);
@@ -121,11 +121,11 @@ void TestMiscAlbumMenuItems::save()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* saveAction = w.findChild<QAction*>("actionSaveComparison");
+  QAction* saveAction = w.findChild<QAction*>("actionSaveAlbum");
   QVERIFY(saveAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -167,11 +167,11 @@ void TestMiscAlbumMenuItems::saveAs_cancelSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* saveAsAction = w.findChild<QAction*>("actionSaveComparisonAs");
+  QAction* saveAsAction = w.findChild<QAction*>("actionSaveAlbumAs");
   QVERIFY(saveAsAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -219,11 +219,11 @@ void TestMiscAlbumMenuItems::saveAs_okSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* saveAsAction = w.findChild<QAction*>("actionSaveComparisonAs");
+  QAction* saveAsAction = w.findChild<QAction*>("actionSaveAlbumAs");
   QVERIFY(saveAsAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -269,9 +269,9 @@ void TestMiscAlbumMenuItems::edit_cancelEdit()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* editAction = w.findChild<QAction*>("actionEditComparison");
+  QAction* editAction = w.findChild<QAction*>("actionEditAlbum");
   QVERIFY(editAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -312,9 +312,9 @@ void TestMiscAlbumMenuItems::edit_okEdit()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* editAction = w.findChild<QAction*>("actionEditComparison");
+  QAction* editAction = w.findChild<QAction*>("actionEditAlbum");
   QVERIFY(editAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -358,9 +358,9 @@ void TestMiscAlbumMenuItems::editWithInconsistentNumberOfWildcardsPerPattern()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* editAction = w.findChild<QAction*>("actionEditComparison");
+  QAction* editAction = w.findChild<QAction*>("actionEditAlbum");
   QVERIFY(editAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -441,9 +441,9 @@ void TestMiscAlbumMenuItems::refresh()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
-  QAction* refreshAction = w.findChild<QAction*>("actionRefreshComparison");
+  QAction* refreshAction = w.findChild<QAction*>("actionRefreshAlbum");
   QVERIFY(refreshAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -506,9 +506,9 @@ void TestMiscAlbumMenuItems::refreshAfterDeletingAllInstances()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* newAction = w.findChild<QAction*>("actionNewComparison");
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
   QVERIFY(newAction != nullptr);
-  QAction* refreshAction = w.findChild<QAction*>("actionRefreshComparison");
+  QAction* refreshAction = w.findChild<QAction*>("actionRefreshAlbum");
   QVERIFY(refreshAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -553,9 +553,9 @@ void TestMiscAlbumMenuItems::open_close()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(closeAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -590,11 +590,11 @@ void TestMiscAlbumMenuItems::open_modify_close_cancelSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(openAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -643,11 +643,11 @@ void TestMiscAlbumMenuItems::open_modify_close_doNotSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(openAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -708,7 +708,7 @@ void TestMiscAlbumMenuItems::open_quit()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* quitAction = w.findChild<QAction*>("actionQuit");
   QVERIFY(quitAction != nullptr);
@@ -740,7 +740,7 @@ void TestMiscAlbumMenuItems::open_modify_quit_cancelSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
@@ -788,7 +788,7 @@ void TestMiscAlbumMenuItems::open_modify_quit_doNotSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);

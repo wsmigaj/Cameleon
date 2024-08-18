@@ -96,9 +96,9 @@ void TestViewMenu::stateAfterAlbumClosing()
   QAction* saveScreenshotAction = w.findChild<QAction*>("actionSaveScreenshot");
   QVERIFY(saveScreenshotAction != nullptr);
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(closeAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -130,7 +130,7 @@ void TestViewMenu::zoom()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* nextInstanceAction = w.findChild<QAction*>("actionNextInstance");
   QVERIFY(nextInstanceAction != nullptr);
@@ -202,7 +202,7 @@ void TestViewMenu::editCaptions_cancelEdit()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* nextInstanceAction = w.findChild<QAction*>("actionNextInstance");
   QVERIFY(nextInstanceAction != nullptr);
@@ -258,7 +258,7 @@ void TestViewMenu::editCaptions_okEdit()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* nextInstanceAction = w.findChild<QAction*>("actionNextInstance");
   QVERIFY(nextInstanceAction != nullptr);
@@ -349,7 +349,7 @@ void TestViewMenu::saveScreenshot_cancelSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
 
   QAction* saveScreenshotAction = w.findChild<QAction*>("actionSaveScreenshot");
@@ -393,7 +393,7 @@ void TestViewMenu::saveScreenshot_okSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
 
   QAction* saveScreenshotAction = w.findChild<QAction*>("actionSaveScreenshot");

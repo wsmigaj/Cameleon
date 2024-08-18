@@ -69,7 +69,7 @@ void TestNavigationMenu::navigationInAlbumWith0Pages()
   QAction* lastInstanceAction = w.findChild<QAction*>("actionLastInstance");
   QVERIFY(lastInstanceAction != nullptr);
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -117,7 +117,7 @@ void TestNavigationMenu::navigationInAlbumWith1Page()
   QAction* lastInstanceAction = w.findChild<QAction*>("actionLastInstance");
   QVERIFY(lastInstanceAction != nullptr);
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -156,7 +156,7 @@ void TestNavigationMenu::navigationInAlbumWith2Pages()
   QAction* lastInstanceAction = w.findChild<QAction*>("actionLastInstance");
   QVERIFY(lastInstanceAction != nullptr);
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -223,7 +223,7 @@ void TestNavigationMenu::navigationInAlbumWith5Pages()
   QAction* lastInstanceAction = w.findChild<QAction*>("actionLastInstance");
   QVERIFY(lastInstanceAction != nullptr);
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -290,9 +290,9 @@ void TestNavigationMenu::stateAfterAlbumClosing()
   QAction* lastInstanceAction = w.findChild<QAction*>("actionLastInstance");
   QVERIFY(lastInstanceAction != nullptr);
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(closeAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);

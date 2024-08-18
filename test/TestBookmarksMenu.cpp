@@ -72,7 +72,7 @@ void TestBookmarksMenu::navigation()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkPageAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkPageAction != nullptr);
@@ -190,9 +190,9 @@ void TestBookmarksMenu::stateAfterAlbumClosing()
   QAction* importBookmarksAction = w.findChild<QAction*>("actionImportBookmarks");
   QVERIFY(importBookmarksAction != nullptr);
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
-  QAction* closeAction = w.findChild<QAction*>("actionCloseComparison");
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
   QVERIFY(closeAction != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -227,7 +227,7 @@ void TestBookmarksMenu::bookmarkPage()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkPageAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkPageAction != nullptr);
@@ -265,7 +265,7 @@ void TestBookmarksMenu::removeAllBookmarks_cancelRemoval()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkPageAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkPageAction != nullptr);
@@ -314,7 +314,7 @@ void TestBookmarksMenu::removeAllBookmarks_okRemoval()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkPageAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkPageAction != nullptr);
@@ -367,7 +367,7 @@ void TestBookmarksMenu::exportAndImport()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkPageAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkPageAction != nullptr);

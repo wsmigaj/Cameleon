@@ -37,7 +37,7 @@ void TestOpenDocument::openDocument_cancelOpen()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionOpenComparison");
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(action != nullptr);
 
   // All variables passed to timer callback functions (executed asynchronously) are wrapped with
@@ -63,7 +63,7 @@ void TestOpenDocument::openDocument_okOpen()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionOpenComparison");
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -90,7 +90,7 @@ void TestOpenDocument::openDocument_openDocument_cancelOpen()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionOpenComparison");
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -128,7 +128,7 @@ void TestOpenDocument::openDocument_openDocument_okOpen()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* action = w.findChild<QAction*>("actionOpenComparison");
+  QAction* action = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(action != nullptr);
 
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
@@ -167,7 +167,7 @@ void TestOpenDocument::openDocument_modifyDocument_openDocument_cancelSave()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
@@ -216,7 +216,7 @@ void TestOpenDocument::openDocument_modifyDocument_openDocument_okSave_cancelOpe
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
@@ -277,7 +277,7 @@ void TestOpenDocument::openDocument_modifyDocument_openDocument_okSave_errorOnSa
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
@@ -336,7 +336,7 @@ void TestOpenDocument::openDocument_modifyDocument_openDocument_okSave_okOpen()
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
@@ -397,7 +397,7 @@ void TestOpenDocument::openDocument_modifyDocument_openDocument_doNotSave_cancel
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
@@ -455,7 +455,7 @@ void TestOpenDocument::openDocument_modifyDocument_openDocument_doNotSave_okOpen
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
-  QAction* openAction = w.findChild<QAction*>("actionOpenComparison");
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
   QAction* bookmarkAction = w.findChild<QAction*>("actionBookmarkPage");
   QVERIFY(bookmarkAction != nullptr);
