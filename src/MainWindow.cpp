@@ -1037,10 +1037,9 @@ bool MainWindow::maybeSaveDocument()
     return true;
   }
 
-  int ret = QMessageBox::warning(this, qApp->applicationName(),
-                                 "The album has been modified. Do you want to save your changes?",
-                                 QMessageBox::Yes | QMessageBox::Default, QMessageBox::No,
-                                 QMessageBox::Cancel | QMessageBox::Escape);
+  int ret = QMessageBox::warning(
+    this, qApp->applicationName(), "The album has been modified. Do you want to save your changes?",
+    QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
   switch (ret)
   {
   case QMessageBox::Yes:
