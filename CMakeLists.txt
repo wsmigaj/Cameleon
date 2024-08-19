@@ -11,6 +11,10 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     endif()
 endif()
 
+# Define options.
+
+option(ENABLE_TESTS "Build tests" ON)
+
 # Set up the Qt dependency.
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Core Concurrent Widgets Test Tools)
@@ -58,14 +62,16 @@ set_property(GLOBAL PROPERTY QT_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER QtInternalTargets)
 set_property(GLOBAL PROPERTY AUTOGEN_SOURCE_GROUP "Generated Files")
 
-# Enable testing.
-
-enable_testing(true)
-
-# Include dependent CMakeLists.txt files.
+# Build the main application.
 
 add_subdirectory(src)
-add_subdirectory(test)
+
+# Build tests, if requested.
+
+if (ENABLE_TESTS)
+    enable_testing(true)
+    add_subdirectory(test)
+endif()
 
 # Set up installation.
 
