@@ -11,12 +11,15 @@ jobs:
     permissions:
       # Allow the workflow to create a release.
       contents: write
+      # Allow the workflow to upload test results.
+      checks: write
 
     strategy:
       # fail-fast set to false to ensure that feedback is delivered for all matrix combinations.
       fail-fast: false
 
       matrix:
+        os: [windows-latest, ubuntu-latest]
         build_type: [RelWithDebInfo]
         include:
           - os: windows-latest
@@ -24,6 +27,11 @@ jobs:
             cpp_compiler: cl
             system_name: win64
             cpack_generator: ZIP
+            deploy: true
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            deploy: false
 
     steps:
     - name: Checkout code
@@ -59,10 +67,17 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{ matrix.build_type }} -VV
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}      
 
+    - name: Upload test reports
+      uses: mikepenz/action-junit-report@v4
+      if: success() || failure()
+      with:
+        report_paths: '${{ steps.strings.outputs.build-output-dir }}/test/Test*.xml'
+          
     - name: Create package
+      if: ${{ matrix.deploy }}
       run: >
         cpack 
         -G ${{ matrix.cpack_generator }}        
@@ -72,6 +87,7 @@ jobs:
         -D CPACK_PACKAGE_FILE_NAME=Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
 
     - name: Uncompress package
+      if: ${{ matrix.deploy }}
       shell: cmake -P {0}
       run: | 
         set(input_path "${{ steps.strings.outputs.build-output-dir }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
@@ -80,6 +96,7 @@ jobs:
         file(ARCHIVE_EXTRACT INPUT "${input_path}" DESTINATION "${destination_path}" VERBOSE)
       
     - name: Upload package
+      if: ${{ matrix.deploy }}
       uses: actions/upload-artifact@v4
       with:
         name: Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
@@ -87,6 +104,7 @@ jobs:
         if-no-files-found: error
       
     - name: Upload PDBs
+      if: ${{ matrix.deploy }}
       uses: actions/upload-artifact@v4
       with:
         name: Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}
@@ -94,6 +112,7 @@ jobs:
         if-no-files-found: error
       
     - name: Zip PDBs
+      if: ${{ matrix.deploy }}
       shell: cmake -P {0}
       run: | 
         set(output_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
@@ -102,6 +121,7 @@ jobs:
         file(ARCHIVE_CREATE OUTPUT ${output_path} PATHS ${input_paths} FORMAT zip VERBOSE)
 
     - name: Create release
+      if: ${{ matrix.deploy }}
       uses: ncipollo/release-action@v1.14.0 
       with:
         artifacts: "${{ steps.strings.outputs.build-output-dir }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip,${{ steps.strings.outputs.build-output-dir }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip"

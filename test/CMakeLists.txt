@@ -2,7 +2,7 @@
 
 function(add_cameleon_test)
     set(OPTION_PREFIX ARG)
-    set(OPTIONS_WITH_ZERO_ARGS)
+    set(OPTIONS_WITH_ZERO_ARGS NO_WIDGETS)
     set(OPTIONS_WITH_ONE_ARG NAME)
     set(OPTIONS_WITH_MULTIPLE_ARGS SOURCES)
     cmake_parse_arguments(
@@ -11,14 +11,21 @@ function(add_cameleon_test)
     )
     
     qt_add_executable(${ARG_NAME} ${ARG_SOURCES})
-    target_link_libraries(${ARG_NAME} PRIVATE CameleonCore Qt::Test Qt::Widgets)
+    target_link_libraries(${ARG_NAME} PRIVATE CameleonCore Qt::Test)
+    if (NOT ${ARG_NO_WIDGETS})
+        target_link_libraries(${ARG_NAME} PRIVATE Qt::Widgets)
+    endif()
     target_include_directories(${ARG_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src ${CMAKE_CURRENT_BINARY_DIR})
     set_target_properties(${ARG_NAME} PROPERTIES
         WIN32_EXECUTABLE ON
         MACOSX_BUNDLE ON
         VS_DEBUGGER_ENVIRONMENT "PATH=%PATH%;$<TARGET_FILE_DIR:Qt6::Widgets>"
     )
-    add_test(NAME ${ARG_NAME} COMMAND ${ARG_NAME})
+    set(QTEST_OPTIONS -o - -o ${ARG_NAME}.xml,junitxml -v2)
+    if (UNIX AND NOT APPLE AND NOT ${ARG_NO_WIDGETS})
+      list(APPEND QTEST_OPTIONS -platform offscreen)
+    endif()
+    add_test(NAME ${ARG_NAME} COMMAND ${ARG_NAME} ${QTEST_OPTIONS})
     if (WIN32)
         set_property(TEST ${ARG_NAME} APPEND PROPERTY ENVIRONMENT "PATH=%PATH%\;$<TARGET_FILE_DIR:Qt6::Widgets>")
     endif()
@@ -41,8 +48,8 @@ configure_file(data/green-checkerboards.cml.in "${TEST_DATA_DIR}/green-checkerbo
 configure_file(data/no-matches.cml.in "${TEST_DATA_DIR}/no-matches.cml")
 configure_file(TestDataDir.h.in TestDataDir.h)
 
-add_cameleon_test(NAME TestPatternMatching SOURCES TestPatternMatching.cpp TestPatternMatching.h)
-add_cameleon_test(NAME TestFindInstances SOURCES TestFindInstances.cpp TestFindInstances.h)
+add_cameleon_test(NAME TestPatternMatching SOURCES TestPatternMatching.cpp TestPatternMatching.h NO_WIDGETS)
+add_cameleon_test(NAME TestFindInstances SOURCES TestFindInstances.cpp TestFindInstances.h NO_WIDGETS)
 add_cameleon_test(NAME TestNewAlbum SOURCES TestNewAlbum.cpp TestNewAlbum.h TestUtils.h TestDataDir.h.in)
 add_cameleon_test(NAME TestOpenAlbum SOURCES TestOpenAlbum.cpp TestOpenAlbum.h TestUtils.h TestDataDir.h.in)
 add_cameleon_test(NAME TestMiscAlbumMenuItems SOURCES TestMiscAlbumMenuItems.cpp TestMiscAlbumMenuItems.h TestUtils.h TestDataDir.h.in)
