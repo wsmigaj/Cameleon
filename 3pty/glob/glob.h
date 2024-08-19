@@ -3,19 +3,9 @@
 #include <string>
 #include <vector>
 
-#ifdef GLOB_USE_GHC_FILESYSTEM
-#include <ghc/filesystem.hpp>
-#else
-#include <filesystem>
-#endif
+#include "ghc/fs_std_fwd.hpp"
 
 namespace glob {
-
-#ifdef GLOB_USE_GHC_FILESYSTEM
-namespace fs = ghc::filesystem;
-#else
-namespace fs = std::filesystem;
-#endif
 
 struct PathInfo
 {

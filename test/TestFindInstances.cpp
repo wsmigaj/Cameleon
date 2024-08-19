@@ -22,25 +22,25 @@
 
 #include <QString>
 #include <QTest>
+
 #include <fstream>
 #include <vector>
 
 QTEST_MAIN(TestFindInstances)
 
-void createFilesystemObjects(const std::filesystem::path& topPath,
-                             const std::vector<std::filesystem::path>& relativePaths)
+void createFilesystemObjects(const fs::path& topPath, const std::vector<fs::path>& relativePaths)
 {
-  for (const std::filesystem::path& relativePath : relativePaths)
+  for (const fs::path& relativePath : relativePaths)
   {
-    std::filesystem::path path = topPath / relativePath;
+    fs::path path = topPath / relativePath;
     if (path.has_filename())
     {
-      std::filesystem::create_directories(path.parent_path());
+      fs::create_directories(path.parent_path());
       std::ofstream fileStream(path);
     }
     else
     {
-      std::filesystem::create_directories(path);
+      fs::create_directories(path);
     }
   }
 }
@@ -48,7 +48,7 @@ void createFilesystemObjects(const std::filesystem::path& topPath,
 void TestFindInstances::noPatterns()
 {
   std::vector<QString> patterns{};
-  std::vector<std::filesystem::path> objects{};
+  std::vector<fs::path> objects{};
   std::vector<Instance> expectedInstances{};
   runTest(patterns, objects, expectedInstances);
 }
@@ -56,7 +56,7 @@ void TestFindInstances::noPatterns()
 void TestFindInstances::onePatternWithTwoWildcards()
 {
   std::vector<QString> patterns{{"p1/ab*/foo/*.png"}};
-  std::vector<std::filesystem::path> objects{{
+  std::vector<fs::path> objects{{
     "p1/ab1/foo/c1.png", "p1/ab1/foo/c2.png",
     "p1/ab1/foo/c3.jpg", // no match
     "p1/ab23/foo/c1.png", "p1/ab23/foo/c2.png",
@@ -77,7 +77,7 @@ void TestFindInstances::onePatternWithTwoWildcards()
 void TestFindInstances::twoPatternsEachWithTwoWildcards()
 {
   std::vector<QString> patterns{{"p1/ab*/foo/*.png", "p2/*ab/foo/*.png"}};
-  std::vector<std::filesystem::path> objects{{
+  std::vector<fs::path> objects{{
     "p1/ab1/foo/c1.png",
     "p1/ab1/foo/c2.png",
     "p1/ab1/foo/c3.jpg", // no match
@@ -106,7 +106,7 @@ void TestFindInstances::twoPatternsEachWithTwoWildcards()
 void TestFindInstances::twoPatternsOneWithZeroWildcardsAnotherWithTwo()
 {
   std::vector<QString> patterns{{"p1/ab*/foo/*.png", "p2/456ab/foo/c1.png"}};
-  std::vector<std::filesystem::path> objects{{
+  std::vector<fs::path> objects{{
     "p1/ab1/foo/c1.png",
     "p1/ab1/foo/c2.png",
     "p1/ab1/foo/c3.jpg", // no match
@@ -133,7 +133,7 @@ void TestFindInstances::twoPatternsOneWithZeroWildcardsAnotherWithTwo()
 void TestFindInstances::twoPatternsOneWithOneWildcardAnotherWithTwo()
 {
   std::vector<QString> patterns{{"p1/ab*/foo/*.png", "p2/*ab/foo/c1.png"}};
-  std::vector<std::filesystem::path> objects{};
+  std::vector<fs::path> objects{};
   runTest(
     patterns, objects,
     std::nullopt // expect an exception to be thrown due to the mismatch in the number of wildcards
@@ -143,13 +143,13 @@ void TestFindInstances::twoPatternsOneWithOneWildcardAnotherWithTwo()
 void TestFindInstances::threePatternsEachWithTwoWildcards()
 {
   std::vector<QString> patterns{{"p1/ab*/foo/*.png", "p2/*ab/foo/*.png", "p3/a*b/foo/*.png"}};
-  std::vector<std::filesystem::path> objects{
-    {"p1/ab1/foo/c1.png", "p1/ab1/foo/c2.png",
-     "p1/ab1/foo/c3.jpg", // no match
-     "p1/ab23/foo/c1.png", "p1/ab23/foo/c2.png",
-     "p1/ab23/bar/c1.png", // no match
-     "p2/1ab/foo/c1.png", "p2/1ab/foo/c2.png", "p2/1ab/foo/c3.png", "p2/456ab/foo/c1.png",
-     "p3/a1b/foo/c1.png", "p3/a23b/foo/c2.png", "p3/a456b/foo/c1.png"}};
+  std::vector<fs::path> objects{{"p1/ab1/foo/c1.png", "p1/ab1/foo/c2.png",
+                                 "p1/ab1/foo/c3.jpg", // no match
+                                 "p1/ab23/foo/c1.png", "p1/ab23/foo/c2.png",
+                                 "p1/ab23/bar/c1.png", // no match
+                                 "p2/1ab/foo/c1.png", "p2/1ab/foo/c2.png", "p2/1ab/foo/c3.png",
+                                 "p2/456ab/foo/c1.png", "p3/a1b/foo/c1.png", "p3/a23b/foo/c2.png",
+                                 "p3/a456b/foo/c1.png"}};
   std::vector<Instance> expectedInstances{
     {{"p1/ab1/foo/c1.png", "p2/1ab/foo/c1.png", "p3/a1b/foo/c1.png"}, {"1", "c1"}},
     {{"p1/ab1/foo/c2.png", "p2/1ab/foo/c2.png", ""}, {"1", "c2"}},
@@ -164,13 +164,12 @@ void TestFindInstances::threePatternsEachWithTwoWildcards()
   runTest(patterns, objects, expectedInstances);
 }
 
-void TestFindInstances::runTest(std::vector<QString> patterns,
-                                const std::vector<std::filesystem::path>& objects,
+void TestFindInstances::runTest(std::vector<QString> patterns, const std::vector<fs::path>& objects,
                                 std::optional<std::vector<Instance>> expectedInstances)
 {
   QTemporaryDir tempDir;
   QVERIFY(tempDir.isValid());
-  const std::filesystem::path tempDirPath = tempDir.path().toStdWString();
+  const fs::path tempDirPath = tempDir.path().toStdWString();
 
   for (QString& pattern : patterns)
     pattern = tempDir.path() + "/" + pattern;

@@ -731,6 +731,8 @@ void MainWindow::on_actionAboutCameleon_triggered()
     "GNU Lesser General Public License version 3, which supplements GNU General "
     "Public License Version 3.\n\n"
     "<li> glob for C++17. Copyright (C) 2019 Pranav.\n\n"
+    "<li> ghc::filesystem. Copyright (C) 2018 <a href=\"mailto:s.schuemann@pobox.com\">Steffen "
+    "Sch\u00FCmann</a>.\n\n"
     "<li> KDE Crystal theme icons. Copyright (C) 2002 and following years KDE Artists. "
     "This library is free software; you can redistribute it and/or "
     "modify it under the terms of the GNU Lesser General Public "

@@ -15,7 +15,7 @@ function(add_cameleon_test)
     if (NOT ${ARG_NO_WIDGETS})
         target_link_libraries(${ARG_NAME} PRIVATE Qt::Widgets)
     endif()
-    target_include_directories(${ARG_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(${ARG_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src ${CMAKE_CURRENT_SOURCE_DIR}/../3pty ${CMAKE_CURRENT_BINARY_DIR})
     set_target_properties(${ARG_NAME} PROPERTIES
         WIN32_EXECUTABLE ON
         MACOSX_BUNDLE ON

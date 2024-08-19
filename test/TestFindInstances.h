@@ -17,9 +17,10 @@
 
 #pragma once
 
+#include "ghc/fs_std_fwd.hpp"
+
 #include <QObject>
 
-#include <filesystem>
 #include <optional>
 
 struct Instance;
@@ -36,6 +37,6 @@ private slots:
   void threePatternsEachWithTwoWildcards();
 
 private:
-  void runTest(std::vector<QString> pattern, const std::vector<std::filesystem::path>& objects,
+  void runTest(std::vector<QString> pattern, const std::vector<fs::path>& objects,
                std::optional<std::vector<Instance>> expectedResult);
 };

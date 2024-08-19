@@ -17,7 +17,8 @@
 
 #include "PatternUtils.h"
 
-#include <filesystem>
+#include "ghc/fs_std_fwd.hpp"
+
 #include <regex>
 
 bool replaceFirstMatch(std::wstring& str, const std::wstring& from, const std::wstring& to)
@@ -45,9 +46,8 @@ std::size_t replaceAllMatches(std::wstring& str, const std::wstring& from, const
 
 std::wstring wildcardPatternToRegex(const std::wstring& pattern)
 {
-  static const std::wstring separator = std::filesystem::path::preferred_separator == '\\'
-                                          ? std::wstring{LR"(\\)"}
-                                          : std::wstring{L"/"};
+  static const std::wstring separator =
+    fs::path::preferred_separator == '\\' ? std::wstring{LR"(\\)"} : std::wstring{L"/"};
   static const std::wstring any_character_except_separator = L"[^" + separator + L"]";
 
   std::size_t i = 0, n = pattern.size();

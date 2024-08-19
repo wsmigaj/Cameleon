@@ -15,25 +15,5 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-
+#include "ghc/fs_std_impl.hpp"
 #include "ghc/fs_std_fwd.hpp"
-
-#include <QTest>
-
-struct PatternMatchingResult;
-
-class TestPatternMatching : public QObject
-{
-  Q_OBJECT
-private slots:
-  void emptyPattern();
-  void noWildcards();
-  void twoAsterisks();
-  void threeQuestionMarks();
-  void noMatches();
-
-private:
-  void runTest(QString pattern, const std::vector<fs::path>& objects,
-               PatternMatchingResult expectedResult);
-};

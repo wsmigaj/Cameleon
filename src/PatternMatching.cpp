@@ -58,7 +58,7 @@ PatternMatchingResult matchPattern(const QString& pattern,
   result.numMagicExpressions = patternAsRegex.mark_count();
   for (const glob::PathInfo& info : globResults)
   {
-    if (std::filesystem::is_directory(info.status))
+    if (fs::is_directory(info.status))
       continue;
 
     const std::wstring path = info.path.wstring();

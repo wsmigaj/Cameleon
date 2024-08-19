@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include <filesystem>
+#include "ghc/fs_std_fwd.hpp"
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -27,7 +28,7 @@ class QString;
 
 struct PatternMatch
 {
-  std::filesystem::path path;
+  fs::path path;
   std::vector<std::wstring> magicExpressionMatches;
 };
 
