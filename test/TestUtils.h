@@ -18,6 +18,8 @@
 #pragma once
 
 #include <QFile>
+#include <QFileDialog>
+#include <QLineEdit>
 #include <QTest>
 
 inline QByteArray readFile(const QString& filename)
@@ -31,4 +33,12 @@ template <typename T>
 bool waitForActiveModalWidgetOfType(int timeout = 5000)
 {
   return QTest::qWaitFor([] { return dynamic_cast<T*>(qApp->activeModalWidget()) != nullptr; });
+}
+
+inline void selectFile(QFileDialog* dlg, const QString& directory, const QString& fileName)
+{
+  dlg->setDirectory(directory);
+  QLineEdit* lineEdit = dlg->findChild<QLineEdit*>();
+  QVERIFY(lineEdit != nullptr);
+  lineEdit->setText(fileName);
 }

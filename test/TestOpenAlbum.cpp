@@ -72,7 +72,7 @@ void TestOpenAlbum::open_okOpen()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   action->trigger();
@@ -100,7 +100,7 @@ void TestOpenAlbum::open_open_cancelOpen()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   action->trigger();
@@ -138,7 +138,7 @@ void TestOpenAlbum::open_open_okOpen()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   action->trigger();
@@ -149,7 +149,7 @@ void TestOpenAlbum::open_open_okOpen()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/green-checkerboards.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "green-checkerboards.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   action->trigger();
@@ -179,7 +179,7 @@ void TestOpenAlbum::open_modify_open_cancelSave()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -224,11 +224,11 @@ void TestOpenAlbum::open_modify_open_okSave_cancelOpen()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, docPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(docPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -285,11 +285,11 @@ void TestOpenAlbum::open_modify_open_okSave_errorOnSave()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, docPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(docPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -311,7 +311,7 @@ void TestOpenAlbum::open_modify_open_okSave_errorOnSave()
                          {
                            QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
                            QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-                           QVERIFY(*asyncSuccess = (box->windowTitle() == "Warning"));
+                           QVERIFY(*asyncSuccess = box->text().contains("Could not open file"));
                            QTest::keyClick(box, Qt::Key_Enter);
                          });
                      });
@@ -344,11 +344,11 @@ void TestOpenAlbum::open_modify_open_okSave_okOpen()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, firstDocPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(firstDocPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -370,7 +370,7 @@ void TestOpenAlbum::open_modify_open_okSave_okOpen()
                          {
                            QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                            QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                           dlg->selectFile(TEST_DATA_DIR "/green-checkerboards.cml");
+                           selectFile(dlg, TEST_DATA_DIR, "green-checkerboards.cml");
                            QTest::keyClick(dlg, Qt::Key_Enter);
                          });
                      });
@@ -405,11 +405,11 @@ void TestOpenAlbum::open_modify_open_doNotSave_cancelOpen()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, docPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(docPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -463,11 +463,11 @@ void TestOpenAlbum::open_modify_open_doNotSave_okOpen()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, firstDocPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(firstDocPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -489,7 +489,7 @@ void TestOpenAlbum::open_modify_open_doNotSave_okOpen()
                          {
                            QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                            QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                           dlg->selectFile(TEST_DATA_DIR "/green-checkerboards.cml");
+                           selectFile(dlg, TEST_DATA_DIR, "green-checkerboards.cml");
                            QTest::keyClick(dlg, Qt::Key_Enter);
                          });
                      });

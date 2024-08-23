@@ -79,7 +79,7 @@ void TestNavigationMenu::navigationInAlbumWith0Pages()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/no-matches.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "no-matches.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
 
                        QTimer::singleShot(
@@ -127,7 +127,7 @@ void TestNavigationMenu::navigationInAlbumWith1Page()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/red-checkerboard.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "red-checkerboard.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -166,7 +166,7 @@ void TestNavigationMenu::navigationInAlbumWith2Pages()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/green-checkerboards.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "green-checkerboards.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -233,7 +233,7 @@ void TestNavigationMenu::navigationInAlbumWith5Pages()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -302,7 +302,7 @@ void TestNavigationMenu::stateAfterAlbumClosing()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();

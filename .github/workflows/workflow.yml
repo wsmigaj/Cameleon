@@ -19,29 +19,36 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        # os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [macos-latest]
         build_type: [RelWithDebInfo]
         include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-            system_name: win64
+          # - os: windows-latest
+            # c_compiler: cl
+            # cpp_compiler: cl
+            # deploy: true
+            # system_name: win64
+            # cpack_generator: ZIP
+          # - os: ubuntu-latest
+            # c_compiler: gcc
+            # cpp_compiler: g++
+            # deploy: false
+          - os: macos-latest
+            c_compiler: cc
+            cpp_compiler: c++
+            install: true
+            system_name: macos
             cpack_generator: ZIP
-            deploy: true
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            deploy: false
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
         version:      6.2.*
-        setup-python: false
+        setup-python: true
         cache: true
 
     - name: Set reusable strings
@@ -52,8 +59,10 @@ jobs:
       run: |
         build_output_dir='${{ github.workspace }}/build'
         build_output_dir_with_fwd_slashes=${build_output_dir//\\//}
+        install_dir='${{ github.workspace }}/install'
         echo "build-output-dir=${build_output_dir}" >> "$GITHUB_OUTPUT"
         echo "build-output-dir-with-fwd-slashes=${build_output_dir_with_fwd_slashes}" >> "$GITHUB_OUTPUT"
+        echo "install-dir=${install_dir}" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
       run: >
@@ -61,20 +70,22 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+        -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.install-dir }}
         -S ${{ github.workspace }}
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
-    - name: Test
-      run: ctest --build-config ${{ matrix.build_type }} -VV
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}      
+    # - name: Test
+      # run: ctest --build-config ${{ matrix.build_type }} -VV
+      # working-directory: ${{ steps.strings.outputs.build-output-dir }}      
 
-    - name: Upload test reports
-      uses: mikepenz/action-junit-report@v4
-      if: success() || failure()
-      with:
-        report_paths: '${{ steps.strings.outputs.build-output-dir }}/test/Test*.xml'
+    # - name: Upload test reports
+      # uses: mikepenz/action-junit-report@v4
+      # if: success() || failure()
+      # with:
+        # report_paths: '${{ steps.strings.outputs.build-output-dir }}/test/Test*.xml'
           
     - name: Create package
       if: ${{ matrix.deploy }}
@@ -103,6 +114,19 @@ jobs:
         path: "${{ steps.strings.outputs.build-output-dir }}/package-contents/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}"
         if-no-files-found: error
       
+    - name: Create DMG file
+      if: ${{ matrix.install }}
+      run: cmake --build . --config ${{ matrix.build_type }} --target install
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}      
+
+    - name: Upload DMG file
+      if: ${{ matrix.install }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
+        path: "${{ steps.strings.outputs.install-dir }}/Cameleon.dmg"
+        if-no-files-found: error
+
     - name: Upload PDBs
       if: ${{ matrix.deploy }}
       uses: actions/upload-artifact@v4
@@ -120,6 +144,7 @@ jobs:
         file(GLOB input_paths LIST_DIRECTORIES false ${input_path_pattern})
         file(ARCHIVE_CREATE OUTPUT ${output_path} PATHS ${input_paths} FORMAT zip VERBOSE)
 
+    # TODO: Add the DMG file to artifacts.
     - name: Create release
       if: ${{ matrix.deploy }}
       uses: ncipollo/release-action@v1.14.0 

@@ -25,6 +25,7 @@
 #include <QAbstractButton>
 #include <QAction>
 #include <QFileDialog>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QTest>
 #include <QTimer>
@@ -228,7 +229,7 @@ void TestNewAlbum::open_new_cancelNew()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -269,7 +270,7 @@ void TestNewAlbum::open_new_okNew()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -313,7 +314,7 @@ void TestNewAlbum::open_modify_new_cancelSave()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -360,11 +361,11 @@ void TestNewAlbum::open_modify_new_okSave_cancelNew()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, docPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(docPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -424,11 +425,11 @@ void TestNewAlbum::open_modify_new_okSave_errorOnSave()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, docPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(docPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -450,7 +451,7 @@ void TestNewAlbum::open_modify_new_okSave_errorOnSave()
                          {
                            QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
                            QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
-                           QVERIFY(*asyncSuccess = (box->windowTitle() == "Warning"));
+                           QVERIFY(*asyncSuccess = box->text().contains("Could not open file"));
                            QTest::keyClick(box, Qt::Key_Enter);
                          });
                      });
@@ -485,11 +486,11 @@ void TestNewAlbum::open_modify_new_okSave_okNew()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, firstDocPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(firstDocPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -549,11 +550,11 @@ void TestNewAlbum::open_modify_new_doNotSave_cancelNew()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, docPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(docPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -610,11 +611,11 @@ void TestNewAlbum::open_modify_new_doNotSave_okNew()
   std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
 
   QTimer::singleShot(0,
-                     [asyncSuccess, tempDir, firstDocPath]
+                     [asyncSuccess, tempDir]
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(firstDocPath);
+                       selectFile(dlg, tempDir->path(), "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();

@@ -36,9 +36,9 @@ public:
   explicit Document(
     const QString& path, const std::function<void()>& onFilesystemTraversalProgress = []() {});
   Document(const Document&) = delete;
-  Document(Document&&) = default;
+  Document(Document&&) = delete;
   Document& operator=(const Document&) = delete;
-  Document& operator=(Document&&) = default;
+  Document& operator=(Document&&) = delete;
   ~Document() override;
 
   const QString& path() const { return path_; }

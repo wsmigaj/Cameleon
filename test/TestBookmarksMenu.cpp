@@ -98,7 +98,7 @@ void TestBookmarksMenu::navigation()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -202,7 +202,7 @@ void TestBookmarksMenu::stateAfterAlbumClosing()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -242,7 +242,7 @@ void TestBookmarksMenu::bookmarkPage()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -282,7 +282,7 @@ void TestBookmarksMenu::removeAllBookmarks_cancelRemoval()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -331,7 +331,7 @@ void TestBookmarksMenu::removeAllBookmarks_okRemoval()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -388,7 +388,7 @@ void TestBookmarksMenu::exportAndImport()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(TEST_DATA_DIR "/colours.cml");
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
                        QTest::keyClick(dlg, Qt::Key_Enter);
                      });
   openAction->trigger();
@@ -407,7 +407,7 @@ void TestBookmarksMenu::exportAndImport()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(tempDir->filePath("bookmarks.txt"));
+                       selectFile(dlg, tempDir->path(), "bookmarks.txt");
                        QTest::keyClick(dlg, Qt::Key_Enter);
 
                        QTimer::singleShot(
@@ -436,7 +436,7 @@ void TestBookmarksMenu::exportAndImport()
                      {
                        QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
                        QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
-                       dlg->selectFile(tempDir->filePath("bookmarks.txt"));
+                       selectFile(dlg, tempDir->path(), "bookmarks.txt");
                        QTest::keyClick(dlg, Qt::Key_Enter);
 
                        QTimer::singleShot(

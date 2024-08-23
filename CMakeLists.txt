@@ -88,7 +88,19 @@ if (WIN32)
         COMMAND "$<TARGET_FILE:Qt6::windeployqt>"
             bin/Cameleon.exe
             --no-translations
-            COMMAND_ERROR_IS_FATAL LAST
+        COMMAND_ERROR_IS_FATAL LAST
+    )
+    ]])
+    install(SCRIPT "${deployScript}")
+elseif (APPLE)
+    set(deployScript ${CMAKE_CURRENT_BINARY_DIR}/deployscript-$<CONFIG>.cmake)
+    file(GENERATE OUTPUT "${deployScript}" CONTENT [[
+    execute_process(
+        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
+        COMMAND "$<TARGET_FILE_DIR:Qt6::qhelpgenerator>/macdeployqt"
+            Cameleon.app
+            -dmg -always-overwrite
+        COMMAND_ERROR_IS_FATAL LAST
     )
     ]])
     install(SCRIPT "${deployScript}")
