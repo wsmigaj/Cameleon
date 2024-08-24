@@ -6,39 +6,34 @@ on:
     - "v*"
 
 jobs:
-  build:
+  build-test-and-pack:
     runs-on: ${{ matrix.os }}
+    
     permissions:
-      # Allow the workflow to create a release.
-      contents: write
-      # Allow the workflow to upload test results.
+      # Give the job read-only access to the repository.
+      contents: read
+      # Allow the job to upload test results.
       checks: write
 
     strategy:
-      # fail-fast set to false to ensure that feedback is delivered for all matrix combinations.
       fail-fast: false
 
       matrix:
-        # os: [windows-latest, ubuntu-latest, macos-latest]
-        os: [macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
         build_type: [RelWithDebInfo]
         include:
-          # - os: windows-latest
-            # c_compiler: cl
-            # cpp_compiler: cl
-            # deploy: true
-            # system_name: win64
-            # cpack_generator: ZIP
-          # - os: ubuntu-latest
-            # c_compiler: gcc
-            # cpp_compiler: g++
-            # deploy: false
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+            system_name: win64
+            cpack_generator: ZIP
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
           - os: macos-latest
             c_compiler: cc
             cpp_compiler: c++
-            install: true
             system_name: macos
-            cpack_generator: ZIP
 
     steps:
     - name: Checkout code
@@ -52,8 +47,6 @@ jobs:
         cache: true
 
     - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. 
-      # These step outputs can be used throughout the workflow file.
       id: strings
       shell: bash
       run: |
@@ -77,18 +70,19 @@ jobs:
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
-    # - name: Test
-      # run: ctest --build-config ${{ matrix.build_type }} -VV
-      # working-directory: ${{ steps.strings.outputs.build-output-dir }}      
+    - name: Test
+      run: ctest --build-config ${{ matrix.build_type }} -VV
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}      
 
-    # - name: Upload test reports
-      # uses: mikepenz/action-junit-report@v4
-      # if: success() || failure()
-      # with:
-        # report_paths: '${{ steps.strings.outputs.build-output-dir }}/test/Test*.xml'
+    - name: Upload test reports
+      uses: mikepenz/action-junit-report@v4
+      if: success() || failure()
+      with:
+        report_paths: '${{ steps.strings.outputs.build-output-dir }}/test/Test*.xml'
+        check_name: 'CMake test report (${{ matrix.os }})'
           
-    - name: Create package
-      if: ${{ matrix.deploy }}
+    - name: (Windows) Create package
+      if: ${{ matrix.os == 'windows-latest' }}
       run: >
         cpack 
         -G ${{ matrix.cpack_generator }}        
@@ -97,57 +91,66 @@ jobs:
         -B "${{ steps.strings.outputs.build-output-dir }}"         
         -D CPACK_PACKAGE_FILE_NAME=Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
 
-    - name: Uncompress package
-      if: ${{ matrix.deploy }}
+    - name: (Windows) Uncompress package
+      if: ${{ matrix.os == 'windows-latest' }}
       shell: cmake -P {0}
       run: | 
-        set(input_path "${{ steps.strings.outputs.build-output-dir }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
-        set(destination_path "${{ steps.strings.outputs.build-output-dir }}/package-contents/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}")
+        set(input_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
+        set(destination_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/package-contents/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}")
         file(GLOB input_paths LIST_DIRECTORIES false ${input_path_pattern})
         file(ARCHIVE_EXTRACT INPUT "${input_path}" DESTINATION "${destination_path}" VERBOSE)
       
-    - name: Upload package
-      if: ${{ matrix.deploy }}
+    - name: (Windows) Upload package
+      if: ${{ matrix.os == 'windows-latest' }}
       uses: actions/upload-artifact@v4
       with:
         name: Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
         path: "${{ steps.strings.outputs.build-output-dir }}/package-contents/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}"
         if-no-files-found: error
-      
-    - name: Create DMG file
-      if: ${{ matrix.install }}
-      run: cmake --build . --config ${{ matrix.build_type }} --target install
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}      
 
-    - name: Upload DMG file
-      if: ${{ matrix.install }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}
-        path: "${{ steps.strings.outputs.install-dir }}/Cameleon.dmg"
-        if-no-files-found: error
-
-    - name: Upload PDBs
-      if: ${{ matrix.deploy }}
+    - name: (Windows) Upload PDB file
+      if: ${{ matrix.os == 'windows-latest' }}
       uses: actions/upload-artifact@v4
       with:
         name: Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}
-        path: "${{ steps.strings.outputs.build-output-dir }}/${{ matrix.build_type }}/*.pdb"
+        path: "${{ steps.strings.outputs.build-output-dir }}/${{ matrix.build_type }}/Cameleon.pdb"
         if-no-files-found: error
       
-    - name: Zip PDBs
-      if: ${{ matrix.deploy }}
-      shell: cmake -P {0}
-      run: | 
-        set(output_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
-        set(input_path_pattern "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/${{ matrix.build_type }}/*.pdb")
-        file(GLOB input_paths LIST_DIRECTORIES false ${input_path_pattern})
-        file(ARCHIVE_CREATE OUTPUT ${output_path} PATHS ${input_paths} FORMAT zip VERBOSE)
+    - name: (macOS) Create DMG file
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: cmake --build . --config ${{ matrix.build_type }} --target install
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}      
 
-    # TODO: Add the DMG file to artifacts.
+    - name: (macOS) Upload DMG file
+      if: ${{ matrix.os == 'macos-latest' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.dmg
+        path: "${{ steps.strings.outputs.install-dir }}/Cameleon.dmg"
+        if-no-files-found: error
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-test-and-pack
+    
+    permissions:
+      # Allow the job to create a release.
+      contents: write
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Create release artifacts
+      run: |
+        zip Cameleon-${{ github.ref_name }}-win64.zip -r Cameleon-${{ github.ref_name }}-win64
+        zip -j Cameleon-pdbs-${{ github.ref_name }}-win64.zip Cameleon-pdbs-${{ github.ref_name }}-win64/Cameleon.pdb
+        mv Cameleon-${{ github.ref_name }}-macos.dmg Cameleon-${{ github.ref_name }}-macos
+        mv Cameleon-${{ github.ref_name }}-macos/Cameleon.dmg Cameleon-${{ github.ref_name }}-macos/Cameleon-${{ github.ref_name }}-macos.dmg
+        ls -R
+
     - name: Create release
-      if: ${{ matrix.deploy }}
       uses: ncipollo/release-action@v1.14.0 
       with:
-        artifacts: "${{ steps.strings.outputs.build-output-dir }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip,${{ steps.strings.outputs.build-output-dir }}/Cameleon-pdbs-${{ github.ref_name }}-${{ matrix.system_name }}.zip"
+        artifacts: "Cameleon-${{ github.ref_name }}-win64.zip,Cameleon-pdbs-${{ github.ref_name }}-win64.zip,Cameleon-${{ github.ref_name }}-macos/Cameleon-${{ github.ref_name }}-macos.dmg"
         draft: true
