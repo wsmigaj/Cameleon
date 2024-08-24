@@ -461,7 +461,7 @@ void MainWindow::on_actionSaveScreenshot_triggered()
   if (!image.save(path))
   {
     QMessageBox::warning(this, "Save Screenshot",
-                         QString("The screenshot could not be saved to %s.").arg(path));
+                         QString("Screenshot could not be saved to %s.").arg(path));
   }
 }
 
@@ -472,7 +472,7 @@ void MainWindow::on_actionSaveAllScreenshots_triggered()
   QString dir = lastDir;
 
   dir = QFileDialog::getExistingDirectory(
-    this, "Save All Screenshots", dir,
+    this, "Save Screenshots of All Pages", dir,
     QFileDialog::ShowDirsOnly |
       (dontUseNativeDialogs_ ? QFileDialog::DontUseNativeDialog : QFileDialog::Options()));
   if (dir.isEmpty())
@@ -480,27 +480,35 @@ void MainWindow::on_actionSaveAllScreenshots_triggered()
 
   settings.setValue("lastSaveScreenshotDir", dir);
 
+  QProgressDialog progressDialog(this);
+  progressDialog.setWindowModality(Qt::WindowModal);
+  progressDialog.setLabelText("Saving screenshots...");
+  progressDialog.setMaximum(doc_->instances().size());
+  progressDialog.setMinimumDuration(0); // ensures the main window is blocked from the very start
+
   on_actionFirstInstance_triggered();
   qApp->processEvents();
-  while (true)
+  while (!progressDialog.wasCanceled())
   {
-    QString path = dir + "\\" + instanceKeyToFileName(doc_->instanceKey(instance_)) + ".png";
+    QString path = dir + "/" + instanceKeyToFileName(doc_->instanceKey(instance_)) + ".png";
 
     QPixmap pixmap = grab(toolBarAreaRect());
     QImage image = pixmap.toImage();
     if (!image.save(path))
     {
       QMessageBox::warning(this, "Save Screenshot",
-                           QString("The screenshot could not be saved to %s.").arg(path));
+                           QString("Screenshot could not be saved to %s.").arg(path));
       return;
     }
+    progressDialog.setValue(instance_ + 1);
 
     if (instance_ + 1 == doc_->instances().size())
-      return;
+      break;
 
     on_actionNextInstance_triggered();
     qApp->processEvents();
   }
+  progressDialog.setValue(instance_ + 1);
 }
 
 void MainWindow::on_actionEditCaptions_triggered()
@@ -872,6 +880,7 @@ void MainWindow::updateDocumentDependentActions()
   ui_->actionZoom1to1->setEnabled(hasInstances);
   ui_->actionEditCaptions->setEnabled(hasPatterns);
   ui_->actionSaveScreenshot->setEnabled(hasInstances);
+  ui_->actionSaveAllScreenshots->setEnabled(hasInstances);
 
   layoutMenu_->setEnabled(hasInstances);
 
