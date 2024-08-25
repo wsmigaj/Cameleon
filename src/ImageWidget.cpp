@@ -151,8 +151,10 @@ void ImageWidget::contextMenuEvent(QContextMenuEvent* event)
     menu.addAction(copyFullPathAction_);
     menu.addAction(copyFileNameAction_);
     menu.addAction(copyInstanceKeyAction_);
+#ifdef Q_OS_WIN
     menu.addSeparator();
     menu.addAction(openInExplorerAction_);
+#endif
     menu.exec(event->globalPos());
   }
 }
