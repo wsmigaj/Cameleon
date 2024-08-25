@@ -120,6 +120,12 @@ void AlbumEditorDialog::saveRecentValues()
     QComboBox* comboBox = comboBoxes[i];
     if (QString currentValue = comboBox->currentText(); !currentValue.isEmpty())
     {
+      if (normalisePathSeparators_)
+      {
+        currentValue.replace('/', QDir::separator());
+        currentValue.replace('\\', QDir::separator());
+      }
+
       const QString key = QString("%1/%2").arg(recentValuesSettingsKey_).arg(i);
       QStringList values = settings.value(key, QStringList()).toStringList();
       values.resize(std::min<qsizetype>(values.size(), MAX_NUM_RECENT_VALUES));

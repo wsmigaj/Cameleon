@@ -399,6 +399,13 @@ void MainWindow::on_actionRefreshAlbum_triggered()
     goToInstance(newInstance);
 }
 
+void MainWindow::on_actionUseRelativePathsInSavedAlbum_triggered(bool checked)
+{
+  if (!doc_ || doc_->instances().empty())
+    return;
+  doc_->setUseRelativePaths(checked);
+}
+
 void MainWindow::on_actionSaveAlbum_triggered()
 {
   saveDocument();
@@ -881,7 +888,8 @@ void MainWindow::updateDocumentDependentActions()
   ui_->actionEditCaptions->setEnabled(hasPatterns);
   ui_->actionSaveScreenshot->setEnabled(hasInstances);
   ui_->actionSaveAllScreenshots->setEnabled(hasInstances);
-
+  ui_->menuOptions->setEnabled(hasInstances);
+  ui_->actionUseRelativePathsInSavedAlbum->setChecked(isOpen && doc_->useRelativePaths());
   layoutMenu_->setEnabled(hasInstances);
 
   updateDocumentModificationStatusDependentActions();

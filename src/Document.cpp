@@ -152,6 +152,16 @@ std::vector<QString> Document::captions(size_t instanceIndex) const
   return result;
 }
 
+void Document::setUseRelativePaths(bool useRelativePaths)
+{
+  if (useRelativePaths != useRelativePaths_)
+  {
+    useRelativePaths_ = useRelativePaths;
+    modified_ = true;
+    modificationStatusChanged();
+  }
+}
+
 std::set<std::vector<QString>> Document::bookmarkKeys() const
 {
   std::set<std::vector<QString>> keys;
@@ -236,7 +246,7 @@ void Document::regenerateInstances(const std::function<void()>& onFilesystemTrav
   patternMatchingResults_ = std::move(patternMatchingResults);
 }
 
-QJsonObject Document::toJson() const
+QJsonObject Document::toJson(const QString& path) const
 {
   QJsonObject json;
 
@@ -248,8 +258,11 @@ QJsonObject Document::toJson() const
     json["layout"] = jsonLayout;
   }
 
-  json["patterns"] = stringVectorToJsonStringArray(patterns_);
+  const std::vector<QString> patterns =
+    useRelativePaths_ ? relativePatterns(patterns_, path) : patterns_;
+  json["patterns"] = stringVectorToJsonStringArray(patterns);
   json["captionTemplates"] = stringVectorToJsonStringArray(captionTemplates_);
+  json["useRelativePaths"] = useRelativePaths_;
 
   {
     QJsonArray jsonBookmarks;
@@ -264,6 +277,10 @@ QJsonObject Document::toJson() const
 void Document::initialiseFromJson(const QJsonObject& json,
                                   const std::function<void()>& onFilesystemTraversalProgress)
 {
+  if (json.contains("useRelativePaths"))
+  {
+    setUseRelativePaths(json["useRelativePaths"].toBool());
+  }
   {
     QJsonArray jsonPatterns = json["patterns"].toArray();
     std::vector<QString> patterns;
@@ -271,6 +288,8 @@ void Document::initialiseFromJson(const QJsonObject& json,
                    [](const QJsonValue& jsonPattern) { return jsonPattern.toString(); });
     if (patterns.size() > MAX_NUM_PATTERNS)
       patterns.resize(MAX_NUM_PATTERNS);
+    if (useRelativePaths_)
+      patterns = absolutePatterns(patterns, path_);
     setPatterns(std::move(patterns), onFilesystemTraversalProgress);
   }
   {
@@ -308,6 +327,35 @@ void Document::initialiseFromJson(const QJsonObject& json,
   }
 }
 
+std::vector<QString> Document::relativePatterns(const std::vector<QString>& absolutePatterns,
+                                                const QString& docPath)
+{
+  QFileInfo docFileInfo(docPath);
+  QDir docDir = docFileInfo.dir();
+
+  std::vector<QString> result;
+  std::transform(absolutePatterns.begin(), absolutePatterns.end(), std::back_inserter(result),
+                 [&](const QString& absolutePattern)
+                 // Use the '/' separator for portability across OSs.
+                 { return QDir::fromNativeSeparators(docDir.relativeFilePath(absolutePattern)); });
+  return result;
+}
+
+std::vector<QString> Document::absolutePatterns(const std::vector<QString>& relativePatterns,
+                                                const QString& docPath)
+{
+  QFileInfo docFileInfo(docPath);
+  QDir docDir = docFileInfo.dir();
+
+  std::vector<QString> result;
+  std::transform(relativePatterns.begin(), relativePatterns.end(), std::back_inserter(result),
+                 [&](const QString& relativePattern) {
+                   return QDir::toNativeSeparators(
+                     QDir::cleanPath(docDir.absoluteFilePath(relativePattern)));
+                 });
+  return result;
+}
+
 void Document::save(const QString& path)
 {
   QFile file(path);
@@ -317,7 +365,7 @@ void Document::save(const QString& path)
     throw RuntimeError("Could not open file " + path + " for writing.");
   }
 
-  if (file.write(QJsonDocument(toJson()).toJson()) < 0)
+  if (file.write(QJsonDocument(toJson(path)).toJson()) < 0)
   {
     throw RuntimeError("An error occurred while saving the document: " + file.errorString() + ".");
   }

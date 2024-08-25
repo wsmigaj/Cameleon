@@ -63,6 +63,9 @@ public:
   void toggleBookmark(size_t instanceIndex);
   void removeAllBookmarks();
 
+  bool useRelativePaths() const { return useRelativePaths_; }
+  void setUseRelativePaths(bool useRelativePaths);
+
   QString instanceKey(size_t instanceIndex) const;
 
   bool modified() const { return modified_; }
@@ -71,13 +74,18 @@ public:
 
   const std::vector<Instance>& instances() const { return instances_; }
 
-  QJsonObject toJson() const;
+  QJsonObject toJson(const QString& path) const;
 
   void save(const QString& path);
 
 private:
   void initialiseFromJson(
     const QJsonObject& json, const std::function<void()>& onFilesystemTraversalProgress = []() {});
+
+  static std::vector<QString> relativePatterns(const std::vector<QString>& absolutePatterns,
+                                               const QString& docPath);
+  static std::vector<QString> absolutePatterns(const std::vector<QString>& relativePatterns,
+                                               const QString& docPath);
 
 signals:
   void modificationStatusChanged();
@@ -87,6 +95,7 @@ private:
   Layout layout_ = Layout{0, 0};
   std::vector<QString> patterns_;
   std::vector<QString> captionTemplates_;
+  bool useRelativePaths_ = false;
 
   bool modified_ = false;
   std::vector<std::shared_ptr<PatternMatchingResult>> patternMatchingResults_;

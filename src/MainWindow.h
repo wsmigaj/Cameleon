@@ -61,6 +61,7 @@ private slots:
   void on_actionOpenAlbum_triggered();
   void on_actionEditAlbum_triggered();
   void on_actionRefreshAlbum_triggered();
+  void on_actionUseRelativePathsInSavedAlbum_triggered(bool checked);
   void on_actionSaveAlbum_triggered();
   void on_actionSaveAlbumAs_triggered();
   void on_actionCloseAlbum_triggered();

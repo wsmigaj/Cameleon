@@ -39,6 +39,12 @@
     <property name="title">
      <string>&amp;Album</string>
     </property>
+    <widget class="QMenu" name="menuOptions">
+     <property name="title">
+      <string>O&amp;ptions</string>
+     </property>
+     <addaction name="actionUseRelativePathsInSavedAlbum"/>
+    </widget>
     <addaction name="actionNewAlbum"/>
     <addaction name="actionOpenAlbum"/>
     <addaction name="actionSaveAlbum"/>
@@ -46,6 +52,7 @@
     <addaction name="separator"/>
     <addaction name="actionEditAlbum"/>
     <addaction name="actionRefreshAlbum"/>
+    <addaction name="menuOptions"/>
     <addaction name="separator"/>
     <addaction name="actionCloseAlbum"/>
     <addaction name="separator"/>
@@ -321,6 +328,14 @@
   <action name="actionRemoveAllBookmarks">
    <property name="text">
     <string>&amp;Remove All Bookmarks</string>
+   </property>
+  </action>
+  <action name="actionUseRelativePathsInSavedAlbum">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use &amp;Relative Paths in Saved Album</string>
    </property>
   </action>
  </widget>
