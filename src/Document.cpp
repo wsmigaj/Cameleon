@@ -267,7 +267,12 @@ QJsonObject Document::toJson(const QString& path) const
   {
     QJsonArray jsonBookmarks;
     for (size_t i : bookmarks_)
-      jsonBookmarks.push_back(stringVectorToJsonStringArray(instances_[i].magicExpressionMatches));
+    {
+      std::vector<QString> key = instances_[i].magicExpressionMatches;
+      // Use the '/' separator for portability across OSs.
+      std::transform(key.begin(), key.end(), key.begin(), QDir::fromNativeSeparators);
+      jsonBookmarks.push_back(stringVectorToJsonStringArray(key));
+    }
     json["bookmarks"] = jsonBookmarks;
   }
 
@@ -319,10 +324,14 @@ void Document::initialiseFromJson(const QJsonObject& json,
   {
     QJsonArray jsonBookmarks = json["bookmarks"].toArray();
     std::set<std::vector<QString>> bookmarkKeys;
-    std::transform(jsonBookmarks.begin(), jsonBookmarks.end(),
-                   std::inserter(bookmarkKeys, bookmarkKeys.end()),
-                   [](const QJsonValue& jsonBookmark)
-                   { return jsonStringArrayToStringVector(jsonBookmark.toArray()); });
+    std::transform(
+      jsonBookmarks.begin(), jsonBookmarks.end(), std::inserter(bookmarkKeys, bookmarkKeys.end()),
+      [](const QJsonValue& jsonBookmark)
+      {
+        std::vector<QString> key = jsonStringArrayToStringVector(jsonBookmark.toArray());
+        std::transform(key.begin(), key.end(), key.begin(), QDir::toNativeSeparators);
+        return key;
+      });
     bookmarks_ = findInstanceIndices(instances_, bookmarkKeys);
   }
 }
