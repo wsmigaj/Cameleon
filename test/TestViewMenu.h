@@ -30,4 +30,6 @@ private slots:
   void editCaptions_okEdit();
   void saveScreenshot_cancelSave();
   void saveScreenshot_okSave();
+  void saveAllScreenshots_cancelSave();
+  void saveAllScreenshots_okSave();
 };

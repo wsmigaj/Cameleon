@@ -70,12 +70,15 @@ void TestViewMenu::stateBeforeAlbumOpening()
   QVERIFY(editCaptionsAction != nullptr);
   QAction* saveScreenshotAction = w.findChild<QAction*>("actionSaveScreenshot");
   QVERIFY(saveScreenshotAction != nullptr);
+  QAction* saveAllScreenshotsAction = w.findChild<QAction*>("actionSaveAllScreenshots");
+  QVERIFY(saveAllScreenshotsAction != nullptr);
 
   QVERIFY(!zoomInAction->isEnabled());
   QVERIFY(!zoomOutAction->isEnabled());
   QVERIFY(!zoom1to1Action->isEnabled());
   QVERIFY(!editCaptionsAction->isEnabled());
   QVERIFY(!saveScreenshotAction->isEnabled());
+  QVERIFY(!saveAllScreenshotsAction->isEnabled());
 }
 
 void TestViewMenu::stateAfterAlbumClosing()
@@ -95,6 +98,8 @@ void TestViewMenu::stateAfterAlbumClosing()
   QVERIFY(editCaptionsAction != nullptr);
   QAction* saveScreenshotAction = w.findChild<QAction*>("actionSaveScreenshot");
   QVERIFY(saveScreenshotAction != nullptr);
+  QAction* saveAllScreenshotsAction = w.findChild<QAction*>("actionSaveAllScreenshots");
+  QVERIFY(saveAllScreenshotsAction != nullptr);
 
   QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
   QVERIFY(openAction != nullptr);
@@ -121,6 +126,7 @@ void TestViewMenu::stateAfterAlbumClosing()
   QVERIFY(!zoom1to1Action->isEnabled());
   QVERIFY(!editCaptionsAction->isEnabled());
   QVERIFY(!saveScreenshotAction->isEnabled());
+  QVERIFY(!saveAllScreenshotsAction->isEnabled());
 }
 
 void TestViewMenu::zoom()
@@ -424,4 +430,99 @@ void TestViewMenu::saveScreenshot_okSave()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(QFileInfo::exists(tempDir->filePath("screenshot.png")));
+}
+
+void TestViewMenu::saveAllScreenshots_cancelSave()
+{
+  auto tempDir = std::make_shared<QTemporaryDir>();
+  QVERIFY(tempDir->isValid());
+  QDir tempQDir(tempDir->path());
+  QVERIFY(tempQDir.mkdir("subdir"));
+
+  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+
+  w.show();
+  QVERIFY(QTest::qWaitForWindowActive(&w));
+
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
+  QVERIFY(openAction != nullptr);
+
+  QAction* saveAllScreenshotsAction = w.findChild<QAction*>("actionSaveAllScreenshots");
+  QVERIFY(saveAllScreenshotsAction != nullptr);
+
+  std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
+
+  QTimer::singleShot(0,
+                     [asyncSuccess]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
+                       QTest::keyClick(dlg, Qt::Key_Enter);
+                     });
+  openAction->trigger();
+  QVERIFY(*asyncSuccess);
+  QVERIFY(saveAllScreenshotsAction->isEnabled());
+
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       selectFile(dlg, tempDir->path(), "subdir");
+                       QTest::keyClick(dlg, Qt::Key_Escape);
+                     });
+  saveAllScreenshotsAction->trigger();
+  QVERIFY(*asyncSuccess);
+
+  QVERIFY(!QFileInfo::exists(tempDir->filePath("subDir/black.png")));
+}
+
+void TestViewMenu::saveAllScreenshots_okSave()
+{
+  auto tempDir = std::make_shared<QTemporaryDir>();
+  QVERIFY(tempDir->isValid());
+  QDir tempQDir(tempDir->path());
+  QVERIFY(tempQDir.mkdir("subdir"));
+
+  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+
+  w.show();
+  QVERIFY(QTest::qWaitForWindowActive(&w));
+
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
+  QVERIFY(openAction != nullptr);
+
+  QAction* saveAllScreenshotsAction = w.findChild<QAction*>("actionSaveAllScreenshots");
+  QVERIFY(saveAllScreenshotsAction != nullptr);
+
+  std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
+
+  QTimer::singleShot(0,
+                     [asyncSuccess]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       selectFile(dlg, TEST_DATA_DIR, "colours.cml");
+                       QTest::keyClick(dlg, Qt::Key_Enter);
+                     });
+  openAction->trigger();
+  QVERIFY(*asyncSuccess);
+
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       selectFile(dlg, tempDir->path(), "subdir");
+                       QTest::keyClick(dlg, Qt::Key_Enter);
+                     });
+  saveAllScreenshotsAction->trigger();
+  QVERIFY(*asyncSuccess);
+
+  QVERIFY(QFileInfo::exists(tempDir->filePath("subdir/black.png")));
+  QVERIFY(QFileInfo::exists(tempDir->filePath("subdir/blue.png")));
+  QVERIFY(QFileInfo::exists(tempDir->filePath("subdir/green.png")));
+  QVERIFY(QFileInfo::exists(tempDir->filePath("subdir/magenta.png")));
+  QVERIFY(QFileInfo::exists(tempDir->filePath("subdir/red.png")));
 }
