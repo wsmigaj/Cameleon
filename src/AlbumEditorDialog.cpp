@@ -362,7 +362,13 @@ void AlbumEditorDialog::onSwapValuesButtonClicked()
 
 void setComboBoxPromptsToPatternExamples(AlbumEditorDialog& dialog)
 {
-  dialog.setComboBoxPrompts({"Example: C:\\TestSet\\input*.png",
-                             "Example: C:\\TestSet\\ground-truth*.png",
-                             "Example: C:\\TestSet\\prediction*.png"});
+  QString prefix = "Example: ";
+#if defined(Q_OS_WIN)
+  prefix += "C:\\TestSet\\";
+#else
+  prefix += "/data/TestSet/";
+#endif
+
+  dialog.setComboBoxPrompts(
+    {prefix + "input*.png", prefix + "ground-truth*.png", prefix + "prediction*.png"});
 }
