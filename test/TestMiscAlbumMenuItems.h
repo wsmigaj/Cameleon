@@ -28,6 +28,7 @@ private slots:
   void save();
   void saveAs_cancelSave();
   void saveAs_okSave();
+  void useRelativePaths();
   void edit_cancelEdit();
   void edit_okEdit();
   void editWithInconsistentNumberOfWildcardsPerPattern();

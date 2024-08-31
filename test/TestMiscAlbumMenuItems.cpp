@@ -18,6 +18,7 @@
 #include "TestMiscAlbumMenuItems.h"
 #include "AlbumEditorDialog.h"
 #include "Document.h"
+#include "Instance.h"
 #include "MainWindow.h"
 #include "TestDataDir.h"
 #include "TestUtils.h"
@@ -260,6 +261,91 @@ void TestMiscAlbumMenuItems::saveAs_okSave()
   QVERIFY(!w.document()->modified());
   const QByteArray currentDocContents = readFile(docPath2);
   QVERIFY(currentDocContents != originalDocContents);
+}
+
+void TestMiscAlbumMenuItems::useRelativePaths()
+{
+  auto tempDir = std::make_shared<QTemporaryDir>();
+  QVERIFY(tempDir->isValid());
+  QDir tempQDir(tempDir->path());
+
+  QVERIFY(tempQDir.mkpath("1/blue"));
+  QVERIFY(QFile::copy(TEST_DATA_DIR "/blue/checkerboard.png",
+                      tempDir->filePath("1/blue/checkerboard.png")));
+  QVERIFY(QFile::copy(TEST_DATA_DIR "/blue/inverted_checkerboard.png",
+                      tempDir->filePath("1/blue/inverted_checkerboard.png")));
+
+  QVERIFY(tempQDir.mkpath("2/blue"));
+  QVERIFY(QFile::copy(TEST_DATA_DIR "/blue/checkerboard.png",
+                      tempDir->filePath("2/blue/checkerboard.png")));
+  QVERIFY(QFile::copy(TEST_DATA_DIR "/blue/inverted_checkerboard.png",
+                      tempDir->filePath("2/blue/inverted_checkerboard.png")));
+
+  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+
+  w.show();
+  QVERIFY(QTest::qWaitForWindowActive(&w));
+
+  QAction* newAction = w.findChild<QAction*>("actionNewAlbum");
+  QVERIFY(newAction != nullptr);
+  QAction* openAction = w.findChild<QAction*>("actionOpenAlbum");
+  QVERIFY(openAction != nullptr);
+  QAction* closeAction = w.findChild<QAction*>("actionCloseAlbum");
+  QVERIFY(closeAction != nullptr);
+  QAction* saveAction = w.findChild<QAction*>("actionSaveAlbum");
+  QVERIFY(saveAction != nullptr);
+  QAction* useRelativePathsAction = w.findChild<QAction*>("actionUseRelativePathsInSavedAlbum");
+  QVERIFY(useRelativePathsAction != nullptr);
+
+  std::shared_ptr<bool> asyncSuccess = std::make_shared<bool>(false);
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<AlbumEditorDialog>());
+                       AlbumEditorDialog* dlg =
+                         dynamic_cast<AlbumEditorDialog*>(qApp->activeModalWidget());
+                       dlg->setValues({tempDir->filePath("1/blue/*.png")});
+                       QTest::keyClick(dlg, Qt::Key_Enter);
+                     });
+  newAction->trigger();
+  QVERIFY(*asyncSuccess);
+
+  useRelativePathsAction->trigger();
+
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       selectFile(dlg, tempDir->filePath("1"), "checkerboards.cml");
+                       QTest::keyClick(dlg, Qt::Key_Enter);
+                     });
+  saveAction->trigger();
+
+  closeAction->trigger();
+  QVERIFY(w.document() == nullptr);
+
+  QVERIFY(QFile::rename(tempDir->filePath("1/checkerboards.cml"),
+                        tempDir->filePath("2/checkerboards.cml")));
+
+  QTimer::singleShot(0,
+                     [asyncSuccess, tempDir]
+                     {
+                       QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QFileDialog>());
+                       QFileDialog* dlg = dynamic_cast<QFileDialog*>(qApp->activeModalWidget());
+                       selectFile(dlg, tempDir->filePath("2"), "checkerboards.cml");
+                       QTest::keyClick(dlg, Qt::Key_Enter);
+                     });
+  openAction->trigger();
+  QVERIFY(*asyncSuccess);
+  QVERIFY(w.document() != nullptr);
+  QVERIFY(w.document()->instances().size() == 2);
+  QVERIFY(w.document()->instances()[0].paths.size() == 1);
+  QVERIFY(w.document()->instances()[0].paths[0] ==
+          QDir::toNativeSeparators(tempDir->filePath("2/blue/checkerboard.png")));
+  QVERIFY(w.document()->instances()[1].paths.size() == 1);
+  QVERIFY(w.document()->instances()[1].paths[0] ==
+          QDir::toNativeSeparators(tempDir->filePath("2/blue/inverted_checkerboard.png")));
 }
 
 void TestMiscAlbumMenuItems::edit_cancelEdit()
