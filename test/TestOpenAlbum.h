@@ -27,10 +27,9 @@ private slots:
   void open_okOpen();
   void open_open_cancelOpen();
   void open_open_okOpen();
-  void open_modify_open_cancelSave();
-  void open_modify_open_okSave_cancelOpen();
-  void open_modify_open_okSave_errorOnSave();
-  void open_modify_open_okSave_okOpen();
-  void open_modify_open_doNotSave_cancelOpen();
-  void open_modify_open_doNotSave_okOpen();
+  void open_modify_open_cancelOpen();
+  void open_modify_open_okOpen_cancelSave();
+  void open_modify_open_okOpen_okSave_errorOnSave();
+  void open_modify_open_okOpen_okSave();
+  void open_modify_open_okOpen_doNotSave();
 };

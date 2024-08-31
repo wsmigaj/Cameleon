@@ -264,11 +264,6 @@ void MainWindow::on_actionNewAlbum_triggered()
 
 void MainWindow::on_actionOpenAlbum_triggered()
 {
-  if (!maybeSaveDocument())
-  {
-    return;
-  }
-
   QSettings settings;
   QString lastDir = settings.value("lastOpenDir", QString()).toString();
   QString path = QFileDialog::getOpenFileName(
@@ -284,6 +279,9 @@ void MainWindow::on_actionOpenAlbum_triggered()
 
 void MainWindow::openDocument(const QString& path)
 {
+  if (!maybeSaveDocument())
+    return;
+
   QSettings settings;
   settings.setValue("lastOpenDir", QFileInfo(path).dir().path());
 
@@ -305,9 +303,6 @@ void MainWindow::openDocument(const QString& path)
 
 void MainWindow::onRecentDocumentActionTriggered()
 {
-  if (!maybeSaveDocument())
-    return;
-
   const QAction* action = dynamic_cast<QAction*>(sender());
   if (!action)
     return;
@@ -315,20 +310,7 @@ void MainWindow::onRecentDocumentActionTriggered()
   // mid() removes the numerical prefix "&1 ", "&2 " etc.
   const QString path = action->text().mid(3);
 
-  PatternMatchingProgressDialog progressDialog(this);
-  progressDialog.show();
-
-  auto onFilesystemTraversalProgress = [&progressDialog]()
-  { progressDialog.incrementProgressAndCheckForCancellation(); };
-
-  if (!Try([&] { doc_ = std::make_unique<Document>(path, onFilesystemTraversalProgress); }))
-    return;
-
-  connectDocumentSignals();
-  onDocumentPathChanged();
-  onInstancesChanged();
-  if (!doc_->instances().empty())
-    goToInstance(0);
+  openDocument(path);
 }
 
 void MainWindow::on_actionEditAlbum_triggered()
