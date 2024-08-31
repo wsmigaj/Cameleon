@@ -55,6 +55,8 @@ public slots:
 
 protected:
   void closeEvent(QCloseEvent* event) override;
+  void dragEnterEvent(QDragEnterEvent* event) override;
+  void dropEvent(QDropEvent* event) override;
 
 private slots:
   void on_actionNewAlbum_triggered();

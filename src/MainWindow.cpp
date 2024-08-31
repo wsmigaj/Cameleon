@@ -50,6 +50,11 @@ bool validatePatterns(AlbumEditorDialog& dialog)
                        "containing any such patterns.");
   return false;
 }
+
+bool isSingleLocalFile(const QList<QUrl>& urls)
+{
+  return urls.size() == 1 && urls.front().isLocalFile();
+}
 } // namespace
 
 MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
@@ -58,6 +63,7 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
 {
   ui_->setupUi(this);
   setWindowIcon(QIcon(":/icons/cameleon/Cameleon.ico"));
+  setAcceptDrops(true);
 
   populateLayoutSubmenu();
   initialiseRecentDocumentsSubmenu();
@@ -222,6 +228,28 @@ void MainWindow::closeEvent(QCloseEvent* event)
   else
   {
     event->ignore();
+  }
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent* event)
+{
+  if (event->mimeData()->hasUrls())
+  {
+    const QList<QUrl> urls = event->mimeData()->urls();
+    if (isSingleLocalFile(urls))
+      event->acceptProposedAction();
+  }
+}
+
+void MainWindow::dropEvent(QDropEvent* event)
+{
+  if (event->mimeData()->hasUrls())
+  {
+    const QList<QUrl> urls = event->mimeData()->urls();
+    if (!isSingleLocalFile(urls))
+      return;
+    openDocument(QDir::toNativeSeparators(urls.front().toLocalFile()));
+    event->acceptProposedAction();
   }
 }
 
