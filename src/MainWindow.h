@@ -141,6 +141,9 @@ private:
   bool saveDocumentAs();
   bool saveDocument(const QString& path);
 
+  static bool isFileTypeRegistered();
+  void maybePromptToRegisterFileType();
+
   QRect toolBarAreaRect() const;
 
   static QString statusBarInstanceLabelText(int currentInstance, int numInstances);

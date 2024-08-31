@@ -29,6 +29,7 @@
 #include "ui_MainWindow.h"
 
 #include <Qt>
+#include <QCheckBox>
 
 namespace
 {
@@ -54,6 +55,21 @@ bool validatePatterns(AlbumEditorDialog& dialog)
 bool isSingleLocalFile(const QList<QUrl>& urls)
 {
   return urls.size() == 1 && urls.front().isLocalFile();
+}
+
+// Constants and functions used during file type registration on Windows
+
+const char* HKCU_SOFTWARE_CLASSES_KEY = "HKEY_CURRENT_USER\\Software\\Classes";
+const char* PROGID = "Cameleon.Cameleon.1";
+const char* PROGID_KEY = "Cameleon.Cameleon.1/Default";
+const char* PROGID_VALUE = CAMELEON_APP_NAME;
+const char* PROGID_OPEN_COMMAND_KEY = "Cameleon.Cameleon.1/shell/open/command/Default";
+const char* FILETYPE_KEY = ".cml/Default";
+const char* FILETYPE_VALUE = "Cameleon.Cameleon.1";
+
+QString progIdOpenCommandValue()
+{
+  return "\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\" \"%1\"";
 }
 } // namespace
 
@@ -125,6 +141,10 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
   statusBarInstanceLabel_->hide();
 
   updateDocumentDependentActions();
+
+#ifdef Q_OS_WIN
+  QTimer::singleShot(0, this, &MainWindow::maybePromptToRegisterFileType);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -1011,12 +1031,10 @@ void MainWindow::updateBookmarkDependentActions()
 
 void MainWindow::on_actionRegisterFileType_triggered()
 {
-  QSettings settings("HKEY_CURRENT_USER\\Software\\Classes", QSettings::NativeFormat);
-  settings.setValue("Cameleon.Cameleon.1/Default", CAMELEON_APP_NAME);
-  settings.setValue("Cameleon.Cameleon.1/shell/open/command/Default",
-                    "\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) +
-                      "\" \"%1\"");
-  settings.setValue(".cml/Default", "Cameleon.Cameleon.1");
+  QSettings settings(HKCU_SOFTWARE_CLASSES_KEY, QSettings::NativeFormat);
+  settings.setValue(PROGID_KEY, PROGID_VALUE);
+  settings.setValue(PROGID_OPEN_COMMAND_KEY, progIdOpenCommandValue());
+  settings.setValue(FILETYPE_KEY, FILETYPE_VALUE);
 
   QMessageBox::information(this, CAMELEON_APP_NAME,
                            "The .cml file extension has been associated with " CAMELEON_APP_NAME
@@ -1025,12 +1043,45 @@ void MainWindow::on_actionRegisterFileType_triggered()
 
 void MainWindow::on_actionUnregisterFileType_triggered()
 {
-  QSettings settings("HKEY_CURRENT_USER\\Software\\Classes", QSettings::NativeFormat);
-  settings.remove("Cameleon.Cameleon.1");
+  QSettings settings(HKCU_SOFTWARE_CLASSES_KEY, QSettings::NativeFormat);
+  settings.remove(PROGID);
 
   QMessageBox::information(this, CAMELEON_APP_NAME,
                            "Association of the .cml file extension with " CAMELEON_APP_NAME
                            " has been removed.");
+}
+
+bool MainWindow::isFileTypeRegistered()
+{
+  QSettings settings(HKCU_SOFTWARE_CLASSES_KEY, QSettings::NativeFormat);
+  bool registered = settings.value(PROGID_KEY) == PROGID_VALUE;
+  registered = registered && settings.value(PROGID_OPEN_COMMAND_KEY) == progIdOpenCommandValue();
+  registered = registered && settings.value(FILETYPE_KEY) == FILETYPE_VALUE;
+  return registered;
+}
+
+void MainWindow::maybePromptToRegisterFileType()
+{
+  QSettings settings;
+  const bool mayAskToRegisterFileType = settings.value("mayAskToRegisterFileType", true).toBool();
+
+  if (mayAskToRegisterFileType && !isFileTypeRegistered())
+  {
+    QMessageBox dlg(QMessageBox::Question, CAMELEON_APP_NAME,
+                    "Would you like to associate the .cml file extension with " CAMELEON_APP_NAME
+                    " to be able to open " CAMELEON_APP_NAME
+                    " albums by double-clicking them in File Explorer?",
+                    QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No, this);
+    dlg.setDefaultButton(QMessageBox::StandardButton::Yes);
+    QCheckBox* doNotAskAgainCheckBox = new QCheckBox("Do not ask me again", &dlg);
+    dlg.setCheckBox(doNotAskAgainCheckBox);
+    const int response = dlg.exec();
+
+    if (response == QMessageBox::Yes)
+      on_actionRegisterFileType_triggered();
+    if (doNotAskAgainCheckBox->isChecked())
+      settings.setValue("mayAskToRegisterFileType", false);
+  }
 }
 
 void MainWindow::onInstancesChanged()
