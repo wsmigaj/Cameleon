@@ -95,6 +95,14 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
 
   ui_->actionBookmarkPage->setIcon(QIcon::fromTheme("bookmarks"));
 
+#ifdef Q_OS_WIN
+  ui_->actionRegisterFileType->setStatusTip("Associate .cml files with " CAMELEON_APP_NAME);
+  ui_->actionUnregisterFileType->setStatusTip("Remove " CAMELEON_APP_NAME
+                                              "'s association with .cml files");
+#else
+  delete ui_->menuTools;
+#endif
+
   // Add a wide empty label to the status bar to force other labels to be right-aligned.
   statusBarMessageLabel_ = new QLabel(this);
   statusBar()->addWidget(statusBarMessageLabel_, 1 /*stretch*/);
@@ -782,7 +790,6 @@ void MainWindow::onDocumentModificationStatusChanged()
 
 void MainWindow::onDocumentPathChanged()
 {
-  QString appTitle = "Cam\u00E9l\u00E9on";
   QString title;
   if (doc_)
   {
@@ -790,11 +797,11 @@ void MainWindow::onDocumentPathChanged()
       title = "Untitled.cml";
     else
       title = QFileInfo(doc_->path()).fileName();
-    title += "[*] - " + appTitle;
+    title += "[*] - " CAMELEON_APP_NAME;
   }
   else
   {
-    title = appTitle;
+    title = CAMELEON_APP_NAME;
   }
   setWindowTitle(title);
   setWindowModified(doc_ && doc_->modified());
@@ -1000,6 +1007,30 @@ void MainWindow::updateBookmarkDependentActions()
   ui_->actionLastBookmark->setEnabled(hasBookmarks && instance_ != *doc_->bookmarks().rbegin());
   ui_->actionImportBookmarks->setEnabled(isOpen && hasInstances);
   ui_->actionExportBookmarks->setEnabled(hasBookmarks);
+}
+
+void MainWindow::on_actionRegisterFileType_triggered()
+{
+  QSettings settings("HKEY_CURRENT_USER\\Software\\Classes", QSettings::NativeFormat);
+  settings.setValue("Cameleon.Cameleon.1/Default", CAMELEON_APP_NAME);
+  settings.setValue("Cameleon.Cameleon.1/shell/open/command/Default",
+                    "\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) +
+                      "\" \"%1\"");
+  settings.setValue(".cml/Default", "Cameleon.Cameleon.1");
+
+  QMessageBox::information(this, CAMELEON_APP_NAME,
+                           "The .cml file extension has been associated with " CAMELEON_APP_NAME
+                           ".");
+}
+
+void MainWindow::on_actionUnregisterFileType_triggered()
+{
+  QSettings settings("HKEY_CURRENT_USER\\Software\\Classes", QSettings::NativeFormat);
+  settings.remove("Cameleon.Cameleon.1");
+
+  QMessageBox::information(this, CAMELEON_APP_NAME,
+                           "Association of the .cml file extension with " CAMELEON_APP_NAME
+                           " has been removed.");
 }
 
 void MainWindow::onInstancesChanged()
