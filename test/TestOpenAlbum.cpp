@@ -25,6 +25,7 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSettings>
 #include <QTest>
 #include <QTimer>
 
@@ -32,7 +33,7 @@ QTEST_MAIN(TestOpenAlbum)
 
 void TestOpenAlbum::open_cancelOpen()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -58,7 +59,7 @@ void TestOpenAlbum::open_cancelOpen()
 
 void TestOpenAlbum::open_okOpen()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -85,7 +86,7 @@ void TestOpenAlbum::open_okOpen()
 
 void TestOpenAlbum::open_open_cancelOpen()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -123,7 +124,7 @@ void TestOpenAlbum::open_open_cancelOpen()
 
 void TestOpenAlbum::open_open_okOpen()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -162,7 +163,7 @@ void TestOpenAlbum::open_open_okOpen()
 
 void TestOpenAlbum::open_modify_open_okOpen_cancelSave()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -215,7 +216,7 @@ void TestOpenAlbum::open_modify_open_okOpen_cancelSave()
 
 void TestOpenAlbum::open_modify_open_cancelOpen()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -263,7 +264,7 @@ void TestOpenAlbum::open_modify_open_okOpen_okSave_errorOnSave()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", docPath));
   QFile::setPermissions(docPath, QFileDevice::ReadOwner);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -333,7 +334,7 @@ void TestOpenAlbum::open_modify_open_okOpen_okSave()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", firstDocPath));
   const QByteArray firstDocOriginalContents = readFile(firstDocPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -395,7 +396,7 @@ void TestOpenAlbum::open_modify_open_okOpen_doNotSave()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", firstDocPath));
   const QByteArray firstDocOriginalContents = readFile(firstDocPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));

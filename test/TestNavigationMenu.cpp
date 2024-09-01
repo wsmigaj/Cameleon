@@ -33,7 +33,7 @@ QTEST_MAIN(TestNavigationMenu)
 
 void TestNavigationMenu::stateBeforeAlbumOpening()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -55,7 +55,7 @@ void TestNavigationMenu::stateBeforeAlbumOpening()
 
 void TestNavigationMenu::navigationInAlbumWith0Pages()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -103,7 +103,7 @@ void TestNavigationMenu::navigationInAlbumWith0Pages()
 
 void TestNavigationMenu::navigationInAlbumWith1Page()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -142,7 +142,7 @@ void TestNavigationMenu::navigationInAlbumWith1Page()
 
 void TestNavigationMenu::navigationInAlbumWith2Pages()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -209,7 +209,7 @@ void TestNavigationMenu::navigationInAlbumWith2Pages()
 
 void TestNavigationMenu::navigationInAlbumWith5Pages()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -276,7 +276,7 @@ void TestNavigationMenu::navigationInAlbumWith5Pages()
 
 void TestNavigationMenu::stateAfterAlbumClosing()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));

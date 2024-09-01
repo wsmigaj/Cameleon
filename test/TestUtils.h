@@ -17,10 +17,18 @@
 
 #pragma once
 
+#include "MainWindow.h"
+
 #include <QFile>
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QTest>
+
+inline MainWindow createMainWindowForTest()
+{
+  return MainWindow(nullptr /*parent*/, true /*dontUseNativeDialogs*/,
+                    true /*dontPromptToRegisterFileType*/);
+}
 
 inline QByteArray readFile(const QString& filename)
 {

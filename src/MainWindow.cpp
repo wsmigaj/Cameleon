@@ -73,7 +73,8 @@ QString progIdOpenCommandValue()
 }
 } // namespace
 
-MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
+MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs,
+                       bool dontPromptToRegisterFileType)
   : QMainWindow(parent), ui_(std::make_unique<Ui::MainWindowClass>()),
     dontUseNativeDialogs_(dontUseNativeDialogs)
 {
@@ -143,7 +144,8 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs)
   updateDocumentDependentActions();
 
 #ifdef Q_OS_WIN
-  QTimer::singleShot(0, this, &MainWindow::maybePromptToRegisterFileType);
+  if (!dontPromptToRegisterFileType)
+    QTimer::singleShot(0, this, &MainWindow::maybePromptToRegisterFileType);
 #endif
 }
 
@@ -1063,9 +1065,10 @@ bool MainWindow::isFileTypeRegistered()
 void MainWindow::maybePromptToRegisterFileType()
 {
   QSettings settings;
-  const bool mayAskToRegisterFileType = settings.value("mayAskToRegisterFileType", true).toBool();
+  const bool mayPromptToRegisterFileType =
+    settings.value("mayPromptToRegisterFileType", true).toBool();
 
-  if (mayAskToRegisterFileType && !isFileTypeRegistered())
+  if (mayPromptToRegisterFileType && !isFileTypeRegistered())
   {
     QMessageBox dlg(QMessageBox::Question, CAMELEON_APP_NAME,
                     "Would you like to associate the .cml file extension with " CAMELEON_APP_NAME
@@ -1080,7 +1083,7 @@ void MainWindow::maybePromptToRegisterFileType()
     if (response == QMessageBox::Yes)
       on_actionRegisterFileType_triggered();
     if (doNotAskAgainCheckBox->isChecked())
-      settings.setValue("mayAskToRegisterFileType", false);
+      settings.setValue("mayPromptToRegisterFileType", false);
   }
 }
 

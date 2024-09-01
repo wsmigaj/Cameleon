@@ -40,7 +40,8 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget* parent = nullptr, bool dontUseNativeDialogs = false);
+  explicit MainWindow(QWidget* parent = nullptr, bool dontUseNativeDialogs = false,
+                      bool dontPromptToRegisterFileType = false);
   ~MainWindow() override;
 
   bool eventFilter(QObject* obj, QEvent* event) override;

@@ -33,7 +33,7 @@ QTEST_MAIN(TestBookmarksMenu)
 
 void TestBookmarksMenu::stateBeforeAlbumOpening()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -67,7 +67,7 @@ void TestBookmarksMenu::stateBeforeAlbumOpening()
 
 void TestBookmarksMenu::navigation()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -168,7 +168,7 @@ void TestBookmarksMenu::navigation()
 
 void TestBookmarksMenu::stateAfterAlbumClosing()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -222,7 +222,7 @@ void TestBookmarksMenu::stateAfterAlbumClosing()
 
 void TestBookmarksMenu::bookmarkPage()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -260,7 +260,7 @@ void TestBookmarksMenu::bookmarkPage()
 
 void TestBookmarksMenu::removeAllBookmarks_cancelRemoval()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -309,7 +309,7 @@ void TestBookmarksMenu::removeAllBookmarks_cancelRemoval()
 
 void TestBookmarksMenu::removeAllBookmarks_okRemoval()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -362,7 +362,7 @@ void TestBookmarksMenu::exportAndImport()
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));

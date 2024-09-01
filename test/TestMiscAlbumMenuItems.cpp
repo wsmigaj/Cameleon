@@ -34,7 +34,7 @@ QTEST_MAIN(TestMiscAlbumMenuItems)
 
 void TestMiscAlbumMenuItems::stateBeforeAlbumOpening()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -65,7 +65,7 @@ void TestMiscAlbumMenuItems::stateBeforeAlbumOpening()
 
 void TestMiscAlbumMenuItems::stateAfterAlbumClosing()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -117,7 +117,7 @@ void TestMiscAlbumMenuItems::save()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", docPath));
   const QByteArray originalDocContents = readFile(docPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -163,7 +163,7 @@ void TestMiscAlbumMenuItems::saveAs_cancelSave()
   const QString docPath1 = tempDir->filePath("colours.cml");
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", docPath1));
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -215,7 +215,7 @@ void TestMiscAlbumMenuItems::saveAs_okSave()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", docPath1));
   const QByteArray originalDocContents = readFile(docPath1);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -281,7 +281,7 @@ void TestMiscAlbumMenuItems::useRelativePaths()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/blue/inverted_checkerboard.png",
                       tempDir->filePath("2/blue/inverted_checkerboard.png")));
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -350,7 +350,7 @@ void TestMiscAlbumMenuItems::useRelativePaths()
 
 void TestMiscAlbumMenuItems::edit_cancelEdit()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -393,7 +393,7 @@ void TestMiscAlbumMenuItems::edit_cancelEdit()
 
 void TestMiscAlbumMenuItems::edit_okEdit()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -439,7 +439,7 @@ void TestMiscAlbumMenuItems::edit_okEdit()
 
 void TestMiscAlbumMenuItems::editWithInconsistentNumberOfWildcardsPerPattern()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -522,7 +522,7 @@ void TestMiscAlbumMenuItems::refresh()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/green/inverted_checkerboard.png",
                       tempDir->filePath("green/inverted_checkerboard.png")));
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -587,7 +587,7 @@ void TestMiscAlbumMenuItems::refreshAfterDeletingAllInstances()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/blue/inverted_checkerboard.png",
                       tempDir->filePath("blue/inverted_checkerboard.png")));
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -634,7 +634,7 @@ void TestMiscAlbumMenuItems::refreshAfterDeletingAllInstances()
 
 void TestMiscAlbumMenuItems::open_close()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -672,7 +672,7 @@ void TestMiscAlbumMenuItems::open_modify_close_cancelSave()
   const QString docPath = TEST_DATA_DIR "/colours.cml";
   const QByteArray originalDocContents = readFile(docPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
@@ -725,7 +725,7 @@ void TestMiscAlbumMenuItems::open_modify_close_doNotSave()
   const QString docPath = TEST_DATA_DIR "/colours.cml";
   const QByteArray originalDocContents = readFile(docPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
@@ -775,7 +775,7 @@ void TestMiscAlbumMenuItems::open_modify_close_doNotSave()
 
 void TestMiscAlbumMenuItems::quit()
 {
-  MainWindow w;
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -789,7 +789,7 @@ void TestMiscAlbumMenuItems::quit()
 
 void TestMiscAlbumMenuItems::open_quit()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -822,7 +822,7 @@ void TestMiscAlbumMenuItems::open_modify_quit_cancelSave()
   const QString docPath = TEST_DATA_DIR "/colours.cml";
   const QByteArray originalDocContents = readFile(docPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 
@@ -870,7 +870,7 @@ void TestMiscAlbumMenuItems::open_modify_quit_doNotSave()
   const QString docPath = TEST_DATA_DIR "/colours.cml";
   const QByteArray originalDocContents = readFile(docPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
 

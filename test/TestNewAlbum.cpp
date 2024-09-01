@@ -34,7 +34,7 @@ QTEST_MAIN(TestNewAlbum)
 
 void TestNewAlbum::new_cancelNew()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -61,7 +61,7 @@ void TestNewAlbum::new_cancelNew()
 
 void TestNewAlbum::new_okNew()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -90,7 +90,7 @@ void TestNewAlbum::new_okNew()
 
 void TestNewAlbum::newAlbumWithoutPatterns()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -127,7 +127,7 @@ void TestNewAlbum::newAlbumWithoutPatterns()
 
 void TestNewAlbum::newAlbumWithoutMatches()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -165,7 +165,7 @@ void TestNewAlbum::newAlbumWithoutMatches()
 
 void TestNewAlbum::newAlbumWithInconsistentNumberOfWildcardsPerPattern()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -212,7 +212,7 @@ void TestNewAlbum::newAlbumWithInconsistentNumberOfWildcardsPerPattern()
 
 void TestNewAlbum::open_new_cancelNew()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -253,7 +253,7 @@ void TestNewAlbum::open_new_cancelNew()
 
 void TestNewAlbum::open_new_okNew()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -295,7 +295,7 @@ void TestNewAlbum::open_new_okNew()
 
 void TestNewAlbum::open_modify_new_cancelSave()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -346,7 +346,7 @@ void TestNewAlbum::open_modify_new_okSave_cancelNew()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", docPath));
   const QByteArray docOriginalContents = readFile(docPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -410,7 +410,7 @@ void TestNewAlbum::open_modify_new_okSave_errorOnSave()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", docPath));
   QFile::setPermissions(docPath, QFileDevice::ReadOwner);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -471,7 +471,7 @@ void TestNewAlbum::open_modify_new_okSave_okNew()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", firstDocPath));
   const QByteArray firstDocOriginalContents = readFile(firstDocPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -535,7 +535,7 @@ void TestNewAlbum::open_modify_new_doNotSave_cancelNew()
   const QString docPath = tempDir->filePath("colours.cml");
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", docPath));
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -596,7 +596,7 @@ void TestNewAlbum::open_modify_new_doNotSave_okNew()
   QVERIFY(QFile::copy(TEST_DATA_DIR "/colours.cml", firstDocPath));
   const QByteArray firstDocOriginalContents = readFile(firstDocPath);
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));

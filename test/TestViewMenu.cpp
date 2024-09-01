@@ -55,7 +55,7 @@ std::vector<QTransform> panelTransforms(const MainWindow& w)
 
 void TestViewMenu::stateBeforeAlbumOpening()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -83,7 +83,7 @@ void TestViewMenu::stateBeforeAlbumOpening()
 
 void TestViewMenu::stateAfterAlbumClosing()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -131,7 +131,7 @@ void TestViewMenu::stateAfterAlbumClosing()
 
 void TestViewMenu::zoom()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -203,7 +203,7 @@ void TestViewMenu::zoom()
 
 void TestViewMenu::editCaptions_cancelEdit()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -259,7 +259,7 @@ void TestViewMenu::editCaptions_cancelEdit()
 
 void TestViewMenu::editCaptions_okEdit()
 {
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -350,7 +350,7 @@ void TestViewMenu::saveScreenshot_cancelSave()
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -394,7 +394,7 @@ void TestViewMenu::saveScreenshot_okSave()
   auto tempDir = std::make_shared<QTemporaryDir>();
   QVERIFY(tempDir->isValid());
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -439,7 +439,7 @@ void TestViewMenu::saveAllScreenshots_cancelSave()
   QDir tempQDir(tempDir->path());
   QVERIFY(tempQDir.mkdir("subdir"));
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
@@ -485,7 +485,7 @@ void TestViewMenu::saveAllScreenshots_okSave()
   QDir tempQDir(tempDir->path());
   QVERIFY(tempQDir.mkdir("subdir"));
 
-  MainWindow w(nullptr /*parent*/, true /*dontUseNativeDialogs*/);
+  MainWindow w = createMainWindowForTest();
 
   w.show();
   QVERIFY(QTest::qWaitForWindowActive(&w));
