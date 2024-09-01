@@ -55,7 +55,9 @@ Click *Album | Save* to save the current album and *Album | Open...* to open one
 Installation
 ============
 
-Download a ZIP or TGZ archive with a pre-built version of Caméléon from https://github.com/wsmigaj/Cameleon/releases. Uncompress the archive to a folder of your choice.
+On Windows or macOS, download a ZIP or DMG archive with a pre-built version of Caméléon from https://github.com/wsmigaj/Cameleon/releases. Uncompress the archive to a folder of your choice. Find the `Cameleon.exe` or `Cameleon.app` executable located in that folder and run it.
+
+On Linux, Caméléon needs to be built from source. Follow the instructions in the _Building_ section below.
 
 Building
 ========
