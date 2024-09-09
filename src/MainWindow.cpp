@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs,
   ui_->actionUnregisterFileType->setStatusTip("Remove " CAMELEON_APP_NAME
                                               "'s association with .cml files");
 #else
-  delete ui_->menuTools;
+  ui_->menuTools->menuAction()->setVisible(false);
 #endif
 
   // Add a wide empty label to the status bar to force other labels to be right-aligned.
