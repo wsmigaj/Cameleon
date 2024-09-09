@@ -28,7 +28,7 @@
      <item>
       <widget class="QLabel" name="promptLabel">
        <property name="text">
-        <string>Paths to the image files displayed in panels A-H. The paths may contain wildcard patterns *, ** and ?; the sets of files corresponding to different pattern matches are displayed on different pages of the album.</string>
+        <string>Enter paths to image files to be displayed in panels A-H. The paths may contain wildcard patterns *, ** and ?; the sets of files corresponding to different pattern matches will be displayed on different album pages.</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>

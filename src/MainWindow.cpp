@@ -86,6 +86,7 @@ MainWindow::MainWindow(QWidget* parent, bool dontUseNativeDialogs,
   initialiseRecentDocumentsSubmenu();
 
   instanceComboBox_ = new QComboBox(this);
+  instanceComboBox_->setToolTip("Page Title");
   instanceComboBox_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
   ui_->mainToolBar->addSeparator();
   ui_->mainToolBar->addWidget(instanceComboBox_);

@@ -36,15 +36,15 @@ ImageWidget::~ImageWidget()
 
 void ImageWidget::createActions()
 {
-  copyImageAction_ = new QAction(tr("&Copy Image"), this);
+  copyImageAction_ = new QAction("Copy &Image", this);
   connect(copyImageAction_, &QAction::triggered, this, &ImageWidget::onCopyImage);
-  copyFullPathAction_ = new QAction(tr("&Copy Full Path"), this);
+  copyFullPathAction_ = new QAction("Copy Full &Path", this);
   connect(copyFullPathAction_, &QAction::triggered, this, &ImageWidget::onCopyFullPath);
-  copyFileNameAction_ = new QAction(tr("&Copy File Name"), this);
+  copyFileNameAction_ = new QAction("Copy File &Name", this);
   connect(copyFileNameAction_, &QAction::triggered, this, &ImageWidget::onCopyFileName);
-  copyInstanceKeyAction_ = new QAction(tr("&Copy Pattern Match"), this);
+  copyInstanceKeyAction_ = new QAction("Copy Page &Title", this);
   connect(copyInstanceKeyAction_, &QAction::triggered, this, &ImageWidget::onCopyInstanceKey);
-  openInExplorerAction_ = new QAction(tr("&Open In Explorer"), this);
+  openInExplorerAction_ = new QAction("&Open In Explorer", this);
   connect(openInExplorerAction_, &QAction::triggered, this, &ImageWidget::onOpenInExplorer);
 }
 
