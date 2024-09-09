@@ -96,7 +96,7 @@ jobs:
       shell: cmake -P {0}
       run: | 
         set(input_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}.zip")
-        set(destination_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/package-contents/Cameleon-${{ github.ref_name }}-${{ matrix.system_name }}")
+        set(destination_path "${{ steps.strings.outputs.build-output-dir-with-fwd-slashes }}/package-contents")
         file(GLOB input_paths LIST_DIRECTORIES false ${input_path_pattern})
         file(ARCHIVE_EXTRACT INPUT "${input_path}" DESTINATION "${destination_path}" VERBOSE)
       
