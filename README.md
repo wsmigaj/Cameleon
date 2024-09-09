@@ -24,7 +24,7 @@ You can zoom in and out using the *View | Zoom In/Zoom Out* menu items or pressi
 
 ![Zoom](/doc/images/zoom.png)
 
-To switch between pages, use the *Navigation* menu, the four toolbar buttons highlighted in red in the screenshot below, or the `Home`, `PgDn`, `PgUp` and `End` keyboard shortcuts. You can also navigate directly to a specific page by selecting its ID (made up of the matches to all wildcards) from the pull-down list highlighted in green in the screenshot below:
+To switch between pages, use the *Navigation* menu, the four toolbar buttons highlighted in red in the screenshot below, or the `Home`, `PgDn`, `PgUp` and `End` keyboard shortcuts. You can also navigate directly to a specific page by selecting its title (made up of the matches to all wildcards) from the pull-down list highlighted in green in the screenshot below:
 
 ![Navigation controls](/doc/images/navigation.png)
 
@@ -40,7 +40,9 @@ The new captions are visible in the screenshot below:
 
 ![Edited captions](/doc/images/edited-captions.png)
 
-To save a screenshot of the current page, click *View | Save Screenshot...* and select the path where the screenshot should be saved. The default file name is derived from the current page ID.
+To bookmark a page, select the *Bookmarks | Bookmark Page* menu item or click the button with a yellow star. Other items in the *Bookmarks* menu let you switch between bookmarked pages, export the list of titles of bookmarked pages to a text file or import such a list from another file.
+
+To save a screenshot of the current page, click *View | Save Screenshot...* and select the path where the screenshot should be saved. The default file name is derived from the current page title.
 
 Click *Album | Save* to save the current album and *Album | Open...* to open one saved previously.
 
