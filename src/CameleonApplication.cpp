@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023-2024 Wojciech Śmigaj
+// Copyright (C) 2024 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,18 +18,26 @@
 #include "CameleonApplication.h"
 #include "MainWindow.h"
 
-#include <QTimer>
+#include <QFileOpenEvent>
 
-int main(int argc, char* argv[])
+bool CameleonApplication::event(QEvent* event)
 {
-  CameleonApplication a(argc, argv);
-  CameleonApplication::setOrganizationName("Cameleon");
-  CameleonApplication::setApplicationName("Cameleon");
-  a.setQuitOnLastWindowClosed(true);
-  MainWindow w;
+  if (event->type() == QEvent::FileOpen)
+  {
+    QFileOpenEvent* openEvent = static_cast<QFileOpenEvent*>(event);
+    const QUrl url = openEvent->url();
+    if (url.isLocalFile())
+    {
+      for (QWidget* widget : QApplication::topLevelWidgets())
+      {
+        if (MainWindow* mainWindow = dynamic_cast<MainWindow*>(widget))
+        {
+          mainWindow->openDocument(url.toLocalFile());
+          return true;
+        }
+      }
+    }
+  }
 
-  QTimer::singleShot(0, &w, &MainWindow::processCommandLine);
-
-  w.show();
-  return a.exec();
+  return QApplication::event(event);
 }

@@ -51,6 +51,8 @@ public:
 
   const MainView* mainView() const;
 
+  void openDocument(const QString& path);
+
 public slots:
   void processCommandLine();
 
@@ -136,7 +138,6 @@ private:
   std::optional<std::vector<QString>> currentInstanceKey() const;
   void goToInstance(int instance);
 
-  void openDocument(const QString& path);
   bool maybeSaveDocument();
   bool saveDocument();
   bool saveDocumentAs();
