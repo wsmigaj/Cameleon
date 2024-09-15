@@ -96,6 +96,7 @@ private slots:
   void on_actionRegisterFileType_triggered();
   void on_actionUnregisterFileType_triggered();
 
+  void on_actionTutorial_triggered();
   void on_actionAboutCameleon_triggered();
 
   void onLayoutActionTriggered();

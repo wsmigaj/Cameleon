@@ -84,6 +84,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionTutorial"/>
+    <addaction name="separator"/>
     <addaction name="actionAboutCameleon"/>
    </widget>
    <widget class="QMenu" name="menuBookmarks">
@@ -264,7 +266,7 @@
   </action>
   <action name="actionEditCaptions">
    <property name="text">
-    <string>&amp;Edit Captions...</string>
+    <string>&amp;Edit Panel Captions...</string>
    </property>
    <property name="toolTip">
     <string>Edit captions shown at the top of each panel</string>
@@ -277,7 +279,7 @@
   </action>
   <action name="actionAboutCameleon">
    <property name="text">
-    <string>&amp;About Caméléon...</string>
+    <string>&amp;About Caméléon</string>
    </property>
   </action>
   <action name="actionBookmarkPage">
@@ -335,7 +337,7 @@
   </action>
   <action name="actionRemoveAllBookmarks">
    <property name="text">
-    <string>&amp;Remove All Bookmarks</string>
+    <string>&amp;Remove All Bookmarks...</string>
    </property>
   </action>
   <action name="actionUseRelativePathsInSavedAlbum">
@@ -354,6 +356,11 @@
   <action name="actionUnregisterFileType">
    <property name="text">
     <string>&amp;Unregister File Type</string>
+   </property>
+  </action>
+  <action name="actionTutorial">
+   <property name="text">
+    <string>&amp;Tutorial</string>
    </property>
   </action>
  </widget>

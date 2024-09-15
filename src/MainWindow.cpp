@@ -768,6 +768,11 @@ void MainWindow::on_actionExportBookmarks_triggered()
   }
 }
 
+void MainWindow::on_actionTutorial_triggered()
+{
+  QDesktopServices::openUrl(QUrl("https://github.com/wsmigaj/Cameleon/blob/main/README.md"));
+}
+
 void MainWindow::on_actionAboutCameleon_triggered()
 {
   QMessageBox::about(
