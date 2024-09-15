@@ -18,6 +18,17 @@ bool string_replace(std::wstring &str, const std::wstring &from, const std::wstr
   return true;
 }
 
+std::map<int, std::wstring> make_special_characters_map(const std::wstring& special_characters)
+{
+  std::map<int, std::wstring> special_characters_map;
+  for (auto& sc : special_characters)
+  {
+    special_characters_map.insert(
+      std::make_pair(static_cast<int>(sc), std::wstring{L"\\"} + std::wstring(1, sc)));
+  }
+  return special_characters_map;
+}
+
 std::wstring translate(const std::wstring &pattern) {
   std::size_t i = 0, n = pattern.size();
   std::wstring result_string;
@@ -102,17 +113,11 @@ std::wstring translate(const std::wstring &pattern) {
       // '-' (a range in character set)
       // '&', '~', (extended character set operations)
       // '#' (comment) and WHITESPACE (ignored) in verbose mode
-      static std::wstring special_characters = L"()[]{}?*+-|^$\\.&~# \t\n\r\v\f";
-      static std::map<int, std::wstring> special_characters_map;
-      if (special_characters_map.empty()) {
-        for (auto &sc : special_characters) {
-          special_characters_map.insert(
-              std::make_pair(static_cast<int>(sc), std::wstring{L"\\"} + std::wstring(1, sc)));
-        }
-      }
+      static const std::wstring special_characters = L"()[]{}?*+-|^$\\.&~# \t\n\r\v\f";
+      static const std::map<int, std::wstring> special_characters_map = make_special_characters_map(special_characters);
 
       if (special_characters.find(c) != std::wstring::npos) {
-        result_string += special_characters_map[static_cast<int>(c)];
+        result_string += special_characters_map.at(static_cast<int>(c));
       } else {
         result_string += c;
       }
