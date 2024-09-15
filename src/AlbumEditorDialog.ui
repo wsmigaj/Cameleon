@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>650</width>
     <height>349</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
      <item>
       <widget class="QLabel" name="promptLabel">
        <property name="text">
-        <string>Enter paths to image files to be displayed on album pages in panels A-H. The paths may contain wildcards *, ** and ?; the sets of files corresponding to different wildcard matches will be displayed on separate pages.</string>
+        <string>Enter paths to image files to be displayed on album pages in panels A-H. The paths may contain &lt;a href=&quot;wildcards&quot;&gt;wildcards (*, ** and ?)&lt;/a&gt;; sets of files corresponding to different wildcard matches will be displayed on separate pages.</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>

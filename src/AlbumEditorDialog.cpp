@@ -284,6 +284,19 @@ void AlbumEditorDialog::onOk()
     accept();
 }
 
+void AlbumEditorDialog::onPromptLabelLinkHovered(const QString& link)
+{
+  if (link == "wildcards")
+  {
+    QToolTip::showText(
+      QCursor::pos(),
+      QString("* matches any sequence of characters except for the directory separator '%1'.\n"
+              "** matches any number of directory or file names separated by '%1'.\n"
+              "? matches any single character.")
+        .arg(QDir::separator()));
+  }
+}
+
 std::vector<QLabel*> AlbumEditorDialog::rowLabels() const
 {
   return {ui_->labelA, ui_->labelB, ui_->labelC, ui_->labelD,
@@ -319,6 +332,8 @@ std::vector<QToolButton*> AlbumEditorDialog::swapValuesButtons() const
 void AlbumEditorDialog::connectSignals()
 {
   connect(ui_->okButton, &QPushButton::clicked, this, &AlbumEditorDialog::onOk);
+  connect(ui_->promptLabel, &QLabel::linkHovered, this,
+          &AlbumEditorDialog::onPromptLabelLinkHovered);
   for (QToolButton* button : fileDialogButtons())
     connect(button, &QToolButton::clicked, this, &AlbumEditorDialog::onFileDialogButtonClicked);
   for (QToolButton* button : swapValuesButtons())

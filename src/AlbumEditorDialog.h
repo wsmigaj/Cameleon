@@ -66,6 +66,7 @@ public slots:
 
 private slots:
   void onOk();
+  void onPromptLabelLinkHovered(const QString& link);
 
 private:
   std::vector<QLabel*> rowLabels() const;
