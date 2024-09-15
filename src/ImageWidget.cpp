@@ -197,7 +197,6 @@ void ImageWidget::onOpenInExplorer()
 {
   if (!path_.isEmpty())
   {
-    // TODO: ensure this is done only on Windows
     QStringList params;
     params += QLatin1String("/select,");
     params += QDir::toNativeSeparators(path_);
