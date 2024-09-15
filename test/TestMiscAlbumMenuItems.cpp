@@ -482,8 +482,8 @@ void TestMiscAlbumMenuItems::editWithInconsistentNumberOfWildcardsPerPattern()
           QVERIFY(*asyncSuccess = waitForActiveModalWidgetOfType<QMessageBox>());
           QMessageBox* box = dynamic_cast<QMessageBox*>(qApp->activeModalWidget());
           QVERIFY(*asyncSuccess =
-                    (box->text() == "The number of wildcard patterns must be the same in all paths "
-                                    "containing any such patterns."));
+                    (box->text() == "The number of wildcards must be the same in all paths "
+                                    "containing any wildcards."));
           QTest::keyClick(box, Qt::Key_Enter);
 
           QTimer::singleShot(

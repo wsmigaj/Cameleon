@@ -113,8 +113,8 @@ bool allPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector<QStr
 void checkAllPatternsContainSameNumberOfMagicExpressionsOrNone(const std::vector<QString>& patterns)
 {
   if (!allPatternsContainSameNumberOfMagicExpressionsOrNone(patterns))
-    throw RuntimeError("The number of wildcard patterns must be the same in all paths "
-                       "containing any such patterns.");
+    throw RuntimeError("The number of wildcards must be the same in all paths "
+                       "containing any wildcards.");
 }
 
 std::vector<std::shared_ptr<PatternMatchingResult>>

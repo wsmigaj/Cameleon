@@ -47,8 +47,8 @@ bool validatePatterns(AlbumEditorDialog& dialog)
     return true;
 
   QMessageBox::warning(&dialog, "Warning",
-                       "The number of wildcard patterns must be the same in all paths "
-                       "containing any such patterns.");
+                       "The number of wildcards must be the same in all paths "
+                       "containing any wildcards.");
   return false;
 }
 
