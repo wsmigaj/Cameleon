@@ -62,7 +62,7 @@ bool isSingleLocalFile(const QList<QUrl>& urls)
 const char* HKCU_SOFTWARE_CLASSES_KEY = "HKEY_CURRENT_USER\\Software\\Classes";
 const char* PROGID = "Cameleon.Cameleon.1";
 const char* PROGID_KEY = "Cameleon.Cameleon.1/Default";
-const char* PROGID_VALUE = CAMELEON_APP_NAME;
+const char* PROGID_VALUE = CAMELEON_APP_NAME " album";
 const char* PROGID_OPEN_COMMAND_KEY = "Cameleon.Cameleon.1/shell/open/command/Default";
 const char* FILETYPE_KEY = ".cml/Default";
 const char* FILETYPE_VALUE = "Cameleon.Cameleon.1";
