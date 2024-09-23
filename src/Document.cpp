@@ -61,7 +61,7 @@ Document::Document()
 Document::~Document() = default;
 
 Document::Document(const QString& path, const std::function<void()>& onFilesystemTraversalProgress)
-  : path_(path)
+  : path_(QDir::toNativeSeparators(path))
 {
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly))
@@ -380,7 +380,7 @@ void Document::save(const QString& path)
   }
 
   modified_ = false;
-  path_ = path;
+  path_ = QDir::toNativeSeparators(path);
   modificationStatusChanged();
 }
 

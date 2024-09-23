@@ -80,7 +80,7 @@ void TestOpenAlbum::open_okOpen()
 
   QVERIFY(*asyncSuccess);
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/colours.cml");
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(TEST_DATA_DIR "/colours.cml"));
   QVERIFY(!w.document()->modified());
 }
 
@@ -118,7 +118,7 @@ void TestOpenAlbum::open_open_cancelOpen()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/colours.cml");
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(TEST_DATA_DIR "/colours.cml"));
   QVERIFY(!w.document()->modified());
 }
 
@@ -157,7 +157,8 @@ void TestOpenAlbum::open_open_okOpen()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/green-checkerboards.cml");
+  QVERIFY(w.document()->path() ==
+          QDir::toNativeSeparators(TEST_DATA_DIR "/green-checkerboards.cml"));
   QVERIFY(!w.document()->modified());
 }
 
@@ -210,7 +211,7 @@ void TestOpenAlbum::open_modify_open_okOpen_cancelSave()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/colours.cml");
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(TEST_DATA_DIR "/colours.cml"));
   QVERIFY(w.document()->modified());
 }
 
@@ -252,7 +253,7 @@ void TestOpenAlbum::open_modify_open_cancelOpen()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/colours.cml");
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(TEST_DATA_DIR "/colours.cml"));
   QVERIFY(w.document()->modified());
 }
 
@@ -322,7 +323,7 @@ void TestOpenAlbum::open_modify_open_okOpen_okSave_errorOnSave()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == docPath);
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(docPath));
   QVERIFY(w.document()->modified());
 }
 
@@ -381,7 +382,8 @@ void TestOpenAlbum::open_modify_open_okOpen_okSave()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/green-checkerboards.cml");
+  QVERIFY(w.document()->path() ==
+          QDir::toNativeSeparators(TEST_DATA_DIR "/green-checkerboards.cml"));
   QVERIFY(!w.document()->modified());
 
   const QByteArray firstDocCurrentContents = readFile(firstDocPath);
@@ -443,7 +445,8 @@ void TestOpenAlbum::open_modify_open_okOpen_doNotSave()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/green-checkerboards.cml");
+  QVERIFY(w.document()->path() ==
+          QDir::toNativeSeparators(TEST_DATA_DIR "/green-checkerboards.cml"));
   QVERIFY(!w.document()->modified());
 
   const QByteArray firstDocCurrentContents = readFile(firstDocPath);

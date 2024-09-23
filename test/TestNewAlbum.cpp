@@ -247,7 +247,7 @@ void TestNewAlbum::open_new_cancelNew()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/colours.cml");
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(TEST_DATA_DIR "/colours.cml"));
   QVERIFY(!w.document()->modified());
 }
 
@@ -334,7 +334,7 @@ void TestNewAlbum::open_modify_new_cancelSave()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == TEST_DATA_DIR "/colours.cml");
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(TEST_DATA_DIR "/colours.cml"));
   QVERIFY(w.document()->modified());
 }
 
@@ -395,7 +395,7 @@ void TestNewAlbum::open_modify_new_okSave_cancelNew()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == docPath);
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(docPath));
   QVERIFY(!w.document()->modified());
 
   const QByteArray docCurrentContents = readFile(docPath);
@@ -459,7 +459,7 @@ void TestNewAlbum::open_modify_new_okSave_errorOnSave()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == docPath);
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(docPath));
   QVERIFY(w.document()->modified());
 }
 
@@ -584,7 +584,7 @@ void TestNewAlbum::open_modify_new_doNotSave_cancelNew()
   QVERIFY(*asyncSuccess);
 
   QVERIFY(w.document() != nullptr);
-  QVERIFY(w.document()->path() == docPath);
+  QVERIFY(w.document()->path() == QDir::toNativeSeparators(docPath));
   QVERIFY(w.document()->modified());
 }
 
