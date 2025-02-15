@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023-2024 Wojciech Śmigaj
+// Copyright (C) 2023-2025 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -350,7 +350,7 @@ void AlbumEditorDialog::onFileDialogButtonClicked()
   if (value.isEmpty() && comboBox->count() > 0)
     value = comboBox->itemText(0);
   QString dir = getDirPrefix(value);
-  QString file = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, "caption", dir));
+  QString file = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, QString(), dir));
   if (!file.isEmpty())
     comboBox->setCurrentText(file);
 }

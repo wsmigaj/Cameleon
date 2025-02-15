@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023-2024 Wojciech Śmigaj
+// Copyright (C) 2023-2025 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -778,7 +778,7 @@ void MainWindow::on_actionAboutCameleon_triggered()
   QMessageBox::about(
     this, "About Cam\u00E9l\u00E9on",
     "Cam\u00E9l\u00E9on " CAMELEON_VERSION ".<b></b><br><br>\n\n"
-    "Copyright (C) 2023-2024 Wojciech \u015Amigaj.<br><br>\n\n"
+    "Copyright (C) 2023-2025 Wojciech \u015Amigaj.<br><br>\n\n"
     "This program is free software: you can redistribute it and/or modify "
     "it under the terms of the GNU General Public License as published by "
     "the Free Software Foundation, either version 3 of the License, or "
