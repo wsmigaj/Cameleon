@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023-2024 Wojciech Śmigaj
+// Copyright (C) 2023-2025 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 #include "ImageWidget.h"
 
 #include <iostream>
+
+const double ImageWidget::ZOOM_INCREMENT = std::pow(2.0, 1.0 / 3.0);
 
 ImageWidget::ImageWidget(QWidget* parent) : QGraphicsView(parent)
 {
@@ -104,7 +106,7 @@ void ImageWidget::wheelEvent(QWheelEvent* event)
 {
   if (event->modifiers() & Qt::CTRL)
   {
-    zoom(std::pow(1.25, event->angleDelta().y() / 120.));
+    zoom(std::pow(ZOOM_INCREMENT, event->angleDelta().y() / 120.));
     event->accept();
   }
   else

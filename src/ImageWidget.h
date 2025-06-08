@@ -1,6 +1,6 @@
 // This file is part of Caméléon.
 //
-// Copyright (C) 2023-2024 Wojciech Śmigaj
+// Copyright (C) 2023-2025 Wojciech Śmigaj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@ class ImageWidget : public QGraphicsView
   Q_OBJECT
 
 public:
+  static const double ZOOM_INCREMENT;
+
   explicit ImageWidget(QWidget* parent = nullptr);
   ~ImageWidget() override;
 

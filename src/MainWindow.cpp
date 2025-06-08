@@ -20,6 +20,7 @@
 #include "Constants.h"
 #include "ContainerUtils.h"
 #include "Document.h"
+#include "ImageWidget.h"
 #include "MainWindow.h"
 #include "PatternMatching.h"
 #include "PatternMatchingProgressDialog.h"
@@ -476,12 +477,12 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-  ui_->mainView->zoom(1.25);
+  ui_->mainView->zoom(ImageWidget::ZOOM_INCREMENT);
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-  ui_->mainView->zoom(1.0 / 1.25);
+  ui_->mainView->zoom(1.0 / ImageWidget::ZOOM_INCREMENT);
 }
 
 void MainWindow::on_actionZoom1to1_triggered()
